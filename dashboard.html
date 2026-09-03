@@ -1,0 +1,565 @@
+<title>Yaseen vs Shufqat</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --bg:#F7F4EC;
+    --surface:#FFFFFF;
+    --surface-2:#EFEADB;
+    --ink:#1B2420;
+    --ink-muted:#666F62;
+    --border:#DCD6C4;
+    --teamA:#1E7A5F;
+    --teamA-soft:#E3F1EA;
+    --teamB:#3E4FC4;
+    --teamB-soft:#E7E9FB;
+    --gold:#B4791F;
+    --gold-soft:#F6ECD6;
+    --open-cell:#F0ECE1;
+    --shadow: 0 1px 2px rgba(27,36,32,.06), 0 8px 24px -12px rgba(27,36,32,.12);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#101512;
+      --surface:#181F1B;
+      --surface-2:#1F2721;
+      --ink:#ECEEE8;
+      --ink-muted:#98A197;
+      --border:#2C352F;
+      --teamA:#3FD3A2;
+      --teamA-soft:#173028;
+      --teamB:#8C9AFF;
+      --teamB-soft:#242C52;
+      --gold:#E4B658;
+      --gold-soft:#332A16;
+      --open-cell:#1F2721;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#101512;
+    --surface:#181F1B;
+    --surface-2:#1F2721;
+    --ink:#ECEEE8;
+    --ink-muted:#98A197;
+    --border:#2C352F;
+    --teamA:#3FD3A2;
+    --teamA-soft:#173028;
+    --teamB:#8C9AFF;
+    --teamB-soft:#242C52;
+    --gold:#E4B658;
+    --gold-soft:#332A16;
+    --open-cell:#1F2721;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:32px 20px 80px;}
+
+  h1,h2,h3,.display{font-family:'Fraunces',Georgia,serif;text-wrap:balance;}
+
+  /* ---------- Top bar ---------- */
+  .topbar{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap;}
+  .topbar .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted);}
+  .topbar h1{font-size:1.05rem;font-weight:600;margin:2px 0 0;color:var(--ink);}
+  .topbar .meta{font-size:.8rem;color:var(--ink-muted);text-align:right;}
+
+  /* ---------- Scoreboard hero ---------- */
+  .scoreboard{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:20px;
+    box-shadow:var(--shadow);
+    padding:36px clamp(16px,4vw,48px);
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:clamp(12px,3vw,32px);
+  }
+  .team-side{display:flex;flex-direction:column;gap:6px;}
+  .team-side.right{align-items:flex-end;text-align:right;}
+  .team-tag{display:inline-flex;align-items:center;gap:8px;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);}
+  .team-side.right .team-tag{flex-direction:row-reverse;}
+  .dot{width:10px;height:10px;border-radius:50%;flex:none;}
+  .dot.a{background:var(--teamA);} .dot.b{background:var(--teamB);}
+  .team-name{font-size:clamp(1.3rem,3vw,1.9rem);font-weight:600;}
+  .team-name.a{color:var(--teamA);} .team-name.b{color:var(--teamB);}
+  .score{font-size:clamp(3.2rem,9vw,5.2rem);font-weight:600;line-height:1;font-variant-numeric:tabular-nums;}
+  .score.a{color:var(--teamA);} .score.b{color:var(--teamB);}
+  .captain{font-size:.78rem;color:var(--ink-muted);}
+  .vs-col{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--ink-muted);}
+  .vs-col .vs{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;letter-spacing:.04em;}
+  .vs-col .fixture{font-size:.68rem;text-align:center;line-height:1.4;max-width:8.5em;}
+
+  .status-strip{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    margin-top:26px;padding-top:20px;border-top:1px solid var(--border);
+    flex-wrap:wrap;
+  }
+  .pill{font-size:.72rem;font-weight:600;padding:4px 11px;border-radius:99px;background:var(--surface-2);color:var(--ink-muted);}
+  .pill.gold{background:var(--gold-soft);color:var(--gold);}
+
+  /* ---------- Progress ---------- */
+  .progress-block{margin-top:22px;}
+  .progress-label{display:flex;justify-content:space-between;font-size:.76rem;color:var(--ink-muted);margin-bottom:7px;}
+  .progress-label b{color:var(--ink);font-weight:600;}
+  .progress-track{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden;}
+  .progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--teamA),var(--teamB));}
+
+  /* ---------- Section headers ---------- */
+  .section{margin-top:52px;}
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+  .section-head h2{font-size:1.3rem;font-weight:600;margin:0;}
+  .section-head p{margin:0;font-size:.82rem;color:var(--ink-muted);}
+
+  /* ---------- Player tables ---------- */
+  .rosters{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media (max-width:720px){.rosters{grid-template-columns:1fr;}}
+  .roster-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;}
+  .roster-card .head{padding:14px 18px;font-weight:600;font-size:.92rem;display:flex;align-items:center;gap:8px;}
+  .roster-card.a .head{background:var(--teamA-soft);color:var(--teamA);}
+  .roster-card.b .head{background:var(--teamB-soft);color:var(--teamB);}
+  table{width:100%;border-collapse:collapse;font-size:.83rem;}
+  .table-scroll{overflow-x:auto;}
+  th,td{padding:9px 10px;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap;font-variant-numeric:tabular-nums;}
+  th{font-size:.66rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);font-weight:700;}
+  td:first-child,th:first-child{text-align:left;}
+  tr:last-child td{border-bottom:none;}
+  td.name{font-weight:600;}
+  td.pts{font-weight:700;}
+  .sub-tag{font-size:.66rem;font-weight:600;color:var(--gold);background:var(--gold-soft);border-radius:5px;padding:1px 5px;margin-left:6px;}
+  .big-badge{display:inline-block;font-size:.66rem;font-weight:700;color:var(--gold);}
+
+  /* ---------- Recent results ---------- */
+  .results-list{display:flex;flex-direction:column;gap:10px;}
+  .result-row{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:13px 18px;display:grid;grid-template-columns:auto 1fr auto 1fr auto;align-items:center;gap:12px;
+    box-shadow:var(--shadow);font-size:.86rem;
+  }
+  @media (max-width:640px){.result-row{grid-template-columns:1fr;text-align:left;gap:4px;}}
+  .result-row .date{font-size:.68rem;color:var(--ink-muted);white-space:nowrap;}
+  .result-row .player{font-weight:600;text-align:right;}
+  .result-row .player.win{color:var(--teamA);}
+  .result-row .vs-mini{font-size:.7rem;color:var(--ink-muted);text-align:center;}
+  .result-row .opp{font-weight:600;}
+  .result-row .opp.win{color:var(--teamB);}
+  .result-row .pts-mini{font-size:.72rem;color:var(--ink-muted);text-align:right;white-space:nowrap;}
+
+  .empty-state{
+    background:var(--surface);border:1px dashed var(--border);border-radius:14px;
+    padding:34px 20px;text-align:center;color:var(--ink-muted);font-size:.88rem;
+  }
+
+  /* ---------- Pairings grid ---------- */
+  .grid-legend{display:flex;gap:16px;font-size:.74rem;color:var(--ink-muted);margin-bottom:12px;flex-wrap:wrap;}
+  .grid-legend span{display:inline-flex;align-items:center;gap:6px;}
+  .swatch{width:13px;height:13px;border-radius:4px;display:inline-block;}
+  .swatch.played{background:var(--gold);}
+  .swatch.open{background:var(--open-cell);border:1px solid var(--border);}
+  .pairings-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:14px;background:var(--surface);box-shadow:var(--shadow);}
+  .pairings-grid{border-collapse:collapse;font-size:.72rem;}
+  .pairings-grid th,.pairings-grid td{border:1px solid var(--border);width:34px;height:34px;text-align:center;padding:0;}
+  .pairings-grid th.corner{background:var(--surface-2);}
+  .pairings-grid th.col-h{writing-mode:vertical-rl;transform:rotate(180deg);font-weight:600;color:var(--teamB);background:var(--teamB-soft);height:70px;font-size:.68rem;}
+  .pairings-grid th.row-h{text-align:left;padding:0 10px;font-weight:600;color:var(--teamA);background:var(--teamA-soft);white-space:nowrap;}
+  .cell-open{background:var(--open-cell);}
+  .cell-played{background:var(--gold-soft);color:var(--gold);font-weight:700;}
+
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--border);font-size:.74rem;color:var(--ink-muted);line-height:1.6;}
+  footer b{color:var(--ink);}
+
+  /* ---------- Race to the Cup ---------- */
+  .race-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:22px clamp(14px,3vw,28px) 24px;}
+  .race-chart-wrap{width:100%;overflow-x:auto;}
+  .race-svg{width:100%;height:auto;display:block;min-width:480px;}
+  .race-svg text{font-family:'Inter',system-ui,sans-serif;fill:var(--ink-muted);}
+  .race-legend{display:flex;gap:18px;font-size:.76rem;color:var(--ink-muted);margin-top:8px;flex-wrap:wrap;}
+  .race-legend span{display:inline-flex;align-items:center;gap:6px;}
+  .lead-scale{margin-top:26px;padding-top:20px;border-top:1px solid var(--border);}
+  .lead-label{text-align:center;font-size:.9rem;font-weight:600;margin-bottom:12px;}
+  .lead-track{position:relative;height:14px;border-radius:99px;background:var(--surface-2);overflow:hidden;}
+  .lead-center-line{position:absolute;left:50%;top:-4px;bottom:-4px;width:1px;background:var(--border);}
+  .lead-fill{position:absolute;top:0;bottom:0;border-radius:99px;transition:none;}
+  .lead-caps{display:flex;justify-content:space-between;font-size:.68rem;color:var(--ink-muted);margin-top:7px;text-transform:uppercase;letter-spacing:.04em;}
+</style>
+
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">Team Match Play &middot; 9-Hole Stableford</div>
+      <h1>Club Team Competition</h1>
+    </div>
+    <div class="meta" id="metaLine"></div>
+  </div>
+
+  <div class="scoreboard">
+    <div class="team-side a">
+      <span class="team-tag"><span class="dot a"></span>Team Yaseen</span>
+      <span class="score a" id="scoreA">0</span>
+      <span class="captain">Captain: Yaseen</span>
+    </div>
+    <div class="vs-col">
+      <span class="vs">VS</span>
+      <span class="fixture">points to date</span>
+    </div>
+    <div class="team-side b right">
+      <span class="team-tag"><span class="dot b"></span>Team Shufqat</span>
+      <span class="score b" id="scoreB">0</span>
+      <span class="captain">Captain: Shufqat</span>
+    </div>
+  </div>
+
+  <div class="status-strip" id="statusStrip"></div>
+
+  <div class="progress-block">
+    <div class="progress-label">
+      <span>Round robin progress</span>
+      <span><b id="progressCount">0</b> of <span id="progressTotal">100</span> pairings played</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <h2>Race to the Cup</h2>
+      <p>Cumulative team points, match by match — the gap tells you how close it is</p>
+    </div>
+    <div class="race-card">
+      <div class="race-chart-wrap"><svg class="race-svg" id="raceSvg" viewBox="0 0 640 220" preserveAspectRatio="none"></svg></div>
+      <div class="race-legend">
+        <span><span class="dot a"></span>Team Yaseen</span>
+        <span><span class="dot b"></span>Team Shufqat</span>
+        <span>Shaded band = current point gap</span>
+      </div>
+      <div class="lead-scale">
+        <div class="lead-label" id="leadLabel"></div>
+        <div class="lead-track">
+          <div class="lead-center-line"></div>
+          <div class="lead-fill" id="leadFill"></div>
+        </div>
+        <div class="lead-caps"><span>Shufqat ahead</span><span>All square</span><span>Yaseen ahead</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <h2>Player Leaderboard</h2>
+      <p>Sorted by points, then wins</p>
+    </div>
+    <div class="rosters">
+      <div class="roster-card a">
+        <div class="head"><span class="dot a"></span>Team Yaseen</div>
+        <div class="table-scroll"><table id="tableA"></table></div>
+      </div>
+      <div class="roster-card b">
+        <div class="head"><span class="dot b"></span>Team Shufqat</div>
+        <div class="table-scroll"><table id="tableB"></table></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <h2>Recent Results</h2>
+      <p id="resultsSub">Most recent first</p>
+    </div>
+    <div class="results-list" id="resultsList"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <h2>Pairings Grid</h2>
+      <p>Every Yaseen player is scheduled to meet every Shufqat player once</p>
+    </div>
+    <div class="grid-legend">
+      <span><span class="swatch played"></span>Played</span>
+      <span><span class="swatch open"></span>Still to play</span>
+    </div>
+    <div class="pairings-scroll">
+      <table class="pairings-grid" id="pairingsGrid"></table>
+    </div>
+  </div>
+
+  <footer>
+    <b>Scoring:</b> win = 1 point, +1 bonus point for a win by 5 or more Stableford points, a tie is halved 0.5&ndash;0.5, loss = 0.
+    &middot; <b>Subs:</b> a stand-in's result counts for the team and for their own record, but the rostered player's own pairing against that opponent stays open until they play it themselves.
+    &middot; Updates as new match results come in.
+  </footer>
+</div>
+
+<script>
+  // ============================== DATA ==============================
+  // Mirrors the "Team_Matchplay_Leaderboard.xlsx" workbook. To add a result,
+  // append an object to MATCHES and republish. Fields: date (YYYY-MM-DD),
+  // aPlayer/bPlayer (must match a roster name for pairing-grid credit),
+  // aSubFor/bSubFor (name they covered for, or null), aPts/bPts (9-hole
+  // Stableford totals), notes (optional).
+  const TEAM_A = { key: 'a', name: 'Yaseen', captain: 'Yaseen' };
+  const TEAM_B = { key: 'b', name: 'Shufqat', captain: 'Shufqat' };
+  const ROSTER_A = [
+    ['Yaseen (C)', 13.4], ['Amriaz', 10.4], ['Bash', 17.4], ['Imran', 13.8],
+    ['Mansoor', 16.0], ['Moody', 16.8], ['Nav', 18.7], ['Shaan', 18.1],
+    ['Shahzad', 20.4], ['Waseem', 15.6],
+  ];
+  const ROSTER_B = [
+    ['Shufqat (C)', 12.6], ['Gaff', 8.2], ['Haaris', 12.4], ['Jabar', 15.5],
+    ['Tab', 10.1], ['Raz', 10.4], ['Raza', 28.0], ['Sam', 17.2],
+    ['Sid', 18.0], ['Tariq', 22.6],
+  ];
+  const BIG_WIN_MARGIN = 5;
+
+  // aSubFor/bSubFor: blank OR equal to the player's own name both mean "no
+  // sub, played direct" -- only a genuinely different name is a substitution.
+  const MATCHES = [
+    { date:'2026-08-24', aPlayer:'Yaseen (C)', aSubFor:'Yaseen (C)', aPts:13, bPlayer:'Shufqat (C)', bSubFor:'Shufqat (C)', bPts:18 },
+    { date:'2026-08-25', aPlayer:'Mansoor',    aSubFor:'Moody',      aPts:13, bPlayer:'Raz',         bSubFor:'Raz',         bPts:10 },
+    { date:'2026-08-25', aPlayer:'Moody',      aSubFor:'Moody',      aPts:14, bPlayer:'Sam',         bSubFor:'Sam',         bPts:10 },
+    { date:'2026-08-25', aPlayer:'Imran',      aSubFor:'Imran',      aPts:17, bPlayer:'Jabar',       bSubFor:'Jabar',       bPts:12 },
+    { date:'2026-08-25', aPlayer:'Waseem',     aSubFor:'Waseem',     aPts:10, bPlayer:'Raz',         bSubFor:'Tariq',       bPts:11 },
+    { date:'2026-08-25', aPlayer:'Mansoor',    aSubFor:'Mansoor',    aPts:10, bPlayer:'Tab',         bSubFor:'Tab',         bPts:16 },
+    { date:'2026-08-25', aPlayer:'Amriaz',     aSubFor:'Amriaz',     aPts:16, bPlayer:'Gaff',        bSubFor:'Gaff',        bPts:16 },
+    { date:'2026-08-25', aPlayer:'Nav',        aSubFor:'Nav',        aPts:16, bPlayer:'Raza',        bSubFor:'Raza',        bPts:7  },
+    { date:'2026-08-25', aPlayer:'Bash',       aSubFor:'Bash',       aPts:21, bPlayer:'Tab',         bSubFor:'Haaris',      bPts:15 },
+    { date:'2026-08-25', aPlayer:'Shahzad',    aSubFor:'Shahzad',    aPts:15, bPlayer:'Sid',         bSubFor:'Sid',         bPts:16 },
+    { date:'2026-08-31', aPlayer:'Yaseen (C)', aSubFor:'Yaseen (C)', aPts:17, bPlayer:'Tariq',       bSubFor:'Tariq',       bPts:17 },
+    { date:'2026-09-01', aPlayer:'Bash',       aSubFor:'Bash',       aPts:12, bPlayer:'Jabar',       bSubFor:'Jabar',       bPts:19 },
+    { date:'2026-09-01', aPlayer:'Waseem',     aSubFor:'Waseem',     aPts:21, bPlayer:'Shufqat (C)', bSubFor:'Shufqat (C)', bPts:16 },
+  ];
+
+  // ============================== COMPUTE ==============================
+  function fmtDate(d){
+    if(!d) return '';
+    const dt = new Date(d + 'T00:00:00');
+    if (isNaN(dt)) return d;
+    return dt.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+  }
+
+  // Blank OR same-as-player both mean "no sub, played direct" -- only a
+  // genuinely different name is a real substitution (see MATCHES comment).
+  function isRealSub(player, subFor){
+    return !!subFor && subFor !== player;
+  }
+
+  function computeMatch(m){
+    const margin = Math.abs(m.aPts - m.bPts);
+    let winner = 'Halved';
+    if (m.aPts > m.bPts) winner = 'A'; else if (m.bPts > m.aPts) winner = 'B';
+    const bigWin = winner !== 'Halved' && margin >= BIG_WIN_MARGIN;
+    let aTeamPts = 0, bTeamPts = 0;
+    if (winner === 'A') aTeamPts = bigWin ? 2 : 1;
+    else if (winner === 'B') bTeamPts = bigWin ? 2 : 1;
+    else { aTeamPts = 0.5; bTeamPts = 0.5; }
+    const aIsSub = isRealSub(m.aPlayer, m.aSubFor);
+    const bIsSub = isRealSub(m.bPlayer, m.bSubFor);
+    return { ...m, margin, winner, bigWin, aTeamPts, bTeamPts, aIsSub, bIsSub };
+  }
+
+  const computed = MATCHES.map(computeMatch);
+
+  function buildPlayerStats(roster, side, opponentWinKey){
+    const names = new Set(roster.map(r => r[0]));
+    computed.forEach(m => { if (side === 'A') names.add(m.aPlayer); else names.add(m.bPlayer); });
+    const hcpMap = Object.fromEntries(roster.map(r => [r[0], r[1]]));
+    const stats = [...names].filter(Boolean).map(name => {
+      const mine = computed.filter(m => (side === 'A' ? m.aPlayer : m.bPlayer) === name);
+      const won = mine.filter(m => m.winner === (side === 'A' ? 'A' : 'B')).length;
+      const lost = mine.filter(m => m.winner === (side === 'A' ? 'B' : 'A')).length;
+      const halved = mine.filter(m => m.winner === 'Halved').length;
+      const bigWins = mine.filter(m => m.bigWin && m.winner === (side === 'A' ? 'A' : 'B')).length;
+      const pts = mine.reduce((s, m) => s + (side === 'A' ? m.aTeamPts : m.bTeamPts), 0);
+      const avg = mine.length ? (mine.reduce((s, m) => s + (side === 'A' ? m.aPts : m.bPts), 0) / mine.length) : null;
+      return { name, hcp: hcpMap[name], played: mine.length, won, lost, halved, bigWins, pts, avg };
+    });
+    stats.sort((x, y) => y.pts - x.pts || y.won - x.won || (x.name < y.name ? -1 : 1));
+    return stats;
+  }
+
+  const statsA = buildPlayerStats(ROSTER_A, 'A');
+  const statsB = buildPlayerStats(ROSTER_B, 'B');
+
+  const totalA = computed.reduce((s, m) => s + m.aTeamPts, 0);
+  const totalB = computed.reduce((s, m) => s + m.bTeamPts, 0);
+
+  function pairingsPlayed(){
+    const map = new Set();
+    computed.forEach(m => {
+      if (!m.aIsSub && !m.bIsSub) map.add(m.aPlayer + '||' + m.bPlayer);
+    });
+    return map;
+  }
+  const playedPairs = pairingsPlayed();
+  const totalPairings = ROSTER_A.length * ROSTER_B.length;
+
+  // ============================== RENDER ==============================
+  document.getElementById('scoreA').textContent = totalA % 1 === 0 ? totalA : totalA.toFixed(1);
+  document.getElementById('scoreB').textContent = totalB % 1 === 0 ? totalB : totalB.toFixed(1);
+
+  const matchesPlayed = computed.length;
+  document.getElementById('metaLine').textContent =
+    matchesPlayed ? `${matchesPlayed} match${matchesPlayed === 1 ? '' : 'es'} played` : 'Season not yet underway';
+
+  const strip = document.getElementById('statusStrip');
+  const leader = totalA === totalB ? null : (totalA > totalB ? TEAM_A.name : TEAM_B.name);
+  const stripPills = [];
+  if (matchesPlayed === 0) {
+    stripPills.push('<span class="pill">No results yet — post your first match to get this board moving</span>');
+  } else {
+    stripPills.push(`<span class="pill">${leader ? leader + ' lead' : 'All square'}</span>`);
+    const bigWinsTotal = computed.filter(m => m.bigWin).length;
+    if (bigWinsTotal) stripPills.push(`<span class="pill gold">${bigWinsTotal} big win${bigWinsTotal === 1 ? '' : 's'} (5+ margin)</span>`);
+    const halvedTotal = computed.filter(m => m.winner === 'Halved').length;
+    if (halvedTotal) stripPills.push(`<span class="pill">${halvedTotal} halved</span>`);
+  }
+  strip.innerHTML = stripPills.join('');
+
+  document.getElementById('progressCount').textContent = playedPairs.size;
+  document.getElementById('progressTotal').textContent = totalPairings;
+  document.getElementById('progressFill').style.width = (playedPairs.size / totalPairings * 100).toFixed(1) + '%';
+
+  function renderTable(el, stats){
+    const rows = stats.map(s => `
+      <tr>
+        <td class="name">${s.name}</td>
+        <td>${s.hcp != null ? s.hcp.toFixed(1) : '—'}</td>
+        <td>${s.played}</td>
+        <td>${s.won}${s.bigWins ? `<span class="big-badge"> &#9733;${s.bigWins}</span>` : ''}</td>
+        <td>${s.lost}</td>
+        <td>${s.halved}</td>
+        <td class="pts">${s.pts % 1 === 0 ? s.pts : s.pts.toFixed(1)}</td>
+        <td>${s.avg != null ? s.avg.toFixed(1) : '—'}</td>
+      </tr>`).join('');
+    el.innerHTML = `
+      <thead><tr>
+        <th>Player</th><th>HCP</th><th>P</th><th>W</th><th>L</th><th>H</th><th>Pts</th><th>Avg</th>
+      </tr></thead><tbody>${rows}</tbody>`;
+  }
+  renderTable(document.getElementById('tableA'), statsA);
+  renderTable(document.getElementById('tableB'), statsB);
+
+  const resultsList = document.getElementById('resultsList');
+  if (!computed.length) {
+    document.getElementById('resultsSub').textContent = '';
+    resultsList.innerHTML = `<div class="empty-state">No matches played yet — results will appear here as soon as you post them.</div>`;
+  } else {
+    const recent = [...computed].sort((a, b) => (a.date < b.date ? 1 : -1));
+    resultsList.innerHTML = recent.map(m => {
+      const aWin = m.winner === 'A', bWin = m.winner === 'B';
+      const aLabel = m.aPlayer + (m.aIsSub ? `<span class="sub-tag">for ${m.aSubFor}</span>` : '');
+      const bLabel = m.bPlayer + (m.bIsSub ? `<span class="sub-tag">for ${m.bSubFor}</span>` : '');
+      const ptsLabel = m.winner === 'Halved'
+        ? 'Halved &middot; 0.5–0.5'
+        : `${m.bigWin ? 'Big win — ' : ''}${m.margin} margin`;
+      return `<div class="result-row">
+        <span class="date">${fmtDate(m.date)}</span>
+        <span class="player ${aWin ? 'win' : ''}">${aLabel} <span style="font-weight:400;color:var(--ink-muted)">${m.aPts}</span></span>
+        <span class="vs-mini">vs</span>
+        <span class="opp ${bWin ? 'win' : ''}"><span style="font-weight:400;color:var(--ink-muted)">${m.bPts}</span> ${bLabel}</span>
+        <span class="pts-mini">${ptsLabel}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // ---------- Race to the Cup: cumulative points + lead scale ----------
+  (function renderRace(){
+    const svg = document.getElementById('raceSvg');
+    const leadLabel = document.getElementById('leadLabel');
+    const leadFill = document.getElementById('leadFill');
+
+    if (!computed.length) {
+      svg.outerHTML = `<div class="empty-state">No matches played yet — the race chart fills in as results come in.</div>`;
+      leadLabel.textContent = 'All square — no matches played yet';
+      leadFill.style.width = '0';
+      return;
+    }
+
+    let cumA = 0, cumB = 0;
+    const race = computed.map((m, i) => {
+      cumA += m.aTeamPts; cumB += m.bTeamPts;
+      return { n: i + 1, a: cumA, b: cumB, diff: cumA - cumB };
+    });
+
+    // ---- line + gap chart ----
+    const W = 640, H = 220, L = 34, R = 48, T = 16, B = 26;
+    const innerW = W - L - R, innerH = H - T - B;
+    const N = race.length;
+    const rawMax = Math.max(1, ...race.flatMap(d => [d.a, d.b]));
+    const maxY = Math.max(2, Math.ceil(rawMax * 1.25 / 2) * 2);
+    const x = i => N === 1 ? L + innerW / 2 : L + (i * innerW) / (N - 1);
+    const y = v => T + innerH - (v / maxY) * innerH;
+
+    let grid = '', gridLabels = '';
+    for (let g = 0; g <= 4; g++) {
+      const v = (maxY / 4) * g;
+      const gy = y(v);
+      grid += `<line x1="${L}" y1="${gy}" x2="${W - R}" y2="${gy}" stroke="var(--border)" stroke-width="1" />`;
+      gridLabels += `<text x="${L - 8}" y="${gy + 3}" font-size="9" text-anchor="end">${Math.round(v)}</text>`;
+    }
+
+    const ptsA = race.map(d => `${x(d.n - 1)},${y(d.a)}`).join(' ');
+    const ptsB = race.map(d => `${x(d.n - 1)},${y(d.b)}`).join(' ');
+    const ptsBRev = [...race].reverse().map(d => `${x(d.n - 1)},${y(d.b)}`).join(' ');
+    const gapPath = `M ${ptsA} L ${ptsBRev} Z`;
+
+    const dotsA = race.map(d => `<circle cx="${x(d.n - 1)}" cy="${y(d.a)}" r="3" fill="var(--teamA)"><title>Match ${d.n}: Team Yaseen ${d.a} pts</title></circle>`).join('');
+    const dotsB = race.map(d => `<circle cx="${x(d.n - 1)}" cy="${y(d.b)}" r="3" fill="var(--teamB)"><title>Match ${d.n}: Team Shufqat ${d.b} pts</title></circle>`).join('');
+
+    const labelStep = N > 14 ? Math.ceil(N / 14) : 1;
+    let xLabels = '';
+    race.forEach((d, i) => {
+      if (i % labelStep === 0 || i === N - 1) {
+        xLabels += `<text x="${x(i)}" y="${H - 6}" font-size="9" text-anchor="middle">${d.n}</text>`;
+      }
+    });
+
+    const lastA = race[N - 1].a, lastB = race[N - 1].b;
+    const fmtN = v => v % 1 === 0 ? v : v.toFixed(1);
+    const endLabels = `
+      <text x="${x(N - 1) + 8}" y="${y(lastA) + 3}" font-size="11" font-weight="700" fill="var(--teamA)">${fmtN(lastA)}</text>
+      <text x="${x(N - 1) + 8}" y="${y(lastB) + 3}" font-size="11" font-weight="700" fill="var(--teamB)">${fmtN(lastB)}</text>`;
+
+    const linePath = N === 1
+      ? `<circle cx="${x(0)}" cy="${y(race[0].a)}" r="4" fill="var(--teamA)" /><circle cx="${x(0)}" cy="${y(race[0].b)}" r="4" fill="var(--teamB)" />`
+      : `<path d="${gapPath}" fill="var(--gold)" fill-opacity="0.14" stroke="none" />
+         <polyline points="${ptsA}" fill="none" stroke="var(--teamA)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+         <polyline points="${ptsB}" fill="none" stroke="var(--teamB)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+         ${dotsA}${dotsB}`;
+
+    svg.innerHTML = `${grid}${gridLabels}${linePath}${xLabels}${endLabels}`;
+
+    // ---- lead scale ----
+    const diff = lastA - lastB;
+    const maxAbs = Math.max(2, ...race.map(d => Math.abs(d.diff)));
+    const scaleMax = Math.ceil(maxAbs * 1.25);
+    const pct = Math.min(50, (Math.abs(diff) / scaleMax) * 50);
+
+    if (diff === 0) {
+      leadLabel.textContent = `All square at ${fmtN(lastA)} pts each — ${N} match${N === 1 ? '' : 'es'} in`;
+      leadFill.style.left = '50%'; leadFill.style.width = '0';
+    } else if (diff > 0) {
+      leadLabel.innerHTML = `<span style="color:var(--teamA)">Team Yaseen</span> ahead by ${fmtN(diff)} point${diff === 1 ? '' : 's'}`;
+      leadFill.style.left = '50%'; leadFill.style.width = pct + '%'; leadFill.style.background = 'var(--teamA)';
+    } else {
+      leadLabel.innerHTML = `<span style="color:var(--teamB)">Team Shufqat</span> ahead by ${fmtN(-diff)} point${diff === -1 ? '' : 's'}`;
+      leadFill.style.left = (50 - pct) + '%'; leadFill.style.width = pct + '%'; leadFill.style.background = 'var(--teamB)';
+    }
+  })();
+
+  const gridTable = document.getElementById('pairingsGrid');
+  let thead = '<thead><tr><th class="corner"></th>' +
+    ROSTER_B.map(([n]) => `<th class="col-h">${n}</th>`).join('') + '</tr></thead>';
+  let tbody = '<tbody>' + ROSTER_A.map(([an]) => {
+    return '<tr><th class="row-h">' + an + '</th>' + ROSTER_B.map(([bn]) => {
+      const played = playedPairs.has(an + '||' + bn);
+      return `<td class="${played ? 'cell-played' : 'cell-open'}" title="${an} vs ${bn}">${played ? '&#10003;' : ''}</td>`;
+    }).join('') + '</tr>';
+  }).join('') + '</tbody>';
+  gridTable.innerHTML = thead + tbody;
+</script>
