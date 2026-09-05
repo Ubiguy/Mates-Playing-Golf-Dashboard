@@ -12,6 +12,17 @@ const SOCIETY = {
   lastRound: '5 September 2026'
 };
 
+/* ---------- The season's five majors ----------
+   [name, status, champion, note, page link or null]
+   status: 'done' | 'live'                                            */
+const MAJORS = [
+  ['Stableford Singles Championship','done','Raz Shafi','13 rounds, Mar-Jun 2026',null],
+  ['Strokeplay Singles Championship','done','Sid Amin','9 rounds, Jul-Aug 2026','strokeplay2026.html'],
+  ['Doubles Match Play','done','Haaris Ahmed & Shaan Ahmed','Pairs knockout',null],
+  ['Singles Match Play','live',null,'In progress',null],
+  ['Team Games','live',null,'Yaseen v Shufqat, 20 matches played','matchplay.html']
+];
+
 /* ---------- Team match play (TeamGames2026) ----------
    Mirrors the Match Log tab of Team_Matchplay_Leaderboard.xlsx.
    aSubFor / bSubFor: null normally. Put a name there ONLY when that
@@ -47,8 +58,10 @@ const MATCHES = [
   {date:'2026-09-05',aPlayer:'Moody',aSubFor:null,aPts:13,bPlayer:'Raza',bSubFor:null,bPts:15}
 ];
 
-/* ---------- League Points 2026 ----------
+/* ---------- Stableford Singles Championship 2026 ----------
+   The society's Stableford singles major, won by Raz Shafi.
    13 rounds, Mar-Jun 2026. Points = MAX(0, 13 - finishing position).
+   (The variable stays LEAGUE - it is the league-points table for that major.)
    [player, total points, rounds played]                              */
 const LEAGUE = [
   ['Raz Shafi',109,11],['Mahmood Sadiq',92,13],['Shufqat Khan',83,12],['Waseem Goldenboy',75,10],
@@ -59,7 +72,7 @@ const LEAGUE = [
   ['Haaris Ahmed',12,1],['Raza Efendi',4,2],['Nadeem Ahmed',3,2]
 ];
 
-/* ---------- Stroke Play 2026 (final) ----------
+/* ---------- Strokeplay Singles Championship 2026 (final) ----------
    9 rounds, Jul-Aug 2026. Best 6 net rounds, minimum 6 to qualify.
    [rank, player, rounds, best-6 total, best-6 average]               */
 const STROKEPLAY = [
@@ -71,7 +84,7 @@ const SP_UNRANKED = [['Waseem Goldenboy',5],['Tariq Javaid',5],['Shufqat Khan',5
   ['Mansoor M',3],['Sabar Riaz',3],['Yaseen Mohammed',2],['Naeem Akhtar',2],['Nadeem Ahmed',2],
   ['Aftab Iqbal',1],['Haaris Ahmed',1]];
 
-/* ---------- Stroke Play 2026: round by round ----------
+/* ---------- Strokeplay Singles: round by round ----------
    [round label, date, field size, winner, winning net, winning gross]  */
 const SP_ROUNDS = [
   ['R1','4 Jul 2026',14,'Raz Shafi',72,82],
@@ -85,7 +98,7 @@ const SP_ROUNDS = [
   ['R9','30 Aug 2026',15,'Basharat2 Ali',67,84]
 ];
 
-/* ---------- Stroke Play 2026: lowest nets of the season ----------
+/* ---------- Strokeplay Singles: lowest nets of the season ----------
    [player, net, gross, round]                                        */
 const SP_BEST = [
   ['Shufqat Khan',64,79,'R6'],

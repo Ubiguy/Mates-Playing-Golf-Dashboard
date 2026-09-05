@@ -9,16 +9,17 @@ drop the folder in a repo, switch on GitHub Pages, and the society has one perma
 
 | File | What it is |
 |---|---|
-| `index.html` | **Season hub** — team match play, then stroke play 2026, then League Points 2026 |
+| `index.html` | **Season hub** — the five majors, then each running competition |
 | `matchplay.html` | **Team match play** — the full Yaseen v Shufqat board |
-| `strokeplay2026.html` | **Stroke play 2026** — final standings and round by round |
+| `strokeplay2026.html` | **Strokeplay Singles Championship** — final standings and round by round |
 | `2025season.html` | **2025 season** — the completed Stableford series |
 | `handicaps.html` | **Handicap register** — NHS, WHS and calculated, for all 32 players |
 | `data.js` | **All the data.** The only file you edit after a round. |
 | `style.css` | Shared styling for every page. |
 
-Competitions on the hub run most-recent-first: match play (from 24 Aug 2026), stroke play
-(Jul–Aug 2026), League Points (Mar–Jun 2026).
+The season has five majors: Stableford Singles (won by Raz Shafi), Strokeplay Singles (Sid Amin),
+Doubles Match Play (Haaris Ahmed & Shaan Ahmed), Singles Match Play and Team Games — the last two
+still being played. The hub leads with that table, then details each competition most-recent-first.
 
 Every page carries the same nav plus a link back to the society's Google Site at
 https://sites.google.com/view/matesplayinggolf, so the pages work equally well embedded
@@ -71,7 +72,7 @@ update themselves as figures come in.
 **Team match play** — win 1 point, win by 5 or more Stableford points 2 points,
 halved match 0.5 each, loss 0.
 
-**Stroke play 2026** — ranked on the average of a player's best 6 net rounds
+**Strokeplay Singles Championship** — ranked on the average of a player's best 6 net rounds
 (net = gross total minus the handicap played off that day), minimum 6 rounds to qualify.
 
 **Stableford 2025** — ranked on league points: each round's winner takes 12, runner-up 11,

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Golf Society 2026</title>
-<meta name="description" content="Golf society season hub - team match play, stroke play and League Points standings.">
+<meta name="description" content="Golf society season hub - the season's five majors, team match play and championship standings.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -14,7 +14,7 @@
   <nav class="sitenav">
     <a href="index.html" aria-current="page">Season hub</a>
     <a href="matchplay.html">Team match play</a>
-    <a href="strokeplay2026.html">Stroke play 2026</a>
+    <a href="strokeplay2026.html">Strokeplay Singles</a>
     <a href="2025season.html">2025 season</a>
     <a href="handicaps.html">Handicaps</a>
     <a class="back" href="https://sites.google.com/view/matesplayinggolf">&larr; Mates Playing Golf</a>
@@ -29,11 +29,22 @@
   </header>
 
   <div class="strip">
-    <div class="stat"><span class="k">Running now</span><span class="v num">2</span><span class="sub">match play &amp; League Points</span></div>
+    <div class="stat"><span class="k">Majors running</span><span class="v num" id="sLive">0</span><span class="sub" id="sLiveWho"></span></div>
     <div class="stat"><span class="k">Players on the books</span><span class="v num" id="sPlayers">0</span><span class="sub">see the handicap register</span></div>
     <div class="stat"><span class="k">Scorecards logged</span><span class="v num" id="sRounds">0</span><span class="sub" id="sSince"></span></div>
     <div class="stat"><span class="k">Lowest net round</span><span class="v num" id="sBest">0</span><span class="sub" id="sBestWho"></span></div>
   </div>
+
+  <section>
+    <div class="head">
+      <div class="head-l">
+        <h2>The season's five majors</h2>
+        <span class="when" id="majorsWhen"></span>
+      </div>
+      <p>Three settled, two still being played</p>
+    </div>
+    <div class="t-scroll"><table id="majors"></table></div>
+  </section>
 
   <section>
     <div class="head">
@@ -61,7 +72,7 @@
   <section>
     <div class="head">
       <div class="head-l">
-        <h2>Stroke Play 2026</h2>
+        <h2>Strokeplay Singles Championship</h2>
         <span class="chip done">Final</span>
         <span class="when">9 rounds &middot; Jul&ndash;Aug 2026</span>
       </div>
@@ -74,8 +85,8 @@
   <section>
     <div class="head">
       <div class="head-l">
-        <h2>League Points 2026</h2>
-        <span class="chip live">Running</span>
+        <h2>Stableford Singles Championship</h2>
+        <span class="chip done">Final</span>
         <span class="when">13 rounds &middot; Mar&ndash;Jun 2026</span>
       </div>
       <p>1st = 12 points, down one per place, nothing below 13th</p>
@@ -94,7 +105,7 @@
 
   <footer>
     <div><b>Where the numbers come from.</b> Stroke play and Stableford figures are computed from hole-by-hole scorecards in the society tracker. Net = gross total minus the handicap played off that day.</div>
-    <div><b>League Points.</b> These 13 rounds were read off leaderboard screenshots rather than full scorecards, so they sit outside the handicap calculation. Game 02 and Game 05 were captured only down to 7th place.</div>
+    <div><b>The Stableford Singles.</b> These 13 rounds were read off leaderboard screenshots rather than full scorecards, so they sit outside the handicap calculation. Game 02 and Game 05 were captured only down to 7th place.</div>
     <div><b>Earlier seasons.</b> The 2025 Stableford series &mdash; fourteen rounds, won by Shaan Ahmed &mdash; has its own page. Handicaps (NHS, WHS and calculated) are on the register.</div>
   </footer>
 </div>
@@ -107,6 +118,9 @@
   (function(){
     document.getElementById('stamp').innerHTML =
       `${SOCIETY.onBooks} players &middot; ${SOCIETY.rounds} scorecards<br>Last round ${SOCIETY.lastRound}`;
+    const live = MAJORS.filter(m => m[1] === 'live');
+    document.getElementById('sLive').textContent = live.length;
+    document.getElementById('sLiveWho').textContent = live.map(m => m[0]).join(' & ');
     document.getElementById('sPlayers').textContent = SOCIETY.onBooks;
     document.getElementById('sRounds').textContent = SOCIETY.rounds;
     document.getElementById('sSince').textContent = 'hole by hole since ' + SOCIETY.firstRound;
@@ -156,7 +170,7 @@
           <td class="nm">${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td>
           <td class="key">${r[4].toFixed(2)}</td></tr>`).join('') + `</tbody>`;
     document.getElementById('spNote').innerHTML =
-      `<b>${STROKEPLAY[0][1]}</b> takes the stroke play season. Positions marked T are shared. ` +
+      `<b>${STROKEPLAY[0][1]}</b> takes the championship on ${STROKEPLAY[0][4].toFixed(2)}. Positions marked T are shared. ` +
       `Short of the 6-round minimum: ` + SP_UNRANKED.map(u => `${u[0]} (${u[1]})`).join(', ') +
       `. <a href="strokeplay2026.html">Round by round &rarr;</a>`;
   })();
@@ -171,8 +185,25 @@
       <span class="val num">${p}<small>${r} rds</small></span>`).join('');
     const played = LEAGUE.reduce((s,r) => s + r[2], 0);
     document.getElementById('leagueNote').textContent =
-      LEAGUE.length + ' players, ' + played + ' entries across 13 rounds. Nothing new logged since ' +
-      '28 June — totals are raw points, not best-of-N, so turnout counts.';
+      `${LEAGUE[0][0]} takes the championship on ${LEAGUE[0][1]} points from ${LEAGUE[0][2]} rounds. ` +
+      `${LEAGUE.length} players, ${played} entries across the 13 rounds. Totals are raw points rather ` +
+      `than a best-of-N, so turning up counts.`;
+  })();
+
+  /* ---------- the five majors ---------- */
+  (function(){
+    const done = MAJORS.filter(m => m[1] === 'done').length;
+    document.getElementById('majorsWhen').textContent =
+      `${done} of ${MAJORS.length} decided`;
+    document.getElementById('majors').innerHTML =
+      `<thead><tr><th class="nm">Tournament</th><th class="nm">Status</th>
+        <th class="nm">Champion</th></tr></thead><tbody>` +
+      MAJORS.map(([name, status, champ, note, link]) => `<tr class="${champ ? 'win' : ''}">
+          <td class="nm">${link ? `<a href="${link}">${name}</a>` : name}
+            <span class="major-note">${note}</span></td>
+          <td class="nm"><span class="chip ${status}">${status === 'done' ? 'Complete' : 'Playing'}</span></td>
+          <td class="nm">${champ || '<span class="pending">still to be decided</span>'}</td>
+        </tr>`).join('') + `</tbody>`;
   })();
 
   /* ---------- lowest net rounds ---------- */

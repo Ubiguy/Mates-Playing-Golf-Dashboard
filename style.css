@@ -141,6 +141,8 @@ td.key{font-family:'Archivo',sans-serif;font-weight:700;text-align:right;}
 td.pending{color:var(--muted);}
 .mini{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.62rem;
   color:var(--muted);margin-left:6px;}
+.major-note{display:block;font-weight:400;font-size:.78rem;color:var(--muted);margin-top:2px;}
+td .chip{font-size:.6rem;}
 .tie{font-family:'IBM Plex Mono',monospace;font-size:.66rem;color:var(--muted);margin-left:6px;}
 .pill{font-family:'IBM Plex Mono',monospace;font-size:.62rem;font-weight:600;letter-spacing:.05em;
   padding:2px 7px;border-radius:3px;background:var(--surface-sunk);color:var(--ink-2);}
