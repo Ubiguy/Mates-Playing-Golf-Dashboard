@@ -71,6 +71,30 @@ const SP_UNRANKED = [['Waseem Goldenboy',5],['Tariq Javaid',5],['Shufqat Khan',5
   ['Mansoor M',3],['Sabar Riaz',3],['Yaseen Mohammed',2],['Naeem Akhtar',2],['Nadeem Ahmed',2],
   ['Aftab Iqbal',1],['Haaris Ahmed',1]];
 
+/* ---------- Stroke Play 2026: round by round ----------
+   [round label, date, field size, winner, winning net, winning gross]  */
+const SP_ROUNDS = [
+  ['R1','4 Jul 2026',14,'Raz Shafi',72,82],
+  ['R2','11 Jul 2026',8,'Sid Amin',70,90],
+  ['R3','18 Jul 2026',6,'Tab Rafique',73,83],
+  ['R4','26 Jul 2026',15,'Sid Amin',70,90],
+  ['R5','1 Aug 2026',7,'Jabar Mughal',70,85],
+  ['R6','9 Aug 2026',11,'Shufqat Khan',64,79],
+  ['R7','15 Aug 2026',10,'Imran K',70,84],
+  ['R8','23 Aug 2026',13,'Mansoor M',67,85],
+  ['R9','30 Aug 2026',15,'Basharat2 Ali',67,84]
+];
+
+/* ---------- Stroke Play 2026: lowest nets of the season ----------
+   [player, net, gross, round]                                        */
+const SP_BEST = [
+  ['Shufqat Khan',64,79,'R6'],
+  ['Basharat2 Ali',67,84,'R9'],
+  ['Mansoor M',67,85,'R8'],
+  ['Aftab Iqbal',70,77,'R5'],
+  ['Guftar Hussain',70,78,'R8']
+];
+
 /* ---------- Stableford Series 2025 (final) ----------
    14 rounds, Apr-Jul 2025 (complete). Minimum 8 rounds to qualify.
    Ranked on LEAGUE POINTS: each round the winner takes 12, runner-up 11,

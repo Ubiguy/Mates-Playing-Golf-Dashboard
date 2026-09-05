@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stroke Play 2026</title>
+<meta name="description" content="The 2026 stroke play season - final standings from 9 rounds, July to August 2026.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <nav class="sitenav">
+    <a href="index.html">Season hub</a>
+    <a href="matchplay.html">Team match play</a>
+    <a href="strokeplay2026.html" aria-current="page">Stroke play 2026</a>
+    <a href="2025season.html">2025 season</a>
+    <a href="handicaps.html">Handicaps</a>
+    <a class="back" href="https://sites.google.com/view/matesplayinggolf">&larr; Mates Playing Golf</a>
+  </nav>
+
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">Completed season &middot; nine rounds</div>
+      <h1>Stroke Play 2026</h1>
+    </div>
+    <div class="stamp" id="stamp"></div>
+  </header>
+
+  <div class="strip">
+    <div class="stat"><span class="k">Rounds played</span><span class="v num">9</span><span class="sub">4 Jul &ndash; 30 Aug 2026</span></div>
+    <div class="stat"><span class="k">Players who teed up</span><span class="v num" id="sPlayed">0</span><span class="sub" id="sQual"></span></div>
+    <div class="stat"><span class="k">Season winner</span><span class="v num" id="sWinner" style="font-size:1.15rem">&mdash;</span><span class="sub" id="sWinAvg"></span></div>
+    <div class="stat"><span class="k">Lowest net round</span><span class="v num" id="sBest">0</span><span class="sub" id="sBestWho"></span></div>
+  </div>
+
+  <section>
+    <div class="head">
+      <div class="head-l">
+        <h2>Final standings</h2>
+        <span class="chip done">Final</span>
+        <span class="when">best 6 of 9</span>
+      </div>
+      <p>Average of your best 6 net rounds &middot; 6 rounds needed to qualify</p>
+    </div>
+    <div class="t-scroll"><table id="strokeplay"></table></div>
+    <p class="after" id="spNote"></p>
+  </section>
+
+  <section>
+    <div class="head">
+      <div class="head-l"><h2>Round by round</h2></div>
+      <p>Who took each round, on net score</p>
+    </div>
+    <div class="t-scroll"><table id="rounds"></table></div>
+    <p class="after" id="roundsNote"></p>
+  </section>
+
+  <section>
+    <div class="head">
+      <div class="head-l"><h2>Lowest net rounds</h2></div>
+      <p>Best cards of the season</p>
+    </div>
+    <div class="cards" id="best"></div>
+  </section>
+
+  <section>
+    <div class="head">
+      <div class="head-l"><h2>How this season was scored</h2></div>
+    </div>
+    <div class="note">
+      <b>Net strokes, not Stableford.</b> Unlike the 2025 series, the stroke play season is settled on
+      net strokes &mdash; gross total minus the handicap played off that day. Lowest wins, so a lower
+      number is a better number throughout this page.
+      <br><br>
+      <b>Best 6 of 9.</b> A player's standing is the average of their six best net rounds. Playing
+      more than six can only help: the extra rounds simply give the average more to choose from, and
+      the worst ones drop out.
+      <br><br>
+      <b>Six rounds to qualify.</b> Turnout varied from six players to fifteen across the nine rounds,
+      so only six players reached the six-round minimum. Everyone else is listed under the table with
+      the number of rounds they played.
+    </div>
+  </section>
+
+  <footer>
+    <div><b>Source.</b> Computed from the hole-by-hole scorecards in the society tracker, the same data behind the handicap register.</div>
+    <div><b>Ties.</b> Players level on a standing share the same position and are marked T &mdash; that is deliberate, not a glitch.</div>
+    <div><b>Other competitions.</b> The 2025 Stableford series and the running team match play have their own pages.</div>
+  </footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+  /* ---------- summary tiles ---------- */
+  (function(){
+    const played = STROKEPLAY.length + SP_UNRANKED.length;
+    document.getElementById('sPlayed').textContent = played;
+    document.getElementById('sQual').textContent = `${STROKEPLAY.length} reached the minimum`;
+    document.getElementById('sWinner').textContent = STROKEPLAY[0][1];
+    document.getElementById('sWinAvg').textContent = STROKEPLAY[0][4].toFixed(2) + ' average net';
+    document.getElementById('sBest').textContent = SP_BEST[0][1];
+    document.getElementById('sBestWho').textContent = SP_BEST[0][0] + ', ' + SP_BEST[0][3];
+    document.getElementById('stamp').innerHTML =
+      `9 rounds &middot; ${played} players<br>July to August 2026`;
+  })();
+
+  /* ---------- final standings ---------- */
+  (function(){
+    const ranks = STROKEPLAY.map(r => r[0]);
+    document.getElementById('strokeplay').innerHTML =
+      `<thead><tr><th class="rk">#</th><th class="nm">Player</th><th>Rounds</th>
+        <th>Best 6 total</th><th>Average net</th></tr></thead><tbody>` +
+      STROKEPLAY.map(r => `<tr class="${r[0] === 1 ? 'win' : ''}">
+          <td class="rk">${r[0]}${ranks.filter(x => x === r[0]).length > 1 ? '<span class="tie">T</span>' : ''}</td>
+          <td class="nm">${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td>
+          <td class="key">${r[4].toFixed(2)}</td></tr>`).join('') + `</tbody>`;
+    const tied = ranks.length - new Set(ranks).size;
+    document.getElementById('spNote').innerHTML =
+      `<b>${STROKEPLAY[0][1]}</b> takes the season on ${STROKEPLAY[0][4].toFixed(2)}, ` +
+      `a fifth of a shot clear of ${STROKEPLAY[1][1]}. ` +
+      (tied ? 'Positions marked T are shared. ' : '') +
+      `Short of the 6-round minimum: ` + SP_UNRANKED.map(u => `${u[0]} (${u[1]})`).join(', ') + '.';
+  })();
+
+  /* ---------- round by round ---------- */
+  (function(){
+    const wins = {};
+    SP_ROUNDS.forEach(r => wins[r[3]] = (wins[r[3]] || 0) + 1);
+    document.getElementById('rounds').innerHTML =
+      `<thead><tr><th class="rk">Rd</th><th>Date</th><th>Field</th>
+        <th class="nm">Winner</th><th>Net</th><th>Gross</th></tr></thead><tbody>` +
+      SP_ROUNDS.map(r => `<tr>
+          <td class="rk">${r[0]}</td>
+          <td>${r[1]}</td>
+          <td>${r[2]}</td>
+          <td class="nm">${r[3]}</td>
+          <td class="key">${r[4]}</td>
+          <td>${r[5]}</td></tr>`).join('') + `</tbody>`;
+    const multi = Object.entries(wins).filter(([,n]) => n > 1).map(([p,n]) => `${p} (${n})`);
+    const entries = SP_ROUNDS.reduce((s,r) => s + r[2], 0);
+    document.getElementById('roundsNote').textContent =
+      `${entries} entries across the nine rounds, from a field of ${Math.min(...SP_ROUNDS.map(r=>r[2]))} ` +
+      `up to ${Math.max(...SP_ROUNDS.map(r=>r[2]))}. ` +
+      (multi.length ? `Only ${multi.join(', ')} won more than one round.` : 'Nine different winners.');
+  })();
+
+  /* ---------- lowest nets ---------- */
+  document.getElementById('best').innerHTML = SP_BEST.map(([p,net,gross,rd]) => `
+    <div class="card">
+      <span class="net num">${net}</span>
+      <span class="who">${p}</span>
+      <span class="meta">${gross} gross &middot; ${rd}</span>
+    </div>`).join('');
+</script>
+</body>
+</html>

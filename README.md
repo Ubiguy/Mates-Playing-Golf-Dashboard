@@ -11,13 +11,18 @@ drop the folder in a repo, switch on GitHub Pages, and the society has one perma
 |---|---|
 | `index.html` | **Season hub** — team match play, then stroke play 2026, then League Points 2026 |
 | `matchplay.html` | **Team match play** — the full Yaseen v Shufqat board |
+| `strokeplay2026.html` | **Stroke play 2026** — final standings and round by round |
 | `2025season.html` | **2025 season** — the completed Stableford series |
-| `handicaps.html` | **Handicap register** — NHS, WHS and calculated, for all 29 players |
+| `handicaps.html` | **Handicap register** — NHS, WHS and calculated, for all 32 players |
 | `data.js` | **All the data.** The only file you edit after a round. |
 | `style.css` | Shared styling for every page. |
 
 Competitions on the hub run most-recent-first: match play (from 24 Aug 2026), stroke play
 (Jul–Aug 2026), League Points (Mar–Jun 2026).
+
+Every page carries the same nav plus a link back to the society's Google Site at
+https://sites.google.com/view/matesplayinggolf, so the pages work equally well embedded
+there or opened on their own.
 
 ## Updating after a round
 

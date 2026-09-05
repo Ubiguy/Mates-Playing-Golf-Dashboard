@@ -66,6 +66,9 @@ a{color:var(--accent);}
 .sitenav a{text-decoration:none;color:var(--muted);padding-bottom:3px;border-bottom:2px solid transparent;}
 .sitenav a:hover{color:var(--ink);}
 .sitenav a[aria-current]{color:var(--ink);border-bottom-color:var(--accent);font-weight:600;}
+.sitenav .back{margin-left:auto;color:var(--accent);}
+.sitenav .back:hover{color:var(--ink);}
+@media (max-width:720px){.sitenav .back{margin-left:0;width:100%;}}
 
 /* ---------- masthead ---------- */
 .masthead{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;
