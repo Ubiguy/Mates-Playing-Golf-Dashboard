@@ -1,6 +1,6 @@
 # Golf Society 2026
 
-A four-page static site. No build step, no dependencies, nothing to install —
+A five-page static site. No build step, no dependencies, nothing to install —
 drop the folder in a repo, switch on GitHub Pages, and the society has one permanent link.
 
 **View it:** https://YOUR-USERNAME.github.io/YOUR-REPO/
@@ -13,7 +13,7 @@ drop the folder in a repo, switch on GitHub Pages, and the society has one perma
 | `matchplay.html` | **Team match play** — the full Yaseen v Shufqat board |
 | `strokeplay2026.html` | **Strokeplay Singles Championship** — final standings and round by round |
 | `2025season.html` | **2025 season** — the completed Stableford series |
-| `handicaps.html` | **Handicap register** — NHS, WHS and calculated, for all 32 players |
+| `handicaps.html` | **Handicap register** — the NHS playing handicap for all 32 players, with WHS and calculated alongside |
 | `data.js` | **All the data.** The only file you edit after a round. |
 | `style.css` | Shared styling for every page. |
 
@@ -28,7 +28,7 @@ there or opened on their own.
 ## Updating after a round
 
 Everything lives in `data.js`. Edit it, commit, and GitHub Pages picks it up within a minute —
-all four pages recalculate themselves from it.
+all five pages recalculate themselves from it.
 
 ### A new match play result
 
@@ -61,11 +61,27 @@ update themselves as figures come in.
 
 ## The three handicaps
 
-- **NHS** — supplied figure, recorded as given. No underlying round data held.
-- **WHS** — supplied figure, same.
-- **Calculated HC** — computed from the society's hole-by-hole scorecards: score differential
-  (round total minus course rating), averaged over the best N differentials, with the WHS
-  low-round adjustment. Provisional until 20 rounds are on record, then established.
+**The society rule: a player's handicap is their NHS handicap unless a competition states
+otherwise.** That is the figure quoted everywhere on the site — the register, the team match
+play rosters and player tables, and anywhere else a handicap appears. The other two are held
+for comparison and are never used as a playing figure.
+
+- **NHS** — the playing handicap. Supplied figure, recorded as given. No underlying round data held.
+- **WHS** — supplied figure, comparison only.
+- **Calculated HC** — comparison only. Computed from the society's hole-by-hole scorecards: score
+  differential (round total minus course rating), averaged over the best N differentials, with the
+  WHS low-round adjustment. Provisional until 20 rounds are on record, then established. Under four
+  rounds it is greyed out and marked `thin`.
+
+Historic net scores are not affected: the season pages use the handicap each player actually
+played off on the day, as recorded on the card.
+
+### Changing a handicap
+
+Update the player's `nhs` figure in `REGISTER`. If they are on a team match play roster, update
+their entry in `ROSTER_A` / `ROSTER_B` to the same number (the short name is mapped to the
+register name in a comment beside each line), and in the `Rosters` tab of
+`Team_Matchplay_Leaderboard.xlsx` so the workbook agrees.
 
 ## Scoring
 

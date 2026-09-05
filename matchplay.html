@@ -33,14 +33,14 @@
       <div class="side a" id="sideA">
         <span class="who">Team Yaseen</span>
         <span class="score num" id="scoreA">0</span>
-        <span class="cap">Captain Yaseen &middot; hcp 13.4</span>
+        <span class="cap" id="capA">Captain Yaseen</span>
         <div class="form" id="formA"></div>
       </div>
       <div class="mid-col"><div class="rule"></div><span class="vs">VS</span><div class="rule"></div></div>
       <div class="side b" id="sideB">
         <span class="who">Team Shufqat</span>
         <span class="score num" id="scoreB">0</span>
-        <span class="cap">Captain Shufqat &middot; hcp 12.6</span>
+        <span class="cap" id="capB">Captain Shufqat</span>
         <div class="form" id="formB"></div>
       </div>
     </div>
@@ -105,11 +105,12 @@
   <footer>
     <div><b>Scoring.</b> Win 1 pt. Win by 5 or more Stableford points 2 pts. Halved match 0.5 each. Loss 0.</div>
     <div><b>Substitutes.</b> A stand-in's result counts for the team and for their own record, but the rostered player's own pairing stays open until they play it themselves.</div>
+    <div><b>Handicaps.</b> Every handicap shown here is the player's current NHS handicap, the society's reference figure. It is listed for context &mdash; matches are settled on the Stableford points recorded on the card.</div>
     <div><b>Source.</b> The Match Log tab of Team_Matchplay_Leaderboard.xlsx, mirrored into <code>data.js</code>.</div>
   </footer>
 </div>
 
-<script src="data.js?v=f1d91423"></script>
+<script src="data.js?v=7e1988be"></script>
 <script>
   const isSub = (p,f) => !!f && f !== p;
   const fmtP  = v => v % 1 === 0 ? String(v) : v.toFixed(1);
@@ -154,6 +155,8 @@
   const lastDate = M.reduce((d,m) => m.date > d ? m.date : d, M[0].date);
   document.getElementById('stamp').innerHTML =
     M.length + ' matches played<br>Latest card ' + fmtD(lastDate) + ' 2026';
+  document.getElementById('capA').innerHTML = 'Captain Yaseen &middot; NHS ' + ROSTER_A[0][1].toFixed(1);
+  document.getElementById('capB').innerHTML = 'Captain Shufqat &middot; NHS ' + ROSTER_B[0][1].toFixed(1);
   document.getElementById('scoreA').textContent = fmtP(totalA);
   document.getElementById('scoreB').textContent = fmtP(totalB);
   if (totalA !== totalB) document.getElementById(totalA > totalB ? 'sideA' : 'sideB').classList.add('lead');
@@ -260,7 +263,7 @@
   /* ---------- player tables ---------- */
   function renderTable(el, rows){
     el.innerHTML = `<thead><tr>
-        <th class="nm">Player</th><th>Hcp</th><th>P</th><th>W</th><th>L</th><th>H</th><th>Pts</th><th>Avg</th>
+        <th class="nm">Player</th><th>NHS</th><th>P</th><th>W</th><th>L</th><th>H</th><th>Pts</th><th>Avg</th>
       </tr></thead><tbody>` + rows.map(r => `<tr class="${r.p ? '' : 'idle'}">
         <td class="nm">${r.name}</td>
         <td>${r.hcp != null ? r.hcp.toFixed(1) : '&ndash;'}</td>

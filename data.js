@@ -26,12 +26,35 @@ const MAJORS = [
 /* ---------- Team match play (TeamGames2026) ----------
    Mirrors the Match Log tab of Team_Matchplay_Leaderboard.xlsx.
    aSubFor / bSubFor: null normally. Put a name there ONLY when that
-   player stood in for a team-mate — then it's the team-mate's name.  */
+   player stood in for a team-mate — then it's the team-mate's name.
+
+   HANDICAPS. The society rule is that a player's handicap is their NHS
+   handicap unless stated otherwise, so the figures below are the current
+   NHS handicaps from REGISTER (short name -> register name in brackets).
+   Update them here and on REGISTER together.                          */
 const ROSTER_A = [
-  ['Yaseen (C)',13.4],['Amriaz',10.4],['Bash',17.4],['Imran',13.8],['Mansoor',16.0],['Moody',16.8],['Nav',18.7],['Shaan',18.1],['Shahzad',20.4],['Waseem',15.4]
+  ['Yaseen (C)',13.4],   // Yaseen Mohammed
+  ['Amriaz',10.6],       // Afrid Iqbal
+  ['Bash',15.9],         // Basharat2 Ali
+  ['Imran',14.0],        // Imran K
+  ['Mansoor',16.1],      // Mansoor M
+  ['Moody',17.0],        // Mahmood Sadiq
+  ['Nav',18.7],          // Naveen Ahmed
+  ['Shaan',18.1],        // Shaan Ahmed
+  ['Shahzad',19.9],      // Shazad Hussain
+  ['Waseem',15.6]        // Waseem Goldenboy
 ];
 const ROSTER_B = [
-  ['Shufqat (C)',12.6],['Gaff',8.2],['Haaris',12.4],['Jabar',15.5],['Tab',10.1],['Raz',10.4],['Raza',28.0],['Sam',17.2],['Sid',18.0],['Tariq',22.6]
+  ['Shufqat (C)',12.7],  // Shufqat Khan
+  ['Gaff',7.9],          // Guftar Hussain
+  ['Haaris',12.4],       // Haaris Ahmed
+  ['Jabar',15.7],        // Jabar Mughal
+  ['Tab',10.1],          // Tab Rafique
+  ['Raz',10.6],          // Raz Shafi
+  ['Raza',28.1],         // Raza Efendi
+  ['Sam',16.9],          // Sameer Ahmed
+  ['Sid',17.2],          // Sid Amin
+  ['Tariq',22.7]         // Tariq Javaid
 ];
 const BIG_WIN = 5;   // margin that turns a win into 2 points
 
@@ -140,9 +163,13 @@ const SF_UNRANKED = [['Shufqat Khan',7],['Basharat2 Ali',7],['Nadeem Ahmed',5],[
   ['Umer Akbar',1],['Ayaz Alam',1],['Naeem Akhtar',1],['Naveen Ahmed',1]];
 
 /* ---------- Handicap register ----------
+   SOCIETY RULE: a player's handicap is their NHS handicap unless stated
+   otherwise. WHS and the calculated index are held for comparison only and
+   are never used as the playing figure.
+
    THREE handicaps are tracked per player:
-     nhs   - NHS handicap. Supplied figure, from the "NHS App HCP (reference)"
-             column of the Player HC tab.
+     nhs   - NHS handicap. THE PLAYING HANDICAP. Supplied figure, from the
+             "NHS App HCP (reference)" column of the Player HC tab.
      whs   - WHS handicap. Supplied figure, from the "WHS" column of the same tab.
      calc  - Calculated HC. Worked out from the hole-by-hole scorecards
              in Golf_Scores_Tracker_19.xlsx (Player HC tab).
