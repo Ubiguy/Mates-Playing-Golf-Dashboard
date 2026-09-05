@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Player Profiles</title>
+<meta name="description" content="England Golf round histories for the society players who made the Asia Cup 2026 squad, alongside their NHS society handicap.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <nav class="sitenav">
+    <a href="index.html">Season hub</a>
+    <a href="matchplay.html">Team match play</a>
+    <a href="strokeplay2026.html">Strokeplay Singles</a>
+    <a href="2025season.html">2025 season</a>
+    <a href="handicaps.html">Handicaps</a>
+    <a href="profiles.html" aria-current="page">Player profiles</a>
+    <a class="back" href="https://sites.google.com/view/matesplayinggolf">&larr; Mates Playing Golf</a>
+  </nav>
+
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">Asia Cup 2026 squad &middot; England Golf histories</div>
+      <h1>Player Profiles</h1>
+    </div>
+    <div class="stamp" id="stamp"></div>
+  </header>
+
+  <div class="strip">
+    <div class="stat"><span class="k">Profiles here</span><span class="v num" id="cProf">0</span><span class="sub" id="sProf"></span></div>
+    <div class="stat"><span class="k">Rounds behind them</span><span class="v num" id="cRounds">0</span><span class="sub">England Golf cards</span></div>
+    <div class="stat"><span class="k">Lowest index</span><span class="v num" id="cLow">0</span><span class="sub" id="sLow"></span></div>
+    <div class="stat"><span class="k">Biggest improver</span><span class="v num" id="cImp" style="font-size:1.15rem">&mdash;</span><span class="sub" id="sImp"></span></div>
+  </div>
+
+  <section>
+    <div class="head">
+      <div class="head-l">
+        <h2>The profiles</h2>
+        <span class="when">ordered by NHS handicap</span>
+      </div>
+      <p>Society handicap first, England Golf index second &mdash; they are not the same number</p>
+    </div>
+    <div class="profiles" id="profiles"></div>
+    <p class="after" id="profNote"></p>
+  </section>
+
+  <section>
+    <div class="head">
+      <div class="head-l"><h2>Reading these numbers</h2></div>
+    </div>
+    <div class="note">
+      <b>NHS is still the handicap.</b> The big number on the left of each card is the player's NHS
+      handicap, which is what they play off in society competitions. The England Golf index beside it
+      is a separate figure, calculated by England Golf from cards submitted at their own clubs. The two
+      rarely agree &mdash; across these nine the England Golf index sits about two shots higher on
+      average &mdash; and nothing on this page changes what anyone plays off.
+      <br><br>
+      <b>Score differential</b> is a round's adjusted gross minus the course rating, so it measures a
+      round against the course rather than against par. Lower is better, and the averages here run over
+      a player's whole England Golf history, not just this season.
+      <br><br>
+      <b>Peak and low.</b> Each card shows either the highest index a player has carried or the lowest,
+      whichever is the more telling for their history, with the date it was reached. <b>Net change</b>
+      runs from the start of their record to today: a minus sign is an improvement.
+      <br><br>
+      <b>Sample sizes vary a lot.</b> Tab Rafique's index rests on six rounds, Waseem's on forty. Read a
+      short history with the same caution the handicap register applies to its own thin figures.
+    </div>
+  </section>
+
+  <footer>
+    <div><b>Source.</b> <span id="srcLine"></span> Compiled from England Golf round-history data. CDH membership numbers held in that deck are deliberately not published here.</div>
+    <div><b>Why only nine.</b> <span id="othersLine"></span></div>
+    <div><b>As at.</b> These histories were compiled for the Asia Cup and are a snapshot, not a live feed &mdash; they do not update themselves the way the rest of this site does. Society handicaps and results come from the tracker as usual.</div>
+  </footer>
+</div>
+
+<script src="data.js?v=190ffc62"></script>
+<script>
+  const REG = Object.fromEntries(REGISTER.map(r => [r.n, r]));
+  const f1  = v => v.toFixed(1);
+  const sgn = v => (v > 0 ? '+' : '−') + Math.abs(v).toFixed(1);
+
+  /* Sorted by the society handicap, the same order the register uses. */
+  const ROWS = [...PROFILES].sort((a,b) => REG[a.n].nhs - REG[b.n].nhs);
+
+  /* ---------- summary tiles ---------- */
+  (function(){
+    const rounds = PROFILES.reduce((s,p) => s + p.scores, 0);
+    const low    = ROWS.reduce((m,p) => p.idx < m.idx ? p : m);
+    const imp    = ROWS.reduce((m,p) => p.net < m.net ? p : m);
+    document.getElementById('cProf').textContent   = PROFILES.length;
+    document.getElementById('sProf').textContent   =
+      `of the ${ASIA_CUP.squad}-player squad`;
+    document.getElementById('cRounds').textContent = rounds;
+    document.getElementById('cLow').textContent    = f1(low.idx);
+    document.getElementById('sLow').textContent    = low.n + ', England Golf index';
+    document.getElementById('cImp').textContent    = imp.n;
+    document.getElementById('sImp').textContent    = sgn(imp.net) + ' over their record';
+    document.getElementById('stamp').innerHTML     =
+      `${ASIA_CUP.event} &middot; ${ASIA_CUP.date}<br>${ASIA_CUP.venue}`;
+  })();
+
+  /* ---------- profile cards ---------- */
+  document.getElementById('profiles').innerHTML = ROWS.map(p => {
+    const r = REG[p.n];
+    const markLabel = p.mark.kind === 'low' ? 'Lowest index' : 'Peak index';
+    return `<article class="prof">
+      <header class="prof-top">
+        <span class="av">${p.init}</span>
+        <span class="id">
+          <b>${p.n}</b>
+          ${p.deck ? `<span class="alias">England Golf: ${p.deck}</span>` : ''}
+          <span class="alias">${p.home}</span>
+        </span>
+        ${p.role ? `<span class="pill role">${p.role}</span>` : ''}
+      </header>
+
+      <div class="hcs">
+        <div class="hc lead">
+          <span class="lbl">NHS &middot; plays off</span>
+          <span class="big num">${f1(r.nhs)}</span>
+          <span class="foot">${r.rounds} society round${r.rounds === 1 ? '' : 's'} logged</span>
+        </div>
+        <div class="hc">
+          <span class="lbl">England Golf index</span>
+          <span class="big num">${f1(p.idx)}</span>
+          <span class="foot">${p.scores} cards since ${p.since}</span>
+        </div>
+      </div>
+
+      <dl class="facts">
+        <div><dt>Avg differential</dt><dd class="num">${f1(p.avgDiff)}</dd></div>
+        <div><dt>Best differential</dt><dd class="num">${f1(p.best.v)}<span class="when">${p.best.d}</span></dd></div>
+        <div><dt>${markLabel}</dt><dd class="num">${f1(p.mark.v)}<span class="when">${p.mark.d}</span></dd></div>
+        <div><dt>Net change</dt><dd class="num ${p.net < 0 ? 'good' : ''}">${sgn(p.net)}</dd></div>
+      </dl>
+
+      <div class="courses">
+        <span class="lbl">Where they play</span>
+        <ul>${p.courses.map(([c,n]) => `<li><span>${c}</span><b>${n}</b></li>`).join('')}</ul>
+      </div>
+
+      <p class="prof-note">${p.note}</p>
+    </article>`;
+  }).join('');
+
+  /* ---------- narrative under the cards ---------- */
+  (function(){
+    const gaps = ROWS.map(p => p.idx - REG[p.n].nhs);
+    const avgGap = gaps.reduce((s,v) => s + v, 0) / gaps.length;
+    const widest = ROWS.reduce((m,p) =>
+      (p.idx - REG[p.n].nhs) > (m.idx - REG[m.n].nhs) ? p : m);
+    const bits = [];
+    bits.push(`${ROWS.length} of the ${ASIA_CUP.squad} players picked for the Asia Cup are on our register.`);
+    bits.push(`Their England Golf index runs ${avgGap.toFixed(1)} shots above their NHS handicap on ` +
+      `average, widest for ${widest.n} at ${(widest.idx - REG[widest.n].nhs).toFixed(1)}.`);
+    document.getElementById('profNote').textContent = bits.join(' ');
+    document.getElementById('srcLine').textContent =
+      `${ASIA_CUP.event} squad profiles, prepared for ${ASIA_CUP.date} at ${ASIA_CUP.venue}.`;
+    document.getElementById('othersLine').textContent =
+      `The other ${SQUAD_OTHERS.length} in the squad do not play in this society, so they have no card here: ` +
+      SQUAD_OTHERS.join(', ') + '.';
+  })();
+</script>
+<style>
+  .profiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:1px;
+    background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+  .prof{background:var(--surface);padding:18px 18px 16px;display:flex;flex-direction:column;gap:14px;}
+
+  .prof-top{display:flex;align-items:center;gap:11px;}
+  .av{flex:none;width:38px;height:38px;border-radius:50%;background:var(--accent-wash);
+    color:var(--accent);font-family:'Archivo',sans-serif;font-weight:700;font-size:.82rem;
+    letter-spacing:.02em;display:flex;align-items:center;justify-content:center;}
+  .prof-top .id{display:flex;flex-direction:column;gap:1px;min-width:0;}
+  .prof-top .id b{font-size:1rem;font-weight:700;letter-spacing:-.01em;}
+  .alias{font-size:.73rem;color:var(--muted);}
+  .pill.role{flex:none;margin-left:auto;background:var(--gold-wash);color:var(--gold);}
+
+  .hcs{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);
+    border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+  .hc{background:var(--surface);padding:11px 13px;display:flex;flex-direction:column;gap:1px;}
+  .hc.lead{background:var(--accent-wash);}
+  .hc .lbl{font-family:'IBM Plex Mono',monospace;font-size:.6rem;font-weight:500;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--muted);}
+  .hc.lead .lbl{color:var(--accent);}
+  .hc .big{font-family:'Archivo',sans-serif;font-size:1.6rem;font-weight:700;line-height:1.15;
+    letter-spacing:-.02em;}
+  .hc.lead .big{color:var(--accent);}
+  .hc .foot{font-size:.72rem;color:var(--muted);}
+
+  .facts{margin:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;}
+  .facts > div{display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+    border-bottom:1px solid var(--hairline);padding-bottom:5px;}
+  .facts dt{font-size:.76rem;color:var(--muted);}
+  .facts dd{margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:.9rem;
+    text-align:right;white-space:nowrap;}
+  .facts dd.good{color:var(--live);}
+  .facts dd .when{display:block;font-family:'IBM Plex Mono',monospace;font-size:.62rem;
+    font-weight:400;color:var(--muted);letter-spacing:0;}
+
+  .courses .lbl{font-family:'IBM Plex Mono',monospace;font-size:.6rem;font-weight:500;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--muted);}
+  .courses ul{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:3px;}
+  .courses li{display:flex;justify-content:space-between;gap:10px;font-size:.79rem;
+    color:var(--ink-2);}
+  .courses li span{min-width:0;}
+  .courses li b{flex:none;font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;
+    color:var(--muted);white-space:nowrap;}
+
+  .prof-note{margin:0;font-size:.82rem;line-height:1.55;color:var(--muted);
+    border-top:1px solid var(--hairline);padding-top:11px;}
+
+  @media (max-width:420px){
+    .facts{grid-template-columns:1fr;}
+  }
+</style>
+</body>
+</html>

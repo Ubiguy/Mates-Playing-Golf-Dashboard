@@ -1,6 +1,6 @@
 # Golf Society 2026
 
-A five-page static site. No build step, no dependencies, nothing to install —
+A six-page static site. No build step, no dependencies, nothing to install —
 drop the folder in a repo, switch on GitHub Pages, and the society has one permanent link.
 
 **View it:** https://YOUR-USERNAME.github.io/YOUR-REPO/
@@ -14,6 +14,7 @@ drop the folder in a repo, switch on GitHub Pages, and the society has one perma
 | `strokeplay2026.html` | **Strokeplay Singles Championship** — final standings and round by round |
 | `2025season.html` | **2025 season** — the completed Stableford series |
 | `handicaps.html` | **Handicap register** — the NHS playing handicap for all 32 players, with WHS and calculated alongside |
+| `profiles.html` | **Player profiles** — England Golf round histories for the nine society players in the Asia Cup 2026 squad |
 | `data.js` | **All the data.** The only file you edit after a round. |
 | `style.css` | Shared styling for every page. |
 
@@ -28,7 +29,7 @@ there or opened on their own.
 ## Updating after a round
 
 Everything lives in `data.js`. Edit it, commit, and GitHub Pages picks it up within a minute —
-all five pages recalculate themselves from it.
+all six pages recalculate themselves from it.
 
 ### A new match play result
 
@@ -96,6 +97,18 @@ down to 1 for twelfth, nothing below that. A player's best 8 of the 14 rounds co
 are needed to qualify. Players level on points within a round are separated by countback —
 back nine, then back six, then back three. Game 12 is a documented exception, left as the
 result stood on the day.
+
+## Player profiles
+
+`PROFILES` in `data.js` holds one entry per player, transcribed from
+`AsiaCuo2026/Asia_Cup_2026_Squad_Profiles.vF2.pptx` — England Golf round histories compiled for
+the Asia Cup 2026 squad. Only squad members who also appear in `REGISTER` get a card; `n` must
+match a register name exactly, and `deck` carries the England Golf spelling where it differs.
+`SQUAD_OTHERS` lists the rest of the squad, who are named but not profiled.
+
+These are a **snapshot**, not a live feed. The `idx` field is an England Golf handicap index and
+is not the playing figure — the card leads with NHS from `REGISTER`. CDH membership numbers from
+the source deck are deliberately not published.
 
 ## Publishing
 

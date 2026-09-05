@@ -221,3 +221,111 @@ const BEST = [
   ['Shazad Hussain',66,88,'Stableford R10','15 Jun 2025'],
   ['Mansoor M',67,85,'Stroke Play R8','23 Aug 2026']
 ];
+
+/* ---------- Asia Cup 2026 player profiles ----------
+   Source: Asia_Cup_2026_Squad_Profiles.vF2.pptx, compiled from England Golf
+   round-history data for the 18-player Asia Cup squad (2 Aug 2026, The
+   Warwickshire). Only the NINE squad members who are also on our register
+   appear here; the other nine are not society players.
+
+   `idx` is the ENGLAND GOLF handicap index from that deck — a different
+   figure from the society's NHS handicap, which stays the playing number
+   per the society rule. Both are shown side by side on the page.
+
+   deck  - the name England Golf holds, where it differs from ours
+   kind  - whether `mark` is that player's highest ('peak') or lowest ('low')
+           recorded index
+   net   - change in index over the whole history; negative is improvement
+
+   CDH membership numbers from the deck are deliberately NOT published.   */
+const PROFILES = [
+  {n:'Guftar Hussain', deck:null, init:'GH', role:null,
+   idx:10.1, since:'May 2025', scores:30, avgDiff:12.4,
+   best:{v:5.3, d:'31 Oct 2025'}, mark:{v:8.3, d:'Apr 2026', kind:'low'}, net:0.3,
+   home:'Leeds Golf Centre',
+   courses:[['Leeds GC — White','18 rounds'],['Leeds GC — Yellow/Indigo/Red','7 rounds'],
+            ['Tankersley Park / Hollins Hall','1 round each'],
+            ['Dewsbury / Whitefield / Doncaster','1 round each']],
+   note:'One of the lowest handicaps in the squad — second only to Tab. Several rounds carry a WHS exceptional-score reduction (−1.0) marker.'},
+
+  {n:'Tab Rafique', deck:'Tabbussam Rafique', init:'TR', role:null,
+   idx:9.9, since:'May 2026', scores:6, avgDiff:14.7,
+   best:{v:9.9, d:'17 Jun 2026'}, mark:{v:11.7, d:'9 May 2026', kind:'peak'}, net:-1.8,
+   home:'Leeds Golf Centre',
+   courses:[['Leeds GC — Yellow','5 rounds'],['Leeds GC — White','1 round']],
+   note:'Lowest index in the squad, but a very short history — six rounds, all at Leeds. Improved fast (11.7 to 8.9) then bounced back to 9.9; still a small sample.'},
+
+  {n:'Afrid Iqbal', deck:null, init:'AI', role:null,
+   idx:13.0, since:'Jul 2023', scores:20, avgDiff:16.9,
+   best:{v:9.8, d:'17 Aug 2024'}, mark:{v:13.1, d:'18 Apr 2026', kind:'peak'}, net:0.5,
+   home:'Leeds Golf Centre',
+   courses:[['Leeds GC — White','10 rounds'],['Leeds GC — Indigo','4 rounds'],
+            ['Leeds GC — Yellow','3 rounds'],['Leeds GC — Red','2 rounds'],
+            ['Leeds GC — Red F9','1 round']],
+   note:'Remarkably stable — 12.2 to 13.1 across nearly three years, every round at Leeds, with two long reporting gaps. The 29 Jul 2023 round was missing its adjusted gross and was back-calculated to about 89 from the differential.'},
+
+  {n:'Shufqat Khan', deck:null, init:'SK', role:'Vice-captain',
+   idx:16.4, since:'Sep 2025', scores:31, avgDiff:20.1,
+   best:{v:11.6, d:'25 Apr 2026'}, mark:{v:20.4, d:'13 Sep 2025', kind:'peak'}, net:-4.0,
+   home:'Leeds Golf Centre',
+   courses:[['Leeds GC — mixed tees','25 rounds'],['Woburn — Marquess','1 round'],
+            ['Forest Pines','1 round'],['Bradford GC / Calderfields','1 round each'],
+            ['Away front-nine rounds','2 rounds']],
+   note:'Steady, consistent improvement across the whole season with no major setbacks — the squad profile called him its steadiest player.'},
+
+  {n:'Yaseen Mohammed', deck:'Yaseen Mohammad', init:'YM', role:null,
+   idx:15.7, since:'Jun 2023', scores:21, avgDiff:19.9,
+   best:{v:10.8, d:'8 Sep 2024'}, mark:{v:13.4, d:'17 Aug 2023', kind:'low'}, net:1.5,
+   home:'Leeds Golf Centre',
+   courses:[['Leeds GC — Yellow','14 rounds'],['Leeds GC — White','2 rounds'],
+            ['Rudding Park / Forest Pines','1 round each'],
+            ['Bradford / Wetherby / Formby Hall','1 round each']],
+   note:'Also filed as “Yaseen Mohammed” and “Mohammad Yassen” in England Golf data — same player, name order varies. The index has drifted up from a 13.4 low in 2023.'},
+
+  {n:'Imran K', deck:'Imran Abbas', init:'IA', role:null,
+   idx:16.0, since:'Aug 2025', scores:21, avgDiff:19.6,
+   best:{v:12.6, d:'8 Nov 2025'}, mark:{v:16.0, d:'4 Jul 2026', kind:'peak'}, net:1.5,
+   home:'Leeds Golf Centre',
+   courses:[['Leeds GC — Yellow','12 rounds'],['Leeds GC — White','6 rounds'],
+            ['Leeds GC — Indigo','2 rounds'],['Leeds GC — Red','1 round']],
+   note:'Every round at Leeds. Has climbed out of a tight 14.5 to 15.5 band to a new high of 16.0 as of 4 Jul 2026 — worth watching.'},
+
+  {n:'Basharat2 Ali', deck:'Basharat Ali', init:'BA', role:null,
+   idx:18.3, since:'May 2024', scores:21, avgDiff:23.4,
+   best:{v:14.5, d:'28 May 2025'}, mark:{v:23.5, d:'Jun–Jul 2024', kind:'peak'}, net:-5.1,
+   home:'Leeds Golf Centre',
+   courses:[['Leeds GC — Yellow','14 rounds'],['Leeds GC — Red','2 rounds'],
+            ['Leeds GC — White / Yellow F9','1 round each'],
+            ['Bradford / Wychwood / The Mere','1 round each']],
+   note:'Strong long-term improvement, 23.4 down to 18.3, with a temporary rise back to about 20.6 in early 2025.'},
+
+  {n:'Waseem Goldenboy', deck:'Waseem Javeed', init:'WJ', role:'Captain',
+   idx:18.4, since:'Jul 2025', scores:40, avgDiff:21.8,
+   best:{v:11.8, d:'28 Jul 2025'}, mark:{v:26.9, d:'3 Jul 2025', kind:'peak'}, net:-8.5,
+   home:'Leeds Golf Centre',
+   courses:[['Leeds GC — Yellow','17 rounds'],['Leeds GC — White','7 rounds'],
+            ['Leeds GC — Red','4 rounds'],['Hollins Hall','2 rounds'],
+            ['Tankersley Park','2 rounds'],['6 other away courses','1 round each']],
+   note:'Biggest improvement in the squad — 8.5 strokes gone inside the first month, then settled into the 15 to 19 range. Most rounds logged of anyone here, at 40.'},
+
+  {n:'Tariq Javaid', deck:'Tariq Javid', init:'TJ', role:'Vice-captain',
+   idx:25.0, since:'May 2018', scores:29, avgDiff:30.3,
+   best:{v:20.8, d:'19 Aug 2024'}, mark:{v:31.0, d:'8 Aug 2023', kind:'peak'}, net:-1.2,
+   home:'Leeds Golf Centre',
+   courses:[['Leeds GC — Yellow','21 rounds'],['Leeds GC — White','2 rounds'],
+            ['Bradford / Forest Pines / The Mere','1 round each'],
+            ['Scarcroft / Formby Hall','1 round each']],
+   note:'The longest history here by far — eight years, with a five-year gap between 2018 and 2023. One extreme outlier, a 60.0 differential back in 2018. Has ticked up recently, 24.3 to 25.0.'}
+];
+
+/* The other nine of the eighteen-strong Asia Cup squad. Not society players,
+   so they have no profile card here.                                    */
+const SQUAD_OTHERS = ['Kamran Jawaid','Sajid Mahmood','Ikhlaq Sulaman','Adam Butt',
+  'Owais Mohammad','Shabir Hussain','Zain Ul-Abidin','Abdullah Noor','Tahir Shah'];
+
+/* Where the profiles were compiled and when.                            */
+const ASIA_CUP = {
+  event:'Asia Cup 2026', date:'2 August 2026',
+  venue:'The Warwickshire, Leek Wootton', squad:18,
+  format:'Four-team round robin — Manchester, Yorkshire, East London, West London'
+};
