@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Handicap Register</title>
+<meta name="description" content="Society handicap register - NHS, WHS and calculated handicaps for every player.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <nav class="sitenav">
+    <a href="index.html">Season hub</a>
+    <a href="matchplay.html">Team match play</a>
+    <a href="2025season.html">2025 season</a>
+    <a href="handicaps.html" aria-current="page">Handicaps</a>
+  </nav>
+
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">Three handicaps, one register</div>
+      <h1>Handicap Register</h1>
+    </div>
+    <div class="stamp" id="stamp"></div>
+  </header>
+
+  <div class="strip">
+    <div class="stat"><span class="k">NHS recorded</span><span class="v num" id="cNhs">0</span><span class="sub" id="sNhs"></span></div>
+    <div class="stat"><span class="k">WHS recorded</span><span class="v num" id="cWhs">0</span><span class="sub" id="sWhs"></span></div>
+    <div class="stat"><span class="k">Calculated</span><span class="v num" id="cCalc">0</span><span class="sub" id="sCalc"></span></div>
+    <div class="stat"><span class="k">Established</span><span class="v num" id="cEst">0</span><span class="sub">past 20 rounds</span></div>
+  </div>
+
+  <section>
+    <div class="head">
+      <div class="head-l">
+        <h2>The register</h2>
+        <span class="when">click any column to sort</span>
+      </div>
+      <p>Marked <span class="src">NHS</span> where too few rounds have been logged to calculate one</p>
+    </div>
+    <div class="t-scroll"><table id="register"></table></div>
+    <p class="after" id="regNote"></p>
+  </section>
+
+  <section>
+    <div class="head">
+      <div class="head-l"><h2>What each column means</h2></div>
+    </div>
+    <div class="note">
+      <b>NHS</b> &mdash; supplied figure. No underlying round data held, so nothing here is computed;
+      the number is recorded as given.
+      <br><br>
+      <b>WHS</b> &mdash; supplied figure, same as above.
+      <br><br>
+      <b>Calculated HC</b> &mdash; worked out here from the hole-by-hole scorecards the society has
+      logged. Score differential = round total minus course rating, then the average of the best N
+      differentials with the WHS low-round adjustment applied. It stays
+      <span class="pill">Provisional</span> until a player has 20 rounds on record, at which point it
+      becomes <span class="pill est">Established</span>.
+      <br><br>
+      <b>Too few rounds to calculate.</b> Below four rounds the calculation swings wildly on a single
+      card, so the player's <b>NHS handicap stands in as the default</b> and the cell is marked
+      <span class="src">NHS</span>. The calculated figure is still held in the data, and takes over
+      automatically the moment a fourth card is logged.
+    </div>
+  </section>
+
+  <footer>
+    <div><b>Editing the register.</b> Every figure lives in <code>data.js</code>, in the <code>REGISTER</code> list, one line per player. Change a number, commit, and this page and its counts update themselves.</div>
+    <div><b>Sorting.</b> Players without a published figure in the column being sorted always sit at the bottom, whichever direction you sort in.</div>
+    <div><b>Source.</b> All three figures come from the Player HC tab of <code>Golf_Scores_Tracker_19.xlsx</code> &mdash; NHS from the &ldquo;NHS App HCP&rdquo; column, WHS from the &ldquo;WHS&rdquo; column, and the calculated index from the logged scorecards.</div>
+  </footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+  const has = v => v !== null && v !== undefined;
+  const fmtH = v => has(v) ? v.toFixed(1) : '&ndash;';
+
+  /* A calculated index off fewer than this many rounds swings too wildly to
+     stand behind, so the player's NHS handicap stands in as the default until
+     they have enough cards. The calculated figure stays in data.js either way. */
+  const MIN_ROUNDS = 4;
+  const earned = r => has(r.calc) && r.rounds >= MIN_ROUNDS;
+  const playing = r => earned(r) ? {v:r.calc, src:'calc'}
+                     : has(r.nhs) ? {v:r.nhs,  src:'nhs'}
+                     : {v:null, src:null};
+
+  /* ---------- summary counts ---------- */
+  (function(){
+    const n = k => REGISTER.filter(r => has(r[k])).length;
+    const nhs = n('nhs'), whs = n('whs');
+    const calc = REGISTER.filter(earned).length;
+    const held = REGISTER.length - calc;
+    const est = REGISTER.filter(r => r.est).length;
+    document.getElementById('cNhs').textContent = nhs;
+    document.getElementById('cWhs').textContent = whs;
+    document.getElementById('cCalc').textContent = calc;
+    document.getElementById('sCalc').textContent =
+      held ? `${held} on NHS until ${MIN_ROUNDS} rounds` : 'from logged scorecards';
+    document.getElementById('cEst').textContent = est;
+    const pending = t => t === 0 ? 'awaiting figures' : (t < REGISTER.length ? `${REGISTER.length - t} still to come` : 'complete');
+    document.getElementById('sNhs').textContent = pending(nhs);
+    document.getElementById('sWhs').textContent = pending(whs);
+    document.getElementById('stamp').innerHTML =
+      `${REGISTER.length} players on the books<br>${est} established, ${REGISTER.length - est} provisional`;
+  })();
+
+  /* ---------- sortable register ---------- */
+  (function(){
+    const el = document.getElementById('register');
+    const calcs = REGISTER.map(r => playing(r).v).filter(has);
+    const lo = Math.min(...calcs), hi = Math.max(...calcs);
+    const cols = [
+      {t:'Player',        k:'n',      cls:'nm'},
+      {t:'NHS',           k:'nhs'},
+      {t:'WHS',           k:'whs'},
+      {t:'Calculated HC', k:'calc'},
+      {t:'Rounds',        k:'rounds'},
+      {t:'Status',        k:'est'}
+    ];
+    let sortKey = 'calc', dir = 1;
+
+    function draw(){
+      const rows = [...REGISTER].sort((a,b) => {
+        const x = sortKey === 'calc' ? playing(a).v : a[sortKey];
+        const y = sortKey === 'calc' ? playing(b).v : b[sortKey];
+        if (!has(x) && !has(y)) return a.n.localeCompare(b.n);
+        if (!has(x)) return 1;          // blanks always last
+        if (!has(y)) return -1;
+        if (typeof x === 'string') return dir * x.localeCompare(y);
+        if (typeof x === 'boolean') return dir * ((x ? 1 : 0) - (y ? 1 : 0));
+        return dir * (x - y);
+      });
+
+      el.innerHTML = '<thead><tr>' + cols.map(c =>
+          `<th class="sortable ${c.cls || ''}" data-k="${c.k}"` +
+          (c.k === sortKey ? ` data-dir="${dir === 1 ? 'asc' : 'desc'}"` : '') +
+          `>${c.t}</th>`).join('') +
+        '</tr></thead><tbody>' +
+        rows.map(r => {
+          const pl = playing(r);
+          const w = has(pl.v) ? 6 + (pl.v - lo) / (hi - lo) * 70 : 0;
+          return `<tr>
+            <td class="nm">${r.n}</td>
+            <td class="${has(r.nhs) ? '' : 'pending'}">${fmtH(r.nhs)}</td>
+            <td class="${has(r.whs) ? '' : 'pending'}">${fmtH(r.whs)}</td>
+            <td class="${pl.src === 'calc' ? '' : 'pending'}"><span class="idx-cell">
+              ${pl.src === 'nhs' ? `<span class="src" title="Only ${r.rounds} round${r.rounds === 1 ? '' : 's'} on record — showing the NHS handicap until ${MIN_ROUNDS}">NHS</span>` : ''}
+              <span class="idx-bar ${pl.src === 'nhs' ? 'sub-src' : ''}" style="width:${w.toFixed(1)}px"></span>
+              <span class="num" style="min-width:3.2em;display:inline-block">${fmtH(pl.v)}</span></span></td>
+            <td>${r.rounds}</td>
+            <td><span class="pill ${r.est ? 'est' : ''}">${r.est ? 'Established' : 'Provisional'}</span></td>
+          </tr>`;
+        }).join('') + '</tbody>';
+
+      el.querySelectorAll('th.sortable').forEach(th => th.addEventListener('click', () => {
+        const k = th.dataset.k;
+        if (k === sortKey) dir = -dir; else { sortKey = k; dir = 1; }
+        draw();
+      }));
+    }
+    draw();
+
+    /* how far apart are the three figures? */
+    const differ = REGISTER.filter(r => has(r.nhs) && has(r.whs) && r.nhs !== r.whs);
+    const wide = REGISTER.filter(r => has(r.whs) && earned(r) && Math.abs(r.calc - r.whs) >= 8)
+                         .sort((a,b) => Math.abs(b.calc - b.whs) - Math.abs(a.calc - a.whs));
+    const onNhs = REGISTER.filter(r => playing(r).src === 'nhs');
+    const bits = [];
+    if (differ.length) bits.push(`${differ.length} of ${REGISTER.length} players carry a different NHS and WHS figure.`);
+    if (onNhs.length) bits.push(`${onNhs.length} players are playing off their NHS handicap, marked NHS, ` +
+      `until they have ${MIN_ROUNDS} rounds on record.`);
+    if (wide.length) bits.push(`Among the calculated ones, the figure sits 8 or more shots from the WHS ` +
+      `handicap for ` + wide.map(r => `${r.n} (${r.rounds} rounds)`).join(', ') + `.`);
+    document.getElementById('regNote').textContent = bits.join(' ');
+  })();
+</script>
+<style>
+  .idx-cell{display:flex;align-items:center;justify-content:flex-end;gap:9px;}
+  .idx-bar{height:6px;background:var(--accent);border-radius:0 3px 3px 0;}
+  .idx-bar.sub-src{background:var(--muted);opacity:.5;}
+  .src{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.58rem;font-weight:600;
+    letter-spacing:.06em;padding:1px 4px;border-radius:2px;background:var(--surface-sunk);
+    color:var(--muted);vertical-align:middle;}
+  code{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.92em;
+    background:var(--surface-sunk);padding:1px 5px;border-radius:3px;}
+</style>
+</body>
+</html>

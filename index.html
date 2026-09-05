@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Golf Society 2026</title>
+<meta name="description" content="Golf society season hub - team match play, stroke play and League Points standings.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <nav class="sitenav">
+    <a href="index.html" aria-current="page">Season hub</a>
+    <a href="matchplay.html">Team match play</a>
+    <a href="2025season.html">2025 season</a>
+    <a href="handicaps.html">Handicaps</a>
+  </nav>
+
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">Season hub &middot; most recent competition first</div>
+      <h1>Golf Society 2026</h1>
+    </div>
+    <div class="stamp" id="stamp"></div>
+  </header>
+
+  <div class="strip">
+    <div class="stat"><span class="k">Running now</span><span class="v num">2</span><span class="sub">match play &amp; League Points</span></div>
+    <div class="stat"><span class="k">Players on the books</span><span class="v num" id="sPlayers">0</span><span class="sub">see the handicap register</span></div>
+    <div class="stat"><span class="k">Scorecards logged</span><span class="v num" id="sRounds">0</span><span class="sub" id="sSince"></span></div>
+    <div class="stat"><span class="k">Lowest net round</span><span class="v num" id="sBest">0</span><span class="sub" id="sBestWho"></span></div>
+  </div>
+
+  <section>
+    <div class="head">
+      <div class="head-l">
+        <h2>Team Match Play</h2>
+        <span class="chip live">Running</span>
+        <span class="when" id="mpWhen"></span>
+      </div>
+      <p>9-hole Stableford, 10 a side, full round robin</p>
+    </div>
+    <div class="mp">
+      <div class="t a">
+        <span class="lbl">Team Yaseen</span>
+        <span class="sc num" id="mpA">0</span>
+      </div>
+      <div class="mid">VS</div>
+      <div class="t b r">
+        <span class="lbl">Team Shufqat</span>
+        <span class="sc num" id="mpB">0</span>
+      </div>
+    </div>
+    <p class="mp-note" id="mpNote"></p>
+  </section>
+
+  <section>
+    <div class="head">
+      <div class="head-l">
+        <h2>Stroke Play 2026</h2>
+        <span class="chip done">Final</span>
+        <span class="when">9 rounds &middot; Jul&ndash;Aug 2026</span>
+      </div>
+      <p>Average of your best 6 net rounds &middot; 6 rounds needed to qualify</p>
+    </div>
+    <div class="t-scroll"><table id="strokeplay"></table></div>
+    <p class="after" id="spNote"></p>
+  </section>
+
+  <section>
+    <div class="head">
+      <div class="head-l">
+        <h2>League Points 2026</h2>
+        <span class="chip live">Running</span>
+        <span class="when">13 rounds &middot; Mar&ndash;Jun 2026</span>
+      </div>
+      <p>1st = 12 points, down one per place, nothing below 13th</p>
+    </div>
+    <div class="bars" id="league"></div>
+    <p class="after" id="leagueNote"></p>
+  </section>
+
+  <section>
+    <div class="head">
+      <div class="head-l"><h2>Lowest net rounds</h2></div>
+      <p>Best cards anyone has put in, across every competition</p>
+    </div>
+    <div class="cards" id="best"></div>
+  </section>
+
+  <footer>
+    <div><b>Where the numbers come from.</b> Stroke play and Stableford figures are computed from hole-by-hole scorecards in the society tracker. Net = gross total minus the handicap played off that day.</div>
+    <div><b>League Points.</b> These 13 rounds were read off leaderboard screenshots rather than full scorecards, so they sit outside the handicap calculation. Game 02 and Game 05 were captured only down to 7th place.</div>
+    <div><b>Earlier seasons.</b> The 2025 Stableford series &mdash; fourteen rounds, won by Shaan Ahmed &mdash; has its own page. Handicaps (NHS, WHS and calculated) are on the register.</div>
+  </footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+  const fmtP = v => v % 1 === 0 ? String(v) : v.toFixed(1);
+
+  /* ---------- society totals ---------- */
+  (function(){
+    document.getElementById('stamp').innerHTML =
+      `${SOCIETY.onBooks} players &middot; ${SOCIETY.rounds} scorecards<br>Last round ${SOCIETY.lastRound}`;
+    document.getElementById('sPlayers').textContent = SOCIETY.onBooks;
+    document.getElementById('sRounds').textContent = SOCIETY.rounds;
+    document.getElementById('sSince').textContent = 'hole by hole since ' + SOCIETY.firstRound;
+    const low = Math.min(...BEST.map(b => b[1]));
+    const who = BEST.filter(b => b[1] === low).map(b => b[0]);
+    document.getElementById('sBest').textContent = low;
+    document.getElementById('sBestWho').textContent =
+      who.length > 1 ? who.join(' & ') : who[0] + ', ' + BEST.find(b => b[1] === low)[4].replace(/ \d{4}$/,'');
+  })();
+
+  /* ---------- team match play summary ---------- */
+  (function(){
+    const isSub = (p,f) => !!f && f !== p;
+    let a = 0, b = 0;
+    MATCHES.forEach(m => {
+      const big = Math.abs(m.aPts - m.bPts) >= BIG_WIN;
+      if (m.aPts > m.bPts) a += big ? 2 : 1;
+      else if (m.bPts > m.aPts) b += big ? 2 : 1;
+      else { a += 0.5; b += 0.5; }
+    });
+    const pairs = new Set(MATCHES.filter(m => !isSub(m.aPlayer,m.aSubFor) && !isSub(m.bPlayer,m.bSubFor))
+      .map(m => m.aPlayer + '|' + m.bPlayer));
+    const total = ROSTER_A.length * ROSTER_B.length;
+
+    document.getElementById('mpA').textContent = fmtP(a);
+    document.getElementById('mpB').textContent = fmtP(b);
+    const first = MATCHES.reduce((d,m) => m.date < d ? m.date : d, MATCHES[0].date);
+    document.getElementById('mpWhen').textContent =
+      MATCHES.length + ' matches · since ' + new Date(first + 'T00:00:00')
+        .toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+
+    const lead = a === b ? null : (a > b ? 'Yaseen' : 'Shufqat');
+    document.getElementById('mpNote').innerHTML =
+      (lead ? `${lead} lead by ${fmtP(Math.abs(a-b))}` : `All square at ${fmtP(a)} each`) +
+      ` with ${total - pairs.size} of the ${total} pairings still to play. ` +
+      `<a href="matchplay.html">Full match play board &rarr;</a>`;
+  })();
+
+  /* ---------- stroke play standings ---------- */
+  (function(){
+    const ranks = STROKEPLAY.map(r => r[0]);
+    document.getElementById('strokeplay').innerHTML =
+      `<thead><tr><th class="rk">#</th><th class="nm">Player</th><th>Rounds</th>
+        <th>Best 6 total</th><th>Average net</th></tr></thead><tbody>` +
+      STROKEPLAY.map(r => `<tr class="${r[0] === 1 ? 'win' : ''}">
+          <td class="rk">${r[0]}${ranks.filter(x => x === r[0]).length > 1 ? '<span class="tie">T</span>' : ''}</td>
+          <td class="nm">${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td>
+          <td class="key">${r[4].toFixed(2)}</td></tr>`).join('') + `</tbody>`;
+    document.getElementById('spNote').innerHTML =
+      `<b>${STROKEPLAY[0][1]}</b> takes the stroke play season. Positions marked T are shared. ` +
+      `Short of the 6-round minimum: ` + SP_UNRANKED.map(u => `${u[0]} (${u[1]})`).join(', ') + '.';
+  })();
+
+  /* ---------- league points ---------- */
+  (function(){
+    const max = Math.max(...LEAGUE.map(r => r[1]));
+    document.getElementById('league').innerHTML = LEAGUE.map(([n,p,r],i) => `
+      <span class="nm"><span class="rk">${i+1}</span>${n}</span>
+      <span class="track"><span class="fill${i === 0 ? ' top' : ''}" style="width:${(p/max*100).toFixed(1)}%"
+        title="${n}: ${p} points from ${r} rounds"></span></span>
+      <span class="val num">${p}<small>${r} rds</small></span>`).join('');
+    const played = LEAGUE.reduce((s,r) => s + r[2], 0);
+    document.getElementById('leagueNote').textContent =
+      LEAGUE.length + ' players, ' + played + ' entries across 13 rounds. Nothing new logged since ' +
+      '28 June — totals are raw points, not best-of-N, so turnout counts.';
+  })();
+
+  /* ---------- lowest net rounds ---------- */
+  document.getElementById('best').innerHTML = BEST.map(([p,net,gross,ev,d]) => `
+    <div class="card">
+      <span class="net num">${net}</span>
+      <span class="who">${p}</span>
+      <span class="meta">${gross} gross &middot; ${ev}</span>
+      <span class="meta">${d}</span>
+    </div>`).join('');
+</script>
+</body>
+</html>

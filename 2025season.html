@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2025 Season</title>
+<meta name="description" content="The 2025 Stableford series - final standings from 14 rounds, April to July 2025.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <nav class="sitenav">
+    <a href="index.html">Season hub</a>
+    <a href="matchplay.html">Team match play</a>
+    <a href="2025season.html" aria-current="page">2025 season</a>
+    <a href="handicaps.html">Handicaps</a>
+  </nav>
+
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">Completed season &middot; the archive</div>
+      <h1>2025 Season</h1>
+    </div>
+    <div class="stamp">14 rounds &middot; 24 players<br>April to July 2025</div>
+  </header>
+
+  <div class="strip">
+    <div class="stat"><span class="k">Rounds played</span><span class="v num">14</span><span class="sub">Apr&ndash;Jul 2025</span></div>
+    <div class="stat"><span class="k">Players who teed up</span><span class="v num" id="sPlayed">0</span><span class="sub" id="sQual"></span></div>
+    <div class="stat"><span class="k">Series winner</span><span class="v num" id="sWinner" style="font-size:1.15rem">&mdash;</span><span class="sub" id="sWinAvg"></span></div>
+    <div class="stat"><span class="k">Lowest net of 2025</span><span class="v num">64</span><span class="sub">Shaan Ahmed, 20 April</span></div>
+  </div>
+
+  <section>
+    <div class="head">
+      <div class="head-l">
+        <h2>Stableford Series</h2>
+        <span class="chip done">Final</span>
+        <span class="when">14 rounds &middot; Apr&ndash;Jul 2025</span>
+      </div>
+      <p>Best 8 rounds count &middot; 8 rounds needed to qualify</p>
+    </div>
+    <div class="t-scroll"><table id="stableford"></table></div>
+    <p class="after" id="sfNote"></p>
+  </section>
+
+  <section>
+    <div class="head">
+      <div class="head-l"><h2>Best cards of 2025</h2></div>
+      <p>Lowest net rounds from the series</p>
+    </div>
+    <div class="cards" id="best2025"></div>
+  </section>
+
+  <section>
+    <div class="head">
+      <div class="head-l"><h2>About this series</h2></div>
+    </div>
+    <div class="note">
+      <b>A note on the name.</b> The series is called the Stableford, but the scorecards behind it
+      hold gross strokes hole by hole, and the standings are worked out on net strokes &mdash; the same
+      basis as the 2026 stroke play season. That keeps the two comparable.
+      <br><br>
+      <b>A complete season.</b> All fourteen rounds are now in, Game 01 on 12 April through Game 14
+      on 13 July. The last four were transcribed from the app's scorecards in September 2026:
+      Game 02 and Game 07 were missing outright, Game 04 had been logged under a mistyped year, and
+      the round the app calls Game 08 had been filed as Game 07.
+      <br><br>
+      <b>Game numbers repeat each season.</b> One round in the data belongs to 2024 &mdash; Game 02
+      played on 27 April 2024 &mdash; and carries its year so it never counts toward 2025.
+      <br><br>
+      <b>One card was set aside.</b> Jabar Mughal's Game 07 card records a front nine only, so the
+      round was left out rather than completed by guesswork. The same applies to Shufqat Khan in
+      Game 02, whose card holds no scores at all.
+    </div>
+  </section>
+
+  <footer>
+    <div><b>Scoring.</b> Each round's winner takes 12 league points, the runner-up 11, and so on down to 1 for twelfth; thirteenth and below score nothing. A player's best 8 rounds count, so extra rounds can only help.</div>
+    <div><b>The comparison columns.</b> Stableford points are the raw points from the card (2 for a net par, 3 for a birdie, and so on). Net is gross total minus the handicap played off that day. Both are totalled or averaged over the same best 8 rounds, so the three columns differ only in what they reward.</div>
+    <div><b>Qualifying.</b> Eight of the fourteen rounds were needed to appear in the ranked table. Players who fell short are listed under the standings.</div>
+    <div><b>Ties within a round.</b> Players level on points are separated by countback &mdash; highest back nine, then back six, then back three. That settled every tie in the season, so each place is awarded outright. Two players can still finish level over the season; those places are shared and marked T.</div>
+    <div><b>One exception, Game 12.</b> Shazad Hussain and Mahmood Sadiq both returned 39 points and were level on the back nine and back six. Countback on the back three would favour Mahmood, but the round was settled as a Shazad win on the day and the result stands. Every other round follows the countback.</div>
+  </footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+
+  /* ---------- Stableford series standings ---------- */
+  (function(){
+    // rank the two comparison columns so each player's placing under every
+    // basis is visible at a glance
+    function rankMap(idx, better){
+      const sorted = [...STABLEFORD].sort((a,b) => better(a[idx], b[idx]));
+      const m = new Map(); let rank = 0, prev = null;
+      sorted.forEach((r,i) => {
+        if (prev === null || r[idx] !== prev) rank = i + 1;
+        prev = r[idx]; m.set(r[1], rank);
+      });
+      return m;
+    }
+    const sfRank  = rankMap(4, (a,b) => b - a);   // more Stableford points is better
+    const netRank = rankMap(5, (a,b) => a - b);   // lower net average is better
+    const ranks = STABLEFORD.map(r => r[0]);
+
+    document.getElementById('stableford').innerHTML =
+      `<thead><tr><th class="rk">#</th><th class="nm">Player</th><th>Rounds</th>
+        <th>League pts</th><th>Stableford pts</th><th>Avg net</th></tr></thead><tbody>` +
+      STABLEFORD.map(r => `<tr class="${r[0] === 1 ? 'win' : ''}">
+          <td class="rk">${r[0]}${ranks.filter(x => x === r[0]).length > 1 ? '<span class="tie">T</span>' : ''}</td>
+          <td class="nm">${r[1]}</td>
+          <td>${r[2]}</td>
+          <td class="key">${r[3]}</td>
+          <td>${r[4]}<span class="mini">${sfRank.get(r[1])}</span></td>
+          <td>${r[5].toFixed(2)}<span class="mini">${netRank.get(r[1])}</span></td>
+        </tr>`).join('') + `</tbody>`;
+
+    document.getElementById('sfNote').innerHTML =
+      `<b>${STABLEFORD[0][1]}</b> takes the series on ${STABLEFORD[0][3]} league points. ` +
+      `The small grey figures are where each player would sit if the season were scored on raw ` +
+      `Stableford points, or on net strokes instead. ` +
+      `Short of the 8-round minimum: ` + SF_UNRANKED.map(u => `${u[0]} (${u[1]})`).join(', ') + '.';
+
+    document.getElementById('sPlayed').textContent = STABLEFORD.length + SF_UNRANKED.length;
+    document.getElementById('sQual').textContent = `${STABLEFORD.length} reached the minimum`;
+    document.getElementById('sWinner').textContent = STABLEFORD[0][1];
+    document.getElementById('sWinAvg').textContent = STABLEFORD[0][3] + ' league points';
+  })();
+
+  /* ---------- best cards from 2025 only ---------- */
+  document.getElementById('best2025').innerHTML = BEST
+    .filter(r => r[4].endsWith('2025'))
+    .map(([p,net,gross,ev,d]) => `
+      <div class="card">
+        <span class="net num">${net}</span>
+        <span class="who">${p}</span>
+        <span class="meta">${gross} gross &middot; ${ev}</span>
+        <span class="meta">${d}</span>
+      </div>`).join('');
+</script>
+</body>
+</html>

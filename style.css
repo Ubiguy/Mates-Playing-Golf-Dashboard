@@ -1,0 +1,281 @@
+/* ============================================================
+   Golf Society 2026 — shared styles for every page
+   ============================================================ */
+
+:root{
+  --ground:#F0EEE9;
+  --surface:#FBFAF7;
+  --surface-sunk:#E7E4DD;
+  --border:#DCD6CB;
+  --hairline:#E8E4DB;
+  --ink:#1C1917;
+  --ink-2:#4A443C;
+  --muted:#6E675E;
+  --accent:#BE4A2F;
+  --accent-wash:#F6E6E0;
+  --gold:#9A6B12;
+  --gold-wash:#F4EBD8;
+  --live:#1B6B4C;
+  --live-wash:#E2EFE8;
+  --teamA:#BE4A2F;
+  --teamA-wash:#F6E6E0;
+  --teamB:#1160B8;
+  --teamB-wash:#E1EAF7;
+  --grid-open:#EDEAE3;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#14171A; --surface:#1B1F23; --surface-sunk:#22272C;
+    --border:#2E353B; --hairline:#262C31;
+    --ink:#E8E6E1; --ink-2:#BDBAB4; --muted:#949B9F;
+    --accent:#E06A45; --accent-wash:#33201A;
+    --gold:#D9A93C; --gold-wash:#302716;
+    --live:#4FBF8E; --live-wash:#152A22;
+    --teamA:#E06A45; --teamA-wash:#33201A;
+    --teamB:#4C93D8; --teamB-wash:#16263A;
+    --grid-open:#20252A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#14171A; --surface:#1B1F23; --surface-sunk:#22272C;
+  --border:#2E353B; --hairline:#262C31;
+  --ink:#E8E6E1; --ink-2:#BDBAB4; --muted:#949B9F;
+  --accent:#E06A45; --accent-wash:#33201A;
+  --gold:#D9A93C; --gold-wash:#302716;
+  --live:#4FBF8E; --live-wash:#152A22;
+  --teamA:#E06A45; --teamA-wash:#33201A;
+  --teamB:#4C93D8; --teamB-wash:#16263A;
+  --grid-open:#20252A;
+}
+
+*{box-sizing:border-box;}
+html{color-scheme:light dark;}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:'Source Sans 3',ui-sans-serif,system-ui,sans-serif;font-size:16px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;}
+img{max-width:100%;}
+h1,h2,h3,.num{font-family:'Archivo',ui-sans-serif,system-ui,sans-serif;text-wrap:balance;}
+.num{font-variant-numeric:tabular-nums;}
+a{color:var(--accent);}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.page{max-width:1040px;margin:0 auto;padding:22px 20px 72px;display:flex;flex-direction:column;gap:46px;}
+
+/* ---------- site nav ---------- */
+.sitenav{display:flex;gap:18px;flex-wrap:wrap;font-family:'IBM Plex Mono',ui-monospace,monospace;
+  font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:-30px;}
+.sitenav a{text-decoration:none;color:var(--muted);padding-bottom:3px;border-bottom:2px solid transparent;}
+.sitenav a:hover{color:var(--ink);}
+.sitenav a[aria-current]{color:var(--ink);border-bottom-color:var(--accent);font-weight:600;}
+
+/* ---------- masthead ---------- */
+.masthead{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;
+  border-bottom:2px solid var(--ink);padding-bottom:12px;}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);}
+.masthead h1{margin:4px 0 0;font-size:clamp(1.6rem,4.5vw,2.15rem);font-weight:700;letter-spacing:-.02em;}
+.masthead .stamp{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted);
+  text-align:right;line-height:1.7;}
+
+/* ---------- stat strip ---------- */
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+@media (max-width:620px){.strip{grid-template-columns:repeat(2,1fr);}}
+.stat{background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;gap:1px;}
+.stat .k{font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);}
+.stat .v{font-family:'Archivo',sans-serif;font-size:1.55rem;font-weight:700;
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.15;}
+.stat .v .of{font-size:.9rem;font-weight:500;color:var(--muted);}
+.stat .sub{font-size:.79rem;color:var(--muted);}
+
+/* ---------- section headers ---------- */
+section{display:flex;flex-direction:column;gap:16px;}
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;
+  border-bottom:1px solid var(--border);padding-bottom:8px;}
+.head-l{display:flex;align-items:baseline;gap:11px;flex-wrap:wrap;}
+.head h2{margin:0;font-size:1.18rem;font-weight:700;letter-spacing:-.015em;}
+.head .when{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted);}
+.head p{margin:0;font-size:.84rem;color:var(--muted);}
+.chip{font-family:'IBM Plex Mono',monospace;font-size:.63rem;font-weight:600;letter-spacing:.09em;
+  text-transform:uppercase;padding:3px 8px;border-radius:3px;background:var(--surface-sunk);color:var(--ink-2);}
+.chip.live{background:var(--live-wash);color:var(--live);}
+.chip.done{background:var(--gold-wash);color:var(--gold);}
+.after{font-size:.83rem;color:var(--muted);}
+
+/* ---------- bar chart ---------- */
+.bars{display:grid;grid-template-columns:auto 1fr auto;gap:3px 12px;align-items:center;}
+.bars .nm{font-size:.86rem;font-weight:600;white-space:nowrap;}
+.bars .nm .rk{color:var(--muted);font-weight:500;font-family:'IBM Plex Mono',monospace;
+  font-size:.72rem;margin-right:7px;}
+.track{height:16px;background:var(--surface-sunk);border-radius:3px;overflow:hidden;}
+.fill{height:100%;background:var(--accent);border-radius:0 4px 4px 0;}
+.fill.top{background:var(--gold);}
+.bars .val{font-family:'Archivo',sans-serif;font-weight:700;font-variant-numeric:tabular-nums;
+  font-size:.9rem;white-space:nowrap;}
+.bars .val small{font-family:'Source Sans 3',sans-serif;font-weight:400;color:var(--muted);
+  font-size:.74rem;margin-left:6px;}
+@media (max-width:560px){
+  .bars{grid-template-columns:1fr auto;}
+  .bars .track{grid-column:1 / -1;}
+}
+
+/* ---------- tables ---------- */
+.t-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:.88rem;}
+th,td{padding:7px 8px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;
+  border-bottom:1px solid var(--hairline);}
+th{font-family:'IBM Plex Mono',monospace;font-size:.62rem;font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+th.sortable{cursor:pointer;user-select:none;}
+th.sortable:hover{color:var(--ink);}
+th.sortable::after{content:"";opacity:.35;margin-left:5px;}
+th.sortable[data-dir="asc"]::after{content:"\2191";opacity:1;color:var(--accent);}
+th.sortable[data-dir="desc"]::after{content:"\2193";opacity:1;color:var(--accent);}
+td.rk,th.rk{width:2.6em;text-align:left;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:.78rem;}
+td.nm,th.nm{text-align:left;font-weight:600;}
+tr.win td.nm{color:var(--gold);}
+td.key{font-family:'Archivo',sans-serif;font-weight:700;text-align:right;}
+td.pending{color:var(--muted);}
+.mini{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.62rem;
+  color:var(--muted);margin-left:6px;}
+.tie{font-family:'IBM Plex Mono',monospace;font-size:.66rem;color:var(--muted);margin-left:6px;}
+.pill{font-family:'IBM Plex Mono',monospace;font-size:.62rem;font-weight:600;letter-spacing:.05em;
+  padding:2px 7px;border-radius:3px;background:var(--surface-sunk);color:var(--ink-2);}
+.pill.est{background:var(--live-wash);color:var(--live);}
+
+/* ---------- callout ---------- */
+.note{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);
+  border-radius:4px;padding:14px 16px;font-size:.87rem;color:var(--ink-2);line-height:1.6;}
+.note b{color:var(--ink);}
+
+/* ---------- cards ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1px;
+  background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+.card{background:var(--surface);padding:15px 16px;display:flex;flex-direction:column;gap:2px;}
+.card .net{font-family:'Archivo',sans-serif;font-size:1.7rem;font-weight:700;line-height:1;
+  font-variant-numeric:tabular-nums;color:var(--accent);}
+.card .who{font-weight:600;font-size:.94rem;}
+.card .meta{font-size:.76rem;color:var(--muted);}
+
+/* ---------- match play: compact score panel ---------- */
+.mp{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:clamp(10px,3vw,26px);
+  background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:20px clamp(16px,3vw,26px);}
+@media (max-width:560px){.mp{grid-template-columns:1fr;text-align:center;}}
+.mp .t{display:flex;flex-direction:column;gap:1px;}
+.mp .t.r{text-align:right;}
+@media (max-width:560px){.mp .t,.mp .t.r{text-align:center;}}
+.mp .t .lbl{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;}
+.mp .t.a .lbl{color:var(--teamA);} .mp .t.b .lbl{color:var(--teamB);}
+.mp .t .sc{font-family:'Archivo',sans-serif;font-size:2.8rem;font-weight:800;line-height:1;
+  letter-spacing:-.03em;font-variant-numeric:tabular-nums;}
+.mp .t.a .sc{color:var(--teamA);} .mp .t.b .sc{color:var(--teamB);}
+.mp .mid{font-family:'Archivo',sans-serif;font-weight:700;font-size:.85rem;color:var(--muted);
+  letter-spacing:.1em;}
+.mp-note{font-size:.86rem;color:var(--muted);}
+
+/* ---------- match play: full board ---------- */
+.board{display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(10px,3vw,28px);align-items:stretch;}
+@media (max-width:640px){.board{grid-template-columns:1fr;}}
+.side{background:var(--surface);border:1px solid var(--border);border-radius:4px;
+  padding:22px clamp(16px,3vw,26px);display:flex;flex-direction:column;gap:2px;position:relative;overflow:hidden;}
+.side::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--tint);}
+.side.a{--tint:var(--teamA);--lead-wash:var(--teamA-wash);}
+.side.b{--tint:var(--teamB);--lead-wash:var(--teamB-wash);}
+.side.lead{background:var(--lead-wash);border-color:var(--tint);}
+.side .who{font-family:'IBM Plex Mono',monospace;font-size:.74rem;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--tint);}
+.side .score{font-family:'Archivo',sans-serif;font-size:clamp(3.4rem,11vw,4.6rem);font-weight:800;
+  line-height:.95;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:var(--tint);}
+.side .cap{font-size:.85rem;color:var(--muted);}
+.side .form{display:flex;gap:3px;margin-top:12px;}
+.form i{width:100%;height:5px;border-radius:1px;background:var(--surface-sunk);font-style:normal;}
+.form i.w{background:var(--tint);}
+.form i.h{background:var(--muted);opacity:.55;}
+.mid-col{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0 4px;}
+.mid-col .vs{font-family:'Archivo',sans-serif;font-weight:700;font-size:.9rem;color:var(--muted);letter-spacing:.1em;}
+.mid-col .rule{width:1px;flex:1;background:var(--border);min-height:18px;}
+@media (max-width:640px){.mid-col{flex-direction:row;}.mid-col .rule{width:100%;height:1px;flex:1;min-height:0;}}
+.verdict{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font-size:1.02rem;margin:0;}
+.verdict b{font-family:'Archivo',sans-serif;font-weight:700;}
+
+/* ---------- match play: race chart ---------- */
+.chart-wrap{position:relative;}
+#race{width:100%;height:auto;display:block;touch-action:pan-y;}
+#race text{font-family:'IBM Plex Mono',monospace;}
+.tip{position:absolute;pointer-events:none;opacity:0;transition:opacity .12s;
+  background:var(--surface);border:1px solid var(--border);border-radius:4px;
+  padding:8px 10px;font-size:.78rem;line-height:1.45;min-width:150px;
+  box-shadow:0 6px 20px -10px rgba(0,0,0,.45);z-index:5;}
+.tip .t-h{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.tip .t-r{display:flex;justify-content:space-between;gap:14px;font-variant-numeric:tabular-nums;}
+.tip .t-r b{font-weight:600;}
+.tip .t-f{margin-top:5px;padding-top:5px;border-top:1px solid var(--hairline);color:var(--muted);font-size:.74rem;}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:.82rem;color:var(--ink-2);}
+.legend span{display:inline-flex;align-items:center;gap:7px;}
+.legend-key{width:14px;height:3px;border-radius:2px;display:inline-block;}
+.legend-key.a{background:var(--teamA);} .legend-key.b{background:var(--teamB);}
+.legend-key.gap{height:10px;width:14px;border-radius:2px;background:var(--surface-sunk);}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.dot.a{background:var(--teamA);} .dot.b{background:var(--teamB);}
+
+/* ---------- match play: rosters ---------- */
+.rosters{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+@media (max-width:760px){.rosters{grid-template-columns:1fr;}}
+.roster h3{margin:0 0 8px;font-family:'IBM Plex Mono',monospace;font-size:.74rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.roster.a h3{color:var(--teamA);} .roster.b h3{color:var(--teamB);}
+.roster h3 .dot{background:currentColor;width:9px;height:9px;}
+tr.idle td{color:var(--muted);font-weight:500;}
+.star{color:var(--gold);font-size:.76rem;font-weight:600;margin-left:3px;}
+
+/* ---------- match play: ledger ---------- */
+.ledger{display:flex;flex-direction:column;}
+.day{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);padding:16px 0 6px;border-bottom:1px solid var(--border);}
+.day:first-child{padding-top:0;}
+.match{display:grid;grid-template-columns:1fr 62px 1fr 118px;align-items:center;gap:12px;
+  padding:9px 0;border-bottom:1px solid var(--hairline);font-size:.9rem;}
+@media (max-width:640px){
+  .match{grid-template-columns:1fr 62px 1fr;gap:8px 10px;}
+  .match .outcome{grid-column:1 / -1;text-align:left;}
+}
+.match .p{display:flex;flex-direction:column;gap:1px;min-width:0;}
+.match .p.right{text-align:right;align-items:flex-end;}
+.match .p .nm2{font-weight:600;overflow:hidden;text-overflow:ellipsis;}
+.match .p.win.a .nm2{color:var(--teamA);} .match .p.win.b .nm2{color:var(--teamB);}
+.match .p .sub{font-size:.72rem;color:var(--muted);}
+.match .cards2{display:flex;justify-content:center;align-items:center;gap:6px;
+  font-family:'Archivo',sans-serif;font-weight:700;font-variant-numeric:tabular-nums;}
+.match .cards2 .dash{color:var(--muted);font-weight:500;}
+.match .outcome{text-align:right;font-size:.78rem;color:var(--muted);}
+.tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.64rem;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:3px;}
+.tag.big{background:var(--gold-wash);color:var(--gold);}
+.tag.half{background:var(--surface-sunk);color:var(--ink-2);}
+
+/* ---------- match play: pairings grid ---------- */
+.grid-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:4px;background:var(--surface);}
+.pg{border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:.68rem;}
+.pg th,.pg td{border:1px solid var(--hairline);padding:0;text-align:center;}
+.pg td{width:30px;height:30px;}
+.pg th.corner{background:var(--surface);}
+.pg th.col{height:74px;width:30px;background:var(--teamB-wash);color:var(--teamB);font-weight:600;}
+.pg th.col span{writing-mode:vertical-rl;transform:rotate(180deg);display:inline-block;padding:5px 0;}
+.pg th.row{background:var(--teamA-wash);color:var(--teamA);font-weight:600;text-align:left;
+  padding:0 10px;white-space:nowrap;}
+.pg td.open{background:var(--grid-open);}
+.pg td.done{background:var(--gold-wash);color:var(--gold);font-weight:600;}
+.g-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:.8rem;color:var(--ink-2);}
+.g-legend span{display:inline-flex;align-items:center;gap:7px;}
+.sw{width:13px;height:13px;border-radius:2px;border:1px solid var(--border);display:inline-block;}
+.sw.done{background:var(--gold-wash);border-color:var(--gold);}
+.sw.open{background:var(--grid-open);}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--border);padding-top:16px;font-size:.82rem;color:var(--muted);
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 26px;line-height:1.6;}
+footer b{color:var(--ink-2);font-weight:600;}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;}}
