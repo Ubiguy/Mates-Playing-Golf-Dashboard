@@ -110,7 +110,7 @@ names the rest of the squad, who are not society players and get no card. These 
 not a live feed, and CDH membership numbers from the source deck are deliberately not published.
 
 **`SOCIETY_PROFILES`** — the other twenty-three, computed from our own hole-by-hole scorecards in
-`Golf_Scores_Tracker_19.xlsx`. The method is the same WHS low-round replay the handicap register
+`Golf_Scores_Tracker_19.xlsx` (348 rounds). The method is the same WHS low-round replay the handicap register
 uses: differential = round total − course rating (70 where a CR override is set, otherwise 69),
 averaged over the best N with the low-round adjustment. It was checked against the tracker's own
 figures for all thirty players who have rounds and matched every one. None of these players has an
