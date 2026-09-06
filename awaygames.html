@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WHS Away Games</title>
+<meta name="description" content="Society tournaments played away from Leeds Golf Centre - full results, with each course's own par and rating.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <nav class="sitenav">
+    <a href="index.html">Season hub</a>
+    <a href="matchplay.html">Team match play</a>
+    <a href="strokeplay2026.html">Strokeplay Singles</a>
+    <a href="2025season.html">2025 season</a>
+    <a href="awaygames.html" aria-current="page">Away games</a>
+    <a href="handicaps.html">Handicaps</a>
+    <a href="profiles.html">Player profiles</a>
+    <a class="back" href="https://sites.google.com/view/matesplayinggolf">&larr; Mates Playing Golf</a>
+  </nav>
+
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">Played away from Leeds &middot; WHS away games</div>
+      <h1>Away Games</h1>
+    </div>
+    <div class="stamp" id="stamp"></div>
+  </header>
+
+  <div class="strip">
+    <div class="stat"><span class="k">Away days</span><span class="v num" id="cDays">0</span><span class="sub" id="sDays"></span></div>
+    <div class="stat"><span class="k">Rounds logged</span><span class="v num" id="cRounds">0</span><span class="sub">all hole by hole</span></div>
+    <div class="stat"><span class="k">Latest</span><span class="v num" id="cLatest" style="font-size:1.15rem">&mdash;</span><span class="sub" id="sLatest"></span></div>
+    <div class="stat"><span class="k">Lowest net away</span><span class="v num" id="cBest">0</span><span class="sub" id="sBest"></span></div>
+  </div>
+
+  <div id="games"></div>
+
+  <section>
+    <div class="head">
+      <div class="head-l"><h2>Why away days are scored differently</h2></div>
+    </div>
+    <div class="note">
+      <b>Every course has its own rating.</b> A handicap is built from score differentials, and a
+      differential is your gross total minus <b>that course's</b> rating &mdash; not minus par, and not
+      minus Leeds's rating. Leeds Wike Ridge plays off 69, Forest Pines off 70. Get the rating wrong and
+      every handicap built on the round is wrong with it, which is why each away day carries its own
+      figure in the tracker rather than inheriting the home one.
+      <br><br>
+      <b>Par and stroke index change too.</b> Hollins Hall is a par 71, 36 out and 35 back, and its
+      stroke index runs in a completely different order from Leeds. Both were read off the cards
+      themselves, and the Stableford points on every card were recomputed hole by hole from that index
+      to confirm the transcription before anything was loaded.
+      <br><br>
+      <span id="crWarn"></span>
+    </div>
+  </section>
+
+  <footer>
+    <div><b>Source.</b> Hole-by-hole scorecards from Golf GameBook, transcribed into the society tracker and checked card by card &mdash; every printed Out, In, gross total and Stableford points figure reproduced from the raw hole scores before loading.</div>
+    <div><b>Net.</b> Gross total minus the handicap played off that day, as recorded on the card. It is not adjusted between courses, so net scores compare within an away day rather than across them.</div>
+    <div><b>Handicaps.</b> Society handicaps are on the register, and every player is quoted on their NHS figure. The handicap shown here is what they actually played off on the day.</div>
+  </footer>
+</div>
+
+<script src="data.js?v=ccab6bd9"></script>
+<script>
+  const GAMES = [...AWAY_GAMES].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  /* ---------- summary tiles ---------- */
+  (function(){
+    const rounds = GAMES.reduce((s,g) => s + g.rows.length, 0);
+    const latest = GAMES[0];
+    let best = null;
+    GAMES.forEach(g => g.rows.forEach(r => {
+      if (best === null || r[4] < best.net) best = {net:r[4], who:r[1], venue:g.venue};
+    }));
+    document.getElementById('cDays').textContent    = GAMES.length;
+    document.getElementById('sDays').textContent    = GAMES.map(g => g.venue.replace(' GC','')).join(' and ');
+    document.getElementById('cRounds').textContent  = rounds;
+    document.getElementById('cLatest').textContent  = latest.venue.replace(' GC','');
+    document.getElementById('sLatest').textContent  = latest.date;
+    document.getElementById('cBest').textContent    = best.net;
+    document.getElementById('sBest').textContent    = best.who + ', ' + best.venue.replace(' GC','');
+    document.getElementById('stamp').innerHTML      =
+      `${GAMES.length} away day${GAMES.length === 1 ? '' : 's'} &middot; ${rounds} rounds<br>each on its own course rating`;
+  })();
+
+  /* ---------- one section per away day ---------- */
+  document.getElementById('games').innerHTML = GAMES.map(g => {
+    const winner = g.rows[0];
+    const head = g.hasPoints
+      ? `<th class="rk">#</th><th class="nm">Player</th><th>Hcp</th><th>Gross</th><th>Net</th><th>Points</th>`
+      : `<th class="rk">#</th><th class="nm">Player</th><th>Hcp</th><th>Gross</th><th>Net</th>`;
+    return `<section>
+      <div class="head">
+        <div class="head-l">
+          <h2>${g.venue}</h2>
+          <span class="chip done">Final</span>
+          <span class="when">${g.date}</span>
+        </div>
+        <p>${g.place} &middot; par ${g.par} &middot; ${g.rows.length} played${
+          g.crPlaceholder
+            ? ` &middot; <span class="src" title="Par is standing in until the real course rating is supplied">rating ${g.cr}, placeholder</span>`
+            : ` &middot; rating ${g.cr}`}</p>
+      </div>
+      <div class="t-scroll"><table>
+        <thead><tr>${head}</tr></thead>
+        <tbody>${g.rows.map(r => `<tr class="${r[0] === 1 ? 'win' : ''}">
+          <td class="rk">${r[0]}</td>
+          <td class="nm">${r[1]}</td>
+          <td>${r[2]}</td>
+          <td>${r[3]}</td>
+          <td class="${g.hasPoints ? '' : 'key'}">${r[4]}</td>
+          ${g.hasPoints ? `<td class="key">${r[5]}</td>` : ''}
+        </tr>`).join('')}</tbody>
+      </table></div>
+      <p class="after">${
+        g.hasPoints
+          ? `<b>${winner[1]}</b> took it on ${winner[5]} points off ${winner[2]}, from a gross ${winner[3]}.`
+          : `<b>${winner[1]}</b> took it on a net ${winner[4]}, from a gross ${winner[3]} off ${winner[2]}.`
+      } ${g.rows.length} players out.</p>
+    </section>`;
+  }).join('');
+
+  /* ---------- placeholder-rating warning, only if one is in play ---------- */
+  (function(){
+    const ph = GAMES.filter(g => g.crPlaceholder);
+    document.getElementById('crWarn').innerHTML = ph.length
+      ? `<b>One rating is a placeholder.</b> ` + ph.map(g => `${g.venue} is carrying par (${g.cr}) in place of its
+         official course rating, because the real figure has not been supplied yet. The ${g.date} results above are
+         unaffected &mdash; gross, net and points are straight off the cards &mdash; but the handicap differentials
+         built from that round will shift slightly once the true rating replaces it.`).join(' ')
+      : `<b>All ratings confirmed.</b> Every away day here carries its course's own rating, so the differentials
+         behind the handicaps are on a proper footing.`;
+  })();
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Golf Society 2026
 
-A six-page static site. No build step, no dependencies, nothing to install —
+A seven-page static site. No build step, no dependencies, nothing to install —
 drop the folder in a repo, switch on GitHub Pages, and the society has one permanent link.
 
 **View it:** https://YOUR-USERNAME.github.io/YOUR-REPO/
@@ -14,6 +14,7 @@ drop the folder in a repo, switch on GitHub Pages, and the society has one perma
 | `strokeplay2026.html` | **Strokeplay Singles Championship** — final standings and round by round |
 | `2025season.html` | **2025 season** — the completed Stableford series |
 | `handicaps.html` | **Handicap register** — the NHS playing handicap for all 32 players, with WHS and calculated alongside |
+| `awaygames.html` | **Away games** — tournaments played away from Leeds, each on its own par and course rating |
 | `profiles.html` | **Player profiles** — a card for all 32 players on the register, in two sections |
 | `data.js` | **All the data.** The only file you edit after a round. |
 | `style.css` | Shared styling for every page. |
@@ -29,7 +30,7 @@ there or opened on their own.
 ## Updating after a round
 
 Everything lives in `data.js`. Edit it, commit, and GitHub Pages picks it up within a minute —
-all six pages recalculate themselves from it.
+all seven pages recalculate themselves from it.
 
 ### A new match play result
 
@@ -97,6 +98,21 @@ down to 1 for twelfth, nothing below that. A player's best 8 of the 14 rounds co
 are needed to qualify. Players level on points within a round are separated by countback —
 back nine, then back six, then back three. Game 12 is a documented exception, left as the
 result stood on the day.
+
+## Away games
+
+`AWAY_GAMES` in `data.js` holds one entry per away day: venue, place, date, the course's own **par**
+and **course rating**, and a row per player as `[position, player, handicap played off, gross, net,
+Stableford points]`. Points are `null` where the round was logged without a points card.
+
+The rating matters more than anything else in that block. A score differential is gross minus **that
+course's** rating, so an away round loaded against Leeds's 69 would corrupt every handicap built on
+it. In the tracker each away round carries the figure in its **CR Override** column; Leeds rounds
+leave it blank and inherit `Settings!B6` (69).
+
+`crPlaceholder: true` marks a venue whose real rating has not been supplied, with par standing in.
+The page then prints an explicit warning rather than passing par off as a rating. Clear the flag and
+set the true `cr` when the figure arrives, then reload the handicaps.
 
 ## Player profiles
 

@@ -7,9 +7,9 @@
 const SOCIETY = {
   players: 30,          // players with at least one logged round
   onBooks: 32,          // names on the handicap register
-  rounds: 348,        // scorecards logged, hole by hole
+  rounds: 359,        // scorecards logged, hole by hole
   firstRound: 'April 2024',
-  lastRound: '30 August 2026'
+  lastRound: '6 September 2026'
 };
 
 /* ---------- The season's five majors ----------
@@ -178,30 +178,30 @@ const SF_UNRANKED = [['Shufqat Khan',7],['Basharat2 Ali',7],['Nadeem Ahmed',5],[
    Source: Golf-2026/2026/Data2026/Golf_Scores_Tracker_19.xlsx, Player HC tab.
    Anything set to null simply shows as a dash on the page.           */
 const REGISTER = [
-  {n:'Yaseen Mohammed',     nhs:13.4,  whs:16,    calc:14.8,  rounds:17, est:false},
+  {n:'Yaseen Mohammed',     nhs:13.4,  whs:16,    calc:14.8,  rounds:18, est:false},
   {n:'Hamza T',             nhs:3,     whs:3,     calc:-3,    rounds: 3, est:false},
-  {n:'Waseem Goldenboy',    nhs:15.6,  whs:18,    calc:19.4,  rounds:24, est:true},
+  {n:'Waseem Goldenboy',    nhs:15.6,  whs:18,    calc:19.4,  rounds:25, est:true},
   {n:'Sameer Ahmed',        nhs:16.9,  whs:17,    calc:20.2,  rounds:16, est:false},
-  {n:'Naveen Ahmed',        nhs:18.7,  whs:19,    calc:22,    rounds: 2, est:false},
+  {n:'Naveen Ahmed',        nhs:18.7,  whs:19,    calc:22,    rounds: 3, est:false},
   {n:'Umer Akbar',          nhs:11.2,  whs:12,    calc:10,    rounds: 2, est:false},
-  {n:'Sid Amin',            nhs:17.2,  whs:20,    calc:21.9,  rounds:22, est:true},
+  {n:'Sid Amin',            nhs:17.2,  whs:20,    calc:21.9,  rounds:23, est:true},
   {n:'Nadeem Ahmed',        nhs:13.7,  whs:14,    calc:14.5,  rounds: 8, est:false},
   {n:'Tab Rafique',         nhs:10.1,  whs:10,    calc:14.4,  rounds:26, est:true},
-  {n:'Mahmood Sadiq',       nhs:17.0,  whs:17,    calc:20.5,  rounds:28, est:true},
+  {n:'Mahmood Sadiq',       nhs:17.0,  whs:17,    calc:20.4,  rounds:29, est:true},
   {n:'Basharat2 Ali',       nhs:15.9,  whs:18,    calc:18.3,  rounds:13, est:false},
-  {n:'Shazad Hussain',      nhs:19.9,  whs:22,    calc:23,  rounds:27, est:true},
+  {n:'Shazad Hussain',      nhs:19.9,  whs:22,    calc:23,  rounds:28, est:true},
   {n:'Aftab Iqbal',         nhs:6.8,   whs:7,     calc:6,     rounds: 2, est:false},
-  {n:'Mansoor M',           nhs:16.1,  whs:16,    calc:20.4,    rounds:19, est:false},
+  {n:'Mansoor M',           nhs:16.1,  whs:16,    calc:20.9,    rounds:20, est:true},
   {n:'Tariq Javaid',        nhs:22.7,  whs:25,    calc:29.5,    rounds:14, est:false},
   {n:'Mustapha T',          nhs:28,    whs:24,    calc:44,    rounds: 1, est:false},
   {n:'Matt T',              nhs:18.6,  whs:19,    calc:36,    rounds: 1, est:false},
   {n:'Hanif Malik',         nhs:17.6,  whs:19,    calc:56,    rounds: 1, est:false},
-  {n:'Shufqat Khan',        nhs:12.7,  whs:17,    calc:14.3,  rounds:18, est:false},
-  {n:'Imran K',             nhs:14.0,  whs:16,    calc:19.3,  rounds:20, est:true},
+  {n:'Shufqat Khan',        nhs:12.7,  whs:17,    calc:16,  rounds:19, est:false},
+  {n:'Imran K',             nhs:14.0,  whs:16,    calc:19.3,  rounds:21, est:true},
   {n:'Shaan Ahmed',         nhs:18.1,  whs:18,    calc:23.4,  rounds:15, est:false},
   {n:'Gazanfar Afzal',      nhs:12,    whs:12,    calc:18,    rounds: 1, est:false},
-  {n:'Guftar Hussain',      nhs:7.9,   whs:10,    calc:11.7,  rounds:19, est:false},
-  {n:'Raz Shafi',           nhs:10.6,  whs:12,    calc:13.4,    rounds:16, est:false},
+  {n:'Guftar Hussain',      nhs:7.9,   whs:10,    calc:12,  rounds:20, est:true},
+  {n:'Raz Shafi',           nhs:10.6,  whs:12,    calc:13.8,    rounds:17, est:false},
   {n:'Afrid Iqbal',         nhs:10.6,  whs:10,    calc:14.3,    rounds: 9, est:false},
   {n:'Haaris Ahmed',        nhs:12.4,  whs:18,    calc:14,    rounds: 4, est:false},
   {n:'Jabar Mughal',        nhs:15.7,  whs:16,    calc:16.5,    rounds:13, est:false},
@@ -355,9 +355,9 @@ const SOCIETY_PROFILES = [
    idx:6.0, avg:14.5, best:{v:8, d:'1 Aug 2026'}, mark:{v:19.0, d:'Mar 2026', kind:'peak'}, net:-13.0,
    ev:[['Forest Pines away day',1],['Strokeplay rounds',1]]},
   {n:'Noor', init:'NO', rounds:0},
-  {n:'Raz Shafi', init:'RS', rounds:16, first:'Apr 2025', last:'Aug 2026',
-   idx:13.4, avg:18.9, best:{v:13, d:'19 Apr 2026'}, mark:{v:24.0, d:'Apr 2025', kind:'peak'}, net:-10.6,
-   ev:[['Stableford rounds',9],['Strokeplay rounds',7]]},
+  {n:'Raz Shafi', init:'RS', rounds:17, first:'Apr 2025', last:'Sep 2026',
+   idx:13.8, avg:19.1, best:{v:13, d:'19 Apr 2026'}, mark:{v:24.0, d:'Apr 2025', kind:'peak'}, net:-10.2,
+   ev:[['Stableford rounds',9],['Strokeplay rounds',7],['Hollins Hall away day',1]]},
   {n:'Umer Akbar', init:'UA', rounds:2, first:'Jul 2025', last:'Mar 2026',
    idx:10.0, avg:14.5, best:{v:12, d:'13 Jul 2025'}, mark:{v:10.0, d:'Jul 2025', kind:'low'}, net:0.0,
    ev:[['Stableford rounds',1],['Forest Pines away day',1]]},
@@ -379,18 +379,18 @@ const SOCIETY_PROFILES = [
   {n:'Jabar Mughal', init:'JM', rounds:13, first:'Apr 2025', last:'Aug 2026',
    idx:16.5, avg:21.8, best:{v:16, d:'1 Aug 2026'}, mark:{v:23.0, d:'Apr 2025', kind:'peak'}, net:-6.5,
    ev:[['Strokeplay rounds',7],['Stableford rounds',6]]},
-  {n:'Mansoor M', init:'MM', rounds:19, first:'Apr 2024', last:'Aug 2026',
-   idx:20.4, avg:27.5, best:{v:16, d:'23 Aug 2026'}, mark:{v:38.0, d:'Apr 2024', kind:'peak'}, net:-17.6,
-   ev:[['Stableford rounds',15],['Strokeplay rounds',3],['Forest Pines away day',1]]},
+  {n:'Mansoor M', init:'MM', rounds:20, first:'Apr 2024', last:'Sep 2026',
+   idx:20.9, avg:27.5, best:{v:16, d:'23 Aug 2026'}, mark:{v:38.0, d:'Apr 2024', kind:'peak'}, net:-17.1,
+   ev:[['Stableford rounds',15],['Strokeplay rounds',3],['Forest Pines away day',1],['Hollins Hall away day',1]]},
   {n:'Sameer Ahmed', init:'SA', rounds:16, first:'May 2025', last:'Aug 2026',
    idx:20.2, avg:26.1, best:{v:19, d:'23 Aug 2026'}, mark:{v:18.0, d:'May 2025', kind:'low'}, net:2.2,
    ev:[['Stableford rounds',10],['Strokeplay rounds',5],['Forest Pines away day',1]]},
-  {n:'Mahmood Sadiq', init:'MS', rounds:28, first:'Apr 2024', last:'Aug 2026',
-   idx:20.5, avg:27.0, best:{v:14, d:'5 Apr 2026'}, mark:{v:24.0, d:'Apr 2024', kind:'peak'}, net:-3.5,
-   ev:[['Stableford rounds',18],['Strokeplay rounds',9],['Forest Pines away day',1]]},
-  {n:'Sid Amin', init:'SA', rounds:22, first:'Apr 2025', last:'Aug 2026',
+  {n:'Mahmood Sadiq', init:'MS', rounds:29, first:'Apr 2024', last:'Sep 2026',
+   idx:20.4, avg:26.8, best:{v:14, d:'5 Apr 2026'}, mark:{v:24.0, d:'Apr 2024', kind:'peak'}, net:-3.6,
+   ev:[['Stableford rounds',18],['Strokeplay rounds',9],['Forest Pines away day',1],['Hollins Hall away day',1]]},
+  {n:'Sid Amin', init:'SA', rounds:23, first:'Apr 2025', last:'Sep 2026',
    idx:21.9, avg:27.1, best:{v:20, d:'20 Apr 2025'}, mark:{v:24.0, d:'Apr 2025', kind:'peak'}, net:-2.1,
-   ev:[['Stableford rounds',14],['Strokeplay rounds',7],['Forest Pines away day',1]]},
+   ev:[['Stableford rounds',14],['Strokeplay rounds',7],['Forest Pines away day',1],['Hollins Hall away day',1]]},
   {n:'Hanif Malik', init:'HM', rounds:1, first:'Mar 2026', last:'Mar 2026',
    idx:56.0, avg:58.0, best:{v:58, d:'23 Mar 2026'}, mark:{v:56.0, d:'Mar 2026', kind:'low'}, net:0.0,
    ev:[['Forest Pines away day',1]]},
@@ -400,12 +400,12 @@ const SOCIETY_PROFILES = [
   {n:'Matt T', init:'MT', rounds:1, first:'Mar 2026', last:'Mar 2026',
    idx:36.0, avg:38.0, best:{v:38, d:'23 Mar 2026'}, mark:{v:36.0, d:'Mar 2026', kind:'low'}, net:0.0,
    ev:[['Forest Pines away day',1]]},
-  {n:'Naveen Ahmed', init:'NA', rounds:2, first:'Apr 2025', last:'Mar 2026',
-   idx:22.0, avg:30.0, best:{v:24, d:'23 Mar 2026'}, mark:{v:34.0, d:'Apr 2025', kind:'peak'}, net:-12.0,
-   ev:[['Stableford rounds',1],['Forest Pines away day',1]]},
-  {n:'Shazad Hussain', init:'SH', rounds:27, first:'Apr 2024', last:'Aug 2026',
-   idx:23.0, avg:29.1, best:{v:19, d:'15 Jun 2025'}, mark:{v:20.0, d:'Jul 2025', kind:'low'}, net:1.0,
-   ev:[['Stableford rounds',19],['Strokeplay rounds',7],['Forest Pines away day',1]]},
+  {n:'Naveen Ahmed', init:'NA', rounds:3, first:'Apr 2025', last:'Sep 2026',
+   idx:22.0, avg:35.0, best:{v:24, d:'23 Mar 2026'}, mark:{v:34.0, d:'Apr 2025', kind:'peak'}, net:-12.0,
+   ev:[['Stableford rounds',1],['Forest Pines away day',1],['Hollins Hall away day',1]]},
+  {n:'Shazad Hussain', init:'SH', rounds:28, first:'Apr 2024', last:'Sep 2026',
+   idx:23.0, avg:29.5, best:{v:19, d:'15 Jun 2025'}, mark:{v:20.0, d:'Jul 2025', kind:'low'}, net:1.0,
+   ev:[['Stableford rounds',19],['Strokeplay rounds',7],['Forest Pines away day',1],['Hollins Hall away day',1]]},
   {n:'Sabar Riaz', init:'SR', rounds:3, first:'Jul 2026', last:'Aug 2026',
    idx:28.0, avg:38.7, best:{v:30, d:'11 Jul 2026'}, mark:{v:52.0, d:'Jul 2026', kind:'peak'}, net:-24.0,
    ev:[['Strokeplay rounds',3]]},
@@ -413,4 +413,53 @@ const SOCIETY_PROFILES = [
    idx:44.0, avg:46.0, best:{v:46, d:'23 Mar 2026'}, mark:{v:44.0, d:'Mar 2026', kind:'low'}, net:0.0,
    ev:[['Forest Pines away day',1]]},
   {n:'Raza Efendi', init:'RE', rounds:0}
+];
+
+/* ---------- WHS Away Games ----------
+   Tournaments played away from Leeds Golf Centre. Each entry carries its own
+   par and course rating, because the differential behind every handicap is
+   gross minus that course's rating, not minus par.
+
+   crPlaceholder:true means the rating is NOT the official one - par is standing
+   in until the real figure is supplied. Say so on the page; do not quietly
+   present a placeholder as a rating.
+
+   rows: [position, player, handicap played off, gross, net, Stableford points]
+   points are null where the round was logged without a points card.   */
+const AWAY_GAMES = [
+  {venue:'Hollins Hall GC', place:'Baildon, BD17 7QW', date:'6 September 2026', par:71, cr:71, crPlaceholder:true, hasPoints:true,
+   rows:[
+    [1,'Mahmood Sadiq',20,94,74,33],
+    [2,'Yaseen Mohammed',15,93,78,29],
+    [3,'Mansoor M',19,99,80,28],
+    [4,'Sid Amin',20,99,79,28],
+    [5,'Raz Shafi',12,92,80,27],
+    [6,'Shufqat Khan',15,96,81,26],
+    [7,'Guftar Hussain',9,93,84,25],
+    [8,'Waseem Goldenboy',18,102,84,24],
+    [9,'Imran K',16,100,84,23],
+    [10,'Shazad Hussain',23,111,88,20],
+    [11,'Naveen Ahmed',22,116,94,14]
+   ]},
+  {venue:'Forest Pines', place:'Broughton, North Lincolnshire', date:'23 March 2026', par:70, cr:70, crPlaceholder:false, hasPoints:false,
+   rows:[
+    [1,'Yaseen Mohammed',13,85,72,29],
+    [2,'Hamza T',0,75,75,null],
+    [3,'Waseem Goldenboy',15,90,75,24],
+    [4,'Sameer Ahmed',18,96,78,null],
+    [5,'Naveen Ahmed',19,94,75,14],
+    [6,'Umer Akbar',11,87,76,null],
+    [8,'Sid Amin',20,98,78,28],
+    [9,'Nadeem Ahmed',12,93,81,null],
+    [10,'Tab Rafique',10,90,80,null],
+    [11,'Mahmood Sadiq',18,99,81,33],
+    [12,'Basharat2 Ali',18,101,83,null],
+    [13,'Shazad Hussain',19,103,84,20],
+    [14,'Aftab Iqbal',7,91,84,null],
+    [15,'Mansoor M',18,106,88,28],
+    [16,'Tariq Javaid',21,107,86,null],
+    [18,'Mustapha T',28,116,88,null],
+    [19,'Matt T',19,108,89,null],
+    [20,'Hanif Malik',19,128,109,null]
+   ]}
 ];
