@@ -23,23 +23,24 @@
 
   <header class="masthead">
     <div>
-      <div class="eyebrow">Asia Cup 2026 squad &middot; England Golf histories</div>
+      <div class="eyebrow">Every player on the register &middot; 32 profiles</div>
       <h1>Player Profiles</h1>
     </div>
     <div class="stamp" id="stamp"></div>
   </header>
 
   <div class="strip">
-    <div class="stat"><span class="k">Profiles here</span><span class="v num" id="cProf">0</span><span class="sub" id="sProf"></span></div>
-    <div class="stat"><span class="k">Rounds behind them</span><span class="v num" id="cRounds">0</span><span class="sub">England Golf cards</span></div>
-    <div class="stat"><span class="k">Lowest index</span><span class="v num" id="cLow">0</span><span class="sub" id="sLow"></span></div>
+    <div class="stat"><span class="k">Profiles</span><span class="v num" id="cProf">0</span><span class="sub" id="sProf"></span></div>
+    <div class="stat"><span class="k">England Golf histories</span><span class="v num" id="cEG">0</span><span class="sub">the Asia Cup squad</span></div>
+    <div class="stat"><span class="k">Society rounds logged</span><span class="v num" id="cRounds">0</span><span class="sub">hole by hole in the tracker</span></div>
     <div class="stat"><span class="k">Biggest improver</span><span class="v num" id="cImp" style="font-size:1.15rem">&mdash;</span><span class="sub" id="sImp"></span></div>
   </div>
 
   <section>
     <div class="head">
       <div class="head-l">
-        <h2>The profiles</h2>
+        <h2>Asia Cup 2026 squad</h2>
+        <span class="chip done">England Golf</span>
         <span class="when">ordered by NHS handicap</span>
       </div>
       <p>Society handicap first, England Golf index second &mdash; they are not the same number</p>
@@ -50,36 +51,58 @@
 
   <section>
     <div class="head">
+      <div class="head-l">
+        <h2>The rest of the society</h2>
+        <span class="chip live">Society data</span>
+        <span class="when">ordered by NHS handicap</span>
+      </div>
+      <p>Worked out from our own scorecards &mdash; no England Golf figure on file for these players yet</p>
+    </div>
+    <div class="profiles" id="society"></div>
+    <p class="after" id="socNote"></p>
+  </section>
+
+  <section>
+    <div class="head">
       <div class="head-l"><h2>Reading these numbers</h2></div>
     </div>
     <div class="note">
-      <b>NHS is still the handicap.</b> The big number on the left of each card is the player's NHS
-      handicap, which is what they play off in society competitions. The England Golf index beside it
-      is a separate figure, calculated by England Golf from cards submitted at their own clubs. The two
-      rarely agree &mdash; across these nine the England Golf index sits about two shots higher on
-      average &mdash; and nothing on this page changes what anyone plays off.
+      <b>NHS is still the handicap.</b> The big number on the left of every card is the player's NHS
+      handicap, which is what they play off in society competitions. Nothing else on this page changes
+      that, whichever section a player appears in.
       <br><br>
-      <b>Score differential</b> is a round's adjusted gross minus the course rating, so it measures a
-      round against the course rather than against par. Lower is better, and the averages here run over
-      a player's whole England Golf history, not just this season.
+      <b>Two different sources, deliberately kept apart.</b> The nine Asia Cup players have an
+      <b>England Golf index</b>, calculated by England Golf from cards submitted at their own clubs.
+      The other twenty-three have a <b>society index</b>, worked out here from the hole-by-hole
+      scorecards in our own tracker. They are built the same way but from different rounds, so a
+      number from one section is not comparable with a number from the other. None of the twenty-three
+      has an England Golf figure on file &mdash; that tile stays blank until one is supplied.
+      <br><br>
+      <b>Score differential</b> is a round's gross total minus the course rating &mdash; 70 at Forest
+      Pines, 69 at Leeds &mdash; so it measures a round against the course rather than against par.
+      Lower is better, and the averages here run over a player's whole record, not just this season.
       <br><br>
       <b>Peak and low.</b> Each card shows either the highest index a player has carried or the lowest,
       whichever is the more telling for their history, with the date it was reached. <b>Net change</b>
       runs from the start of their record to today: a minus sign is an improvement.
       <br><br>
-      <b>Sample sizes vary a lot.</b> Tab Rafique's index rests on six rounds, Waseem's on forty. Read a
-      short history with the same caution the handicap register applies to its own thin figures.
+      <b>Sample sizes vary enormously.</b> Tab Rafique's index rests on six rounds, Waseem's on forty,
+      and several society records stand on a single card. Anything under four rounds is marked
+      <span class="pill">Thin record</span> and greyed out, the same threshold the handicap register
+      uses &mdash; those figures move by whole shots on one bad hole, so read them as placeholders
+      rather than handicaps.
     </div>
   </section>
 
   <footer>
     <div><b>Source.</b> <span id="srcLine"></span> Compiled from England Golf round-history data. CDH membership numbers held in that deck are deliberately not published here.</div>
-    <div><b>Why only nine.</b> <span id="othersLine"></span></div>
+    <div><b>Society figures.</b> Computed here from the hole-by-hole scorecards in the society tracker, replaying the same WHS low-round method the handicap register uses. Checked against the tracker's own calculation for all thirty players who have rounds: no discrepancies.</div>
+    <div><b>The Asia Cup squad.</b> <span id="othersLine"></span></div>
     <div><b>As at.</b> These histories were compiled for the Asia Cup and are a snapshot, not a live feed &mdash; they do not update themselves the way the rest of this site does. Society handicaps and results come from the tracker as usual.</div>
   </footer>
 </div>
 
-<script src="data.js?v=190ffc62"></script>
+<script src="data.js?v=dc7a2a29"></script>
 <script>
   const REG = Object.fromEntries(REGISTER.map(r => [r.n, r]));
   const f1  = v => v.toFixed(1);
@@ -88,21 +111,38 @@
   /* Sorted by the society handicap, the same order the register uses. */
   const ROWS = [...PROFILES].sort((a,b) => REG[a.n].nhs - REG[b.n].nhs);
 
+  /* A society index off fewer than this many rounds swings too wildly on a
+     single card to lean on, so it is greyed and flagged, exactly as the
+     handicap register does. */
+  const MIN_ROUNDS = 4;
+  const thin = p => p.rounds > 0 && p.rounds < MIN_ROUNDS;
+
+  const SOC = [...SOCIETY_PROFILES].sort((a,b) => {
+    const x = REG[a.n].nhs, y = REG[b.n].nhs;
+    if (x == null && y == null) return a.n.localeCompare(b.n);
+    if (x == null) return 1;
+    if (y == null) return -1;
+    return x - y;
+  });
+
   /* ---------- summary tiles ---------- */
   (function(){
-    const rounds = PROFILES.reduce((s,p) => s + p.scores, 0);
-    const low    = ROWS.reduce((m,p) => p.idx < m.idx ? p : m);
-    const imp    = ROWS.reduce((m,p) => p.net < m.net ? p : m);
-    document.getElementById('cProf').textContent   = PROFILES.length;
-    document.getElementById('sProf').textContent   =
-      `of the ${ASIA_CUP.squad}-player squad`;
-    document.getElementById('cRounds').textContent = rounds;
-    document.getElementById('cLow').textContent    = f1(low.idx);
-    document.getElementById('sLow').textContent    = low.n + ', England Golf index';
+    const socRounds = SOCIETY_PROFILES.reduce((s,p) => s + p.rounds, 0);
+    const sqRounds  = REGISTER.filter(r => PROFILES.some(p => p.n === r.n))
+                              .reduce((s,r) => s + r.rounds, 0);
+    /* Improvement only means something once a player has a few cards behind
+       them, so thin records are left out of this comparison. */
+    const solid = SOCIETY_PROFILES.filter(p => p.rounds >= 8);
+    const imp   = solid.reduce((m,p) => p.net < m.net ? p : m);
+    document.getElementById('cProf').textContent   = PROFILES.length + SOCIETY_PROFILES.length;
+    document.getElementById('sProf').textContent   = 'everyone on the register';
+    document.getElementById('cEG').textContent     = PROFILES.length;
+    document.getElementById('cRounds').textContent = socRounds + sqRounds;
     document.getElementById('cImp').textContent    = imp.n;
-    document.getElementById('sImp').textContent    = sgn(imp.net) + ' over their record';
+    document.getElementById('sImp').textContent    =
+      sgn(imp.net) + ` since ${imp.first}, on society cards`;
     document.getElementById('stamp').innerHTML     =
-      `${ASIA_CUP.event} &middot; ${ASIA_CUP.date}<br>${ASIA_CUP.venue}`;
+      `${PROFILES.length} from England Golf &middot; ${SOCIETY_PROFILES.length} from our own cards`;
   })();
 
   /* ---------- profile cards ---------- */
@@ -162,10 +202,85 @@
     document.getElementById('profNote').textContent = bits.join(' ');
     document.getElementById('srcLine').textContent =
       `${ASIA_CUP.event} squad profiles, prepared for ${ASIA_CUP.date} at ${ASIA_CUP.venue}.`;
+    renderSociety();
     document.getElementById('othersLine').textContent =
       `The other ${SQUAD_OTHERS.length} in the squad do not play in this society, so they have no card here: ` +
       SQUAD_OTHERS.join(', ') + '.';
   })();
+
+  /* ---------- the rest of the society ----------
+     Same card, but the England Golf slot stays empty: none of these players
+     has a figure on file yet. Everything else is computed from our own
+     hole-by-hole scorecards.                                              */
+  function renderSociety(){
+    document.getElementById('society').innerHTML = SOC.map(p => {
+      const r = REG[p.n];
+      const nhs = r && r.nhs != null;
+      const none = p.rounds === 0;
+      const markLabel = none ? '' : (p.mark.kind === 'low' ? 'Lowest index' : 'Peak index');
+      return `<article class="prof">
+        <header class="prof-top">
+          <span class="av soc">${p.init}</span>
+          <span class="id">
+            <b>${p.n}</b>
+            <span class="alias">${none ? 'No rounds logged yet'
+              : `${p.rounds} round${p.rounds === 1 ? '' : 's'}, ${p.first} to ${p.last}`}</span>
+          </span>
+          ${thin(p) ? '<span class="pill thin-pill">Thin record</span>' : ''}
+        </header>
+
+        <div class="hcs">
+          <div class="hc lead">
+            <span class="lbl">NHS &middot; plays off</span>
+            <span class="big num">${nhs ? f1(r.nhs) : '&ndash;'}</span>
+            <span class="foot">${nhs ? 'the figure that counts' : 'no NHS figure on file'}</span>
+          </div>
+          <div class="hc empty">
+            <span class="lbl">England Golf index</span>
+            <span class="big num">&ndash;</span>
+            <span class="foot">not on file yet</span>
+          </div>
+        </div>
+
+        ${none ? '<p class="prof-note">Nothing on record to work from — this card fills itself in as soon as a scorecard is logged.</p>' : `
+        <dl class="facts${thin(p) ? ' faded' : ''}">
+          <div><dt>Society index</dt><dd class="num">${f1(p.idx)}</dd></div>
+          <div><dt>Avg differential</dt><dd class="num">${f1(p.avg)}</dd></div>
+          <div><dt>Best differential</dt><dd class="num">${f1(p.best.v)}<span class="when">${p.best.d}</span></dd></div>
+          <div><dt>${markLabel}</dt><dd class="num">${f1(p.mark.v)}<span class="when">${p.mark.d}</span></dd></div>
+          ${p.rounds > 1 ? `<div><dt>Net change</dt><dd class="num ${p.net < 0 ? 'good' : ''}">${sgn(p.net)}</dd></div>` : ''}
+        </dl>
+
+        <div class="courses">
+          <span class="lbl">Rounds logged</span>
+          <ul>${p.ev.map(([e,n]) => `<li><span>${e}</span><b>${n}</b></li>`).join('')}</ul>
+        </div>
+
+        <p class="prof-note">${socNote(p)}</p>`}
+      </article>`;
+    }).join('');
+
+    const played = SOCIETY_PROFILES.filter(p => p.rounds > 0);
+    const none   = SOCIETY_PROFILES.filter(p => p.rounds === 0);
+    const thinN  = SOCIETY_PROFILES.filter(thin).length;
+    const bits = [`${played.length} of these ${SOCIETY_PROFILES.length} players have rounds on record.`];
+    if (thinN) bits.push(`${thinN} have fewer than ${MIN_ROUNDS}, so their index is greyed out — it moves several shots on a single card.`);
+    if (none.length) bits.push(`No rounds at all yet for ` + none.map(p => p.n).join(' and ') + `.`);
+    bits.push('None of them has an England Golf index on file, so that column stays blank until one is supplied.');
+    document.getElementById('socNote').textContent = bits.join(' ');
+  }
+
+  /* A short, honest line per player, written from their own numbers. */
+  function socNote(p){
+    if (p.rounds === 1) return `A single round, at ${p.ev[0][0].replace(' rounds','').replace(' away day','')} in ${p.first}. One card cannot make a handicap, and the index above should be read as a placeholder.`;
+    if (thin(p))        return `Only ${p.rounds} rounds so far, ${p.first} to ${p.last}. Early days — the figures will settle as more cards come in.`;
+    const span = p.first === p.last ? p.first : `${p.first} to ${p.last}`;
+    if (p.net <= -8)  return `Down ${Math.abs(p.net).toFixed(1)} shots across ${p.rounds} rounds, ${span} — one of the real improvers on the books.`;
+    if (p.net <= -3)  return `Steadily better: ${Math.abs(p.net).toFixed(1)} shots off the index across ${p.rounds} rounds, ${span}.`;
+    if (p.net < 0)    return `Marginally improved over ${p.rounds} rounds, ${span}, with a best differential of ${f1(p.best.v)}.`;
+    if (p.net === 0)  return `Level over ${p.rounds} rounds, ${span}. The index today is where it started.`;
+    return `Up ${p.net.toFixed(1)} shots over ${p.rounds} rounds, ${span}, though the best card of the lot came in at ${f1(p.best.v)}.`;
+  }
 </script>
 <style>
   .profiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:1px;
@@ -214,6 +329,11 @@
 
   .prof-note{margin:0;font-size:.82rem;line-height:1.55;color:var(--muted);
     border-top:1px solid var(--hairline);padding-top:11px;}
+
+  .av.soc{background:var(--surface-sunk);color:var(--ink-2);}
+  .hc.empty .big{color:var(--muted);opacity:.55;}
+  .pill.thin-pill{flex:none;margin-left:auto;}
+  .facts.faded dd{color:var(--muted);}
 
   @media (max-width:420px){
     .facts{grid-template-columns:1fr;}

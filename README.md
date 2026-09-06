@@ -14,7 +14,7 @@ drop the folder in a repo, switch on GitHub Pages, and the society has one perma
 | `strokeplay2026.html` | **Strokeplay Singles Championship** — final standings and round by round |
 | `2025season.html` | **2025 season** — the completed Stableford series |
 | `handicaps.html` | **Handicap register** — the NHS playing handicap for all 32 players, with WHS and calculated alongside |
-| `profiles.html` | **Player profiles** — England Golf round histories for the nine society players in the Asia Cup 2026 squad |
+| `profiles.html` | **Player profiles** — a card for all 32 players on the register, in two sections |
 | `data.js` | **All the data.** The only file you edit after a round. |
 | `style.css` | Shared styling for every page. |
 
@@ -100,15 +100,25 @@ result stood on the day.
 
 ## Player profiles
 
-`PROFILES` in `data.js` holds one entry per player, transcribed from
-`AsiaCuo2026/Asia_Cup_2026_Squad_Profiles.vF2.pptx` — England Golf round histories compiled for
-the Asia Cup 2026 squad. Only squad members who also appear in `REGISTER` get a card; `n` must
-match a register name exactly, and `deck` carries the England Golf spelling where it differs.
-`SQUAD_OTHERS` lists the rest of the squad, who are named but not profiled.
+Every player on the register has a card. They come from two different places and the page keeps
+them in separate sections, because the numbers are not comparable.
 
-These are a **snapshot**, not a live feed. The `idx` field is an England Golf handicap index and
-is not the playing figure — the card leads with NHS from `REGISTER`. CDH membership numbers from
-the source deck are deliberately not published.
+**`PROFILES`** — the nine Asia Cup squad members, transcribed from
+`AsiaCuo2026/Asia_Cup_2026_Squad_Profiles.vF2.pptx`, which England Golf compiled. `n` must match a
+register name exactly; `deck` carries the England Golf spelling where it differs. `SQUAD_OTHERS`
+names the rest of the squad, who are not society players and get no card. These are a **snapshot**,
+not a live feed, and CDH membership numbers from the source deck are deliberately not published.
+
+**`SOCIETY_PROFILES`** — the other twenty-three, computed from our own hole-by-hole scorecards in
+`Golf_Scores_Tracker_19.xlsx`. The method is the same WHS low-round replay the handicap register
+uses: differential = round total − course rating (70 where a CR override is set, otherwise 69),
+averaged over the best N with the low-round adjustment. It was checked against the tracker's own
+figures for all thirty players who have rounds and matched every one. None of these players has an
+England Golf index, so that tile renders blank — fill in the gap by moving the player into
+`PROFILES`, or extend their entry, once a figure exists.
+
+In both sections the card leads with **NHS** from `REGISTER`: the index is never the playing figure.
+Records under four rounds are greyed and marked `Thin record`, the same threshold the register uses.
 
 ## Publishing
 

@@ -329,3 +329,88 @@ const ASIA_CUP = {
   venue:'The Warwickshire, Leek Wootton', squad:18,
   format:'Four-team round robin — Manchester, Yorkshire, East London, West London'
 };
+
+/* ---------- Society player profiles ----------
+   The other 23 on the register: everyone who is NOT in the Asia Cup squad.
+   Unlike PROFILES above, these are computed here from the society's own
+   hole-by-hole scorecards in Golf_Scores_Tracker_19.xlsx, not from England
+   Golf. None of them has an England Golf / WHS index on file yet, so that
+   figure is deliberately left blank on their card until one is supplied.
+
+   idx   - the society calculated index: score differential (round total minus
+           course rating, 70 at Forest Pines, otherwise 69) averaged over the
+           best N differentials with the WHS low-round adjustment. Verified to
+           match the tracker exactly for all 30 players who have rounds.
+   avg   - mean score differential across every round logged
+   mark  - the peak index for players who have improved, the lowest for those
+           who have not; `kind` says which
+   net   - change in index from their first round to now; negative is better
+   ev    - how their rounds break down by competition
+   rounds:0 means nothing logged yet, so only their NHS handicap shows.   */
+const SOCIETY_PROFILES = [
+  {n:'Hamza T', init:'HT', rounds:3, first:'Jul 2025', last:'Mar 2026',
+   idx:-3.0, avg:3.7, best:{v:-1, d:'13 Jul 2025'}, mark:{v:5.0, d:'Jul 2025', kind:'peak'}, net:-8.0,
+   ev:[['Stableford rounds',2],['Forest Pines away day',1]]},
+  {n:'Aftab Iqbal', init:'AI', rounds:2, first:'Mar 2026', last:'Aug 2026',
+   idx:6.0, avg:14.5, best:{v:8, d:'1 Aug 2026'}, mark:{v:19.0, d:'Mar 2026', kind:'peak'}, net:-13.0,
+   ev:[['Forest Pines away day',1],['Strokeplay rounds',1]]},
+  {n:'Noor', init:'NO', rounds:0},
+  {n:'Raz Shafi', init:'RS', rounds:11, first:'Apr 2025', last:'Aug 2026',
+   idx:15.0, avg:19.2, best:{v:13, d:'4 Jul 2026'}, mark:{v:24.0, d:'Apr 2025', kind:'peak'}, net:-9.0,
+   ev:[['Strokeplay rounds',7],['Stableford rounds',4]]},
+  {n:'Umer Akbar', init:'UA', rounds:2, first:'Jul 2025', last:'Mar 2026',
+   idx:10.0, avg:14.5, best:{v:12, d:'13 Jul 2025'}, mark:{v:10.0, d:'Jul 2025', kind:'low'}, net:0.0,
+   ev:[['Stableford rounds',1],['Forest Pines away day',1]]},
+  {n:'Gazanfar Afzal', init:'GA', rounds:1, first:'Apr 2024', last:'Apr 2024',
+   idx:18.0, avg:20.0, best:{v:20, d:'27 Apr 2024'}, mark:{v:18.0, d:'Apr 2024', kind:'low'}, net:0.0,
+   ev:[['Stableford rounds',1]]},
+  {n:'Haaris Ahmed', init:'HA', rounds:4, first:'May 2025', last:'Aug 2026',
+   idx:14.0, avg:21.8, best:{v:15, d:'15 Aug 2026'}, mark:{v:28.0, d:'May 2025', kind:'peak'}, net:-14.0,
+   ev:[['Stableford rounds',3],['Strokeplay rounds',1]]},
+  {n:'Nadeem Ahmed', init:'NA', rounds:8, first:'Apr 2025', last:'Aug 2026',
+   idx:14.5, avg:20.9, best:{v:13, d:'20 Apr 2025'}, mark:{v:11.0, d:'Apr 2025', kind:'low'}, net:3.5,
+   ev:[['Stableford rounds',5],['Strokeplay rounds',2],['Forest Pines away day',1]]},
+  {n:'Ayaz Alam', init:'AA', rounds:1, first:'Apr 2025', last:'Apr 2025',
+   idx:22.0, avg:24.0, best:{v:24, d:'20 Apr 2025'}, mark:{v:22.0, d:'Apr 2025', kind:'low'}, net:0.0,
+   ev:[['Stableford rounds',1]]},
+  {n:'Naeem Akhtar', init:'NA', rounds:3, first:'Apr 2025', last:'Jul 2026',
+   idx:23.0, avg:28.3, best:{v:25, d:'11 Jul 2026'}, mark:{v:30.0, d:'Apr 2025', kind:'peak'}, net:-7.0,
+   ev:[['Strokeplay rounds',2],['Stableford rounds',1]]},
+  {n:'Jabar Mughal', init:'JM', rounds:10, first:'Apr 2025', last:'Aug 2026',
+   idx:17.0, avg:21.8, best:{v:16, d:'1 Aug 2026'}, mark:{v:23.0, d:'Apr 2025', kind:'peak'}, net:-6.0,
+   ev:[['Strokeplay rounds',7],['Stableford rounds',3]]},
+  {n:'Mansoor M', init:'MM', rounds:17, first:'Apr 2024', last:'Aug 2026',
+   idx:19.0, avg:26.5, best:{v:16, d:'23 Aug 2026'}, mark:{v:38.0, d:'Apr 2024', kind:'peak'}, net:-19.0,
+   ev:[['Stableford rounds',13],['Strokeplay rounds',3],['Forest Pines away day',1]]},
+  {n:'Sameer Ahmed', init:'SA', rounds:15, first:'May 2025', last:'Aug 2026',
+   idx:20.2, avg:25.9, best:{v:19, d:'23 Aug 2026'}, mark:{v:18.0, d:'May 2025', kind:'low'}, net:2.2,
+   ev:[['Stableford rounds',9],['Strokeplay rounds',5],['Forest Pines away day',1]]},
+  {n:'Mahmood Sadiq', init:'MS', rounds:23, first:'Apr 2024', last:'Aug 2026',
+   idx:22.5, avg:27.6, best:{v:18, d:'29 Jun 2025'}, mark:{v:24.0, d:'Apr 2024', kind:'peak'}, net:-1.5,
+   ev:[['Stableford rounds',13],['Strokeplay rounds',9],['Forest Pines away day',1]]},
+  {n:'Sid Amin', init:'SA', rounds:19, first:'Apr 2025', last:'Aug 2026',
+   idx:22.9, avg:27.2, best:{v:20, d:'20 Apr 2025'}, mark:{v:24.0, d:'Apr 2025', kind:'peak'}, net:-1.1,
+   ev:[['Stableford rounds',11],['Strokeplay rounds',7],['Forest Pines away day',1]]},
+  {n:'Hanif Malik', init:'HM', rounds:1, first:'Mar 2026', last:'Mar 2026',
+   idx:56.0, avg:58.0, best:{v:58, d:'23 Mar 2026'}, mark:{v:56.0, d:'Mar 2026', kind:'low'}, net:0.0,
+   ev:[['Forest Pines away day',1]]},
+  {n:'Shaan Ahmed', init:'SA', rounds:14, first:'Apr 2024', last:'Aug 2026',
+   idx:24.5, avg:30.8, best:{v:23, d:'20 Apr 2025'}, mark:{v:33.0, d:'Apr 2024', kind:'peak'}, net:-8.5,
+   ev:[['Stableford rounds',10],['Strokeplay rounds',4]]},
+  {n:'Matt T', init:'MT', rounds:1, first:'Mar 2026', last:'Mar 2026',
+   idx:36.0, avg:38.0, best:{v:38, d:'23 Mar 2026'}, mark:{v:36.0, d:'Mar 2026', kind:'low'}, net:0.0,
+   ev:[['Forest Pines away day',1]]},
+  {n:'Naveen Ahmed', init:'NA', rounds:2, first:'Apr 2025', last:'Mar 2026',
+   idx:22.0, avg:30.0, best:{v:24, d:'23 Mar 2026'}, mark:{v:34.0, d:'Apr 2025', kind:'peak'}, net:-12.0,
+   ev:[['Stableford rounds',1],['Forest Pines away day',1]]},
+  {n:'Shazad Hussain', init:'SH', rounds:22, first:'Apr 2024', last:'Aug 2026',
+   idx:23.1, avg:29.0, best:{v:19, d:'15 Jun 2025'}, mark:{v:20.0, d:'Jul 2025', kind:'low'}, net:1.1,
+   ev:[['Stableford rounds',14],['Strokeplay rounds',7],['Forest Pines away day',1]]},
+  {n:'Sabar Riaz', init:'SR', rounds:3, first:'Jul 2026', last:'Aug 2026',
+   idx:28.0, avg:38.7, best:{v:30, d:'11 Jul 2026'}, mark:{v:52.0, d:'Jul 2026', kind:'peak'}, net:-24.0,
+   ev:[['Strokeplay rounds',3]]},
+  {n:'Mustapha T', init:'MT', rounds:1, first:'Mar 2026', last:'Mar 2026',
+   idx:44.0, avg:46.0, best:{v:46, d:'23 Mar 2026'}, mark:{v:44.0, d:'Mar 2026', kind:'low'}, net:0.0,
+   ev:[['Forest Pines away day',1]]},
+  {n:'Raza Efendi', init:'RE', rounds:0}
+];
