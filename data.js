@@ -424,10 +424,14 @@ const SOCIETY_PROFILES = [
    in until the real figure is supplied. Say so on the page; do not quietly
    present a placeholder as a rating.
 
+   slope is recorded where known but is NEVER used: every differential in this
+   society, home or away, is gross minus course rating, with slope and PCC
+   excluded by standing instruction.
+
    rows: [position, player, handicap played off, gross, net, Stableford points]
    points are null where the round was logged without a points card.   */
 const AWAY_GAMES = [
-  {venue:'Hollins Hall GC', place:'Baildon, BD17 7QW', date:'6 September 2026', par:71, cr:71, crPlaceholder:true, hasPoints:true,
+  {venue:'Hollins Hall GC', place:'Baildon, BD17 7QW', date:'6 September 2026', par:71, cr:71.0, tee:'White', slope:130, crPlaceholder:false, hasPoints:true,
    rows:[
     [1,'Mahmood Sadiq',20,94,74,33],
     [2,'Yaseen Mohammed',15,93,78,29],
@@ -441,7 +445,7 @@ const AWAY_GAMES = [
     [10,'Shazad Hussain',23,111,88,20],
     [11,'Naveen Ahmed',22,116,94,14]
    ]},
-  {venue:'Forest Pines', place:'Broughton, North Lincolnshire', date:'23 March 2026', par:70, cr:70, crPlaceholder:false, hasPoints:false,
+  {venue:'Forest Pines', place:'Broughton, North Lincolnshire', date:'23 March 2026', par:70, cr:70, tee:null, slope:null, crPlaceholder:false, hasPoints:false,
    rows:[
     [1,'Yaseen Mohammed',13,85,72,29],
     [2,'Hamza T',0,75,75,null],

@@ -66,7 +66,7 @@
   </footer>
 </div>
 
-<script src="data.js?v=ccab6bd9"></script>
+<script src="data.js?v=5eff53d2"></script>
 <script>
   const GAMES = [...AWAY_GAMES].sort((a,b) => new Date(b.date) - new Date(a.date));
 
@@ -102,10 +102,10 @@
           <span class="chip done">Final</span>
           <span class="when">${g.date}</span>
         </div>
-        <p>${g.place} &middot; par ${g.par} &middot; ${g.rows.length} played${
+        <p>${g.place} &middot; ${g.tee ? g.tee.toLowerCase() + ' tees &middot; ' : ''}par ${g.par} &middot; ${g.rows.length} played${
           g.crPlaceholder
-            ? ` &middot; <span class="src" title="Par is standing in until the real course rating is supplied">rating ${g.cr}, placeholder</span>`
-            : ` &middot; rating ${g.cr}`}</p>
+            ? ` &middot; <span class="src" title="Par is standing in until the real course rating is supplied">rating ${g.cr.toFixed(1)}, placeholder</span>`
+            : ` &middot; rating ${g.cr.toFixed(1)}${g.slope ? `, slope ${g.slope}` : ''}`}</p>
       </div>
       <div class="t-scroll"><table>
         <thead><tr>${head}</tr></thead>
@@ -134,8 +134,10 @@
          official course rating, because the real figure has not been supplied yet. The ${g.date} results above are
          unaffected &mdash; gross, net and points are straight off the cards &mdash; but the handicap differentials
          built from that round will shift slightly once the true rating replaces it.`).join(' ')
-      : `<b>All ratings confirmed.</b> Every away day here carries its course's own rating, so the differentials
-         behind the handicaps are on a proper footing.`;
+      : `<b>All ratings confirmed.</b> Every away day here carries its course's own rating, taken from the club's
+         scorecard, so the differentials behind the handicaps rest on the real figure rather than a stand-in.
+         Slope is recorded where the club publishes it &mdash; Hollins Hall is 130 &mdash; but it is deliberately
+         left out of the maths, exactly as it is at Leeds.`;
   })();
 </script>
 </body>

@@ -114,6 +114,14 @@ leave it blank and inherit `Settings!B6` (69).
 The page then prints an explicit warning rather than passing par off as a rating. Clear the flag and
 set the true `cr` when the figure arrives, then reload the handicaps.
 
+`slope` is recorded where the club publishes it, and `tee` names the tees played. **Slope is never
+used.** Every differential in this society is gross minus course rating, with slope and PCC excluded
+by standing instruction — the same simplification applied at Leeds. It is held for reference only.
+
+Confirmed ratings so far: Leeds Wike Ridge (yellow) 69.0, Forest Pines 70.0, Hollins Hall (white)
+71.0 / slope 130. Away-course par and stroke index are recorded in the `Course Reference` tab of the
+tracker.
+
 ## Player profiles
 
 Every player on the register has a card. They come from two different places and the page keeps
