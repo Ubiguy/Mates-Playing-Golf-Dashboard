@@ -23,6 +23,19 @@
    Moody has a record because he has played twice as a stand-in, and Shaan has
    none because Moody played his week 1 match for him.
 
+   WHERE THEY APPEAR, AND WHY ONLY THERE. On the outstanding fixtures of the
+   current week, and nowhere else. A match already played carries its own
+   score, so a form bar beside it only repeats what the row already says; a
+   match in week 8 will be played against a record that has changed several
+   times before it is reached, so the bar shown today is not the one that will
+   matter. That leaves the games about to be played, which is the only place
+   knowing the two records tells the reader anything they cannot already see.
+   Everywhere else it was decoration, and ten weeks of it made the page noisy.
+
+   The full record lives on the Player records table of the match play page -
+   P / W / L / H / Pts, sorted, with a star for big wins. That is the place to
+   read form properly; this is a glance before a game.
+
    READ IT WITH THE SAMPLE SIZE IN MIND. This is one to three matches a player,
    so the bars show what has happened, not a settled ranking. A player with one
    big win is not yet demonstrably better than one with two ordinary wins.   */
@@ -64,6 +77,16 @@ const FX = (function () {
     byPair[(m.aSubFor || m.aPlayer) + '|' + (m.bSubFor || m.bPlayer)] = m;
   });
 
+  /* the week we are in, or the next one to start - the only week whose
+     outstanding fixtures carry form. null once the competition is over. */
+  const CURRENT = (function () {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const live = TEAM_SCHEDULE.find(function (w) {
+      const e = day(w.from); e.setDate(e.getDate() + 6); return e >= today;
+    });
+    return live ? live.week : null;
+  })();
+
   const WORD = { bw: ['big win', 'big wins'], w: ['win', 'wins'],
                  h: ['halved', 'halved'], l: ['loss', 'losses'] };
 
@@ -95,11 +118,12 @@ const FX = (function () {
       const note = why
         ? '<span class="src" title="' + esc(why) + '">sub needed</span>'
         : (opts.late ? 'not yet played' : 'to play');
+      const fa = opts.form ? pips(a) : '', fb = opts.form ? pips(b) : '';
       return '<li class="fx' + (opts.late ? ' late' : '') + '">'
         + '<span class="no">' + (i + 1) + '</span>'
-        + '<span class="fx-a">' + pips(a) + nm(a, '') + '</span>'
+        + '<span class="fx-a">' + fa + nm(a, '') + '</span>'
         + '<span class="fx-v">v</span>'
-        + '<span class="fx-b">' + nm(b, '') + pips(b) + '</span>'
+        + '<span class="fx-b">' + nm(b, '') + fb + '</span>'
         + '<span class="fx-r pending">' + note + '</span></li>';
     }
 
@@ -110,10 +134,10 @@ const FX = (function () {
     return '<li class="fx done' + (win === 'halved' ? ' halved' : '') + '">'
       + '<span class="no">' + (i + 1) + '</span>'
       + '<span class="fx-a' + (win === 'a' ? ' won' : '') + '">'
-      + pips(m.aPlayer) + nm(a, subMark(m.aPlayer, m.aSubFor)) + '</span>'
+      + nm(a, subMark(m.aPlayer, m.aSubFor)) + '</span>'
       + '<span class="fx-v">' + m.aPts + '&ndash;' + m.bPts + '</span>'
       + '<span class="fx-b' + (win === 'b' ? ' won' : '') + '">'
-      + nm(b, subMark(m.bPlayer, m.bSubFor)) + pips(m.bPlayer) + '</span>'
+      + nm(b, subMark(m.bPlayer, m.bSubFor)) + '</span>'
       + '<span class="fx-r">' + dmy(m.date) + early + '</span></li>';
   }
 
@@ -127,8 +151,8 @@ const FX = (function () {
     const done = w.pairs.filter(p => byPair[p[0] + '|' + p[1]]).length;
     const late = end < today && done < w.pairs.length;
 
-    const rows = w.pairs.map((p, i) =>
-      row(p[0], p[1], i, { late: late, early: opts.early, start: start })).join('');
+    const rows = w.pairs.map((p, i) => row(p[0], p[1], i,
+      { late: late, early: opts.early, start: start, form: w.week === CURRENT })).join('');
 
     let head = '';
     if (opts.header) {
@@ -145,14 +169,17 @@ const FX = (function () {
   /* The bars mean nothing without this, so it goes under the list once - not
      once per week card. */
   function key() {
+    if (CURRENT === null) return '';   // nothing left to play, nothing to explain
     const bar = k => '<i class="form"><b class="' + k + '"></b></i>';
     return '<div class="fx-key"><span class="fx-key-t">Form</span>'
       + '<span>' + bar('bw') + 'big win</span>'
       + '<span>' + bar('w') + 'win</span>'
       + '<span>' + bar('h') + 'halved</span>'
       + '<span>' + bar('l') + 'loss</span>'
-      + '<span class="fx-key-t">one bar per match played, oldest first</span></div>';
+      + '<span class="fx-key-t">record so far, oldest first &middot; '
+      + 'shown only on this week&rsquo;s outstanding games</span></div>';
   }
 
-  return { row: row, card: card, key: key, form: form, byPair: byPair, team: team };
+  return { row: row, card: card, key: key, form: form, byPair: byPair,
+           team: team, current: CURRENT };
 })();

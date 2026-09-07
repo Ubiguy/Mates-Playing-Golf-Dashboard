@@ -20,7 +20,7 @@
     <a href="awaygames.html">Away games</a>
     <a href="handicaps.html">Handicaps</a>
     <a href="profiles.html" aria-current="page">Player profiles</a>
-    <a class="back" href="https://sites.google.com/view/matesplayinggolf">&larr; Mates Playing Golf</a>
+    <a class="back" href="https://sites.google.com/view/mpgolf">&larr; Mates Playing Golf</a>
   </nav>
 
   <header class="masthead">
@@ -113,7 +113,7 @@
   </footer>
 </div>
 
-<script src="data.js?v=71f251c4"></script>
+<script src="data.js?v=cd71dcba"></script>
 <script>
   const REG = Object.fromEntries(REGISTER.map(r => [r.n, r]));
   const f1  = v => v.toFixed(1);
@@ -249,8 +249,13 @@
     document.getElementById('cRounds').textContent = rounds;
     document.getElementById('cImp').textContent    = imp[0];
     document.getElementById('sImp').textContent    = sgn(imp[1].net) + ` since ${imp[1].first}, on society cards`;
+    /* Counted against the register, not against SOCIETY_STATS on its own: a
+       player can have a society record without being on the books - Mustapha T
+       has the Forest Pines card but is no longer a member - and counting those
+       here would claim more cards carry a record than there are cards. */
+    const withRecord = REGISTER.filter(r => SOCIETY_STATS[r.n]).length;
     document.getElementById('stamp').innerHTML     =
-      `${REGISTER.length} cards &middot; ${Object.keys(SOCIETY_STATS).length} with a society record` +
+      `${REGISTER.length} cards &middot; ${withRecord} with a society record` +
       `<br>${egLoaded} with an England Golf export`;
   })();
 

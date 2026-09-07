@@ -24,7 +24,7 @@ Doubles Match Play (Haaris Ahmed & Shaan Ahmed), Singles Match Play and Team Gam
 still being played. The hub leads with that table, then details each competition most-recent-first.
 
 Every page carries the same nav plus a link back to the society's Google Site at
-https://sites.google.com/view/matesplayinggolf, so the pages work equally well embedded
+https://sites.google.com/view/mpgolf, so the pages work equally well embedded
 there or opened on their own.
 
 ## Updating after a round

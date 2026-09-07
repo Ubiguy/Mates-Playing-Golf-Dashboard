@@ -5,9 +5,9 @@
 
 /* ---------- Society totals (from the Rounds tab of the tracker) ------ */
 const SOCIETY = {
-  players: 30,          // players with at least one logged round
-  onBooks: 32,          // names on the handicap register
-  rounds: 359,        // scorecards logged, hole by hole
+  players: 29,          // players with at least one logged round
+  onBooks: 30,          // names on the handicap register
+  rounds: 358,        // scorecards logged, hole by hole
   firstRound: 'April 2024',
   lastRound: '6 September 2026'
 };
@@ -76,7 +76,6 @@ const VENUES = {
   'Aftab Iqbal':{play:[['Forest Pines',1],['Leeds Golf Centre — Wike Ridge',1]], extra:['Waterton Park','York']},
   'Ayaz Alam':{play:[['Leeds Golf Centre — Wike Ridge',1]], extra:[]},
   'Basharat2 Ali':{play:[['Leeds Golf Centre — Wike Ridge',12],['Forest Pines',1]], extra:['Bradford','The Mere Golf Resort & Spa','Wychwood Park']},
-  'Gazanfar Afzal':{play:[['Leeds Golf Centre — Wike Ridge',1]], extra:[]},
   'Guftar Hussain':{play:[['Leeds Golf Centre — Wike Ridge',19],['Hollins Hall',1]], extra:['Dewsbury District','Doncaster Town Moor','Stoke Rochford','Tankersley Park','Whitefield']},
   'Haaris Ahmed':{play:[['Leeds Golf Centre — Wike Ridge',4]], extra:['Farleigh-Green (Yellow & Blue)','Finchley','Foxhills Country Club & Resort- Longcross','Moor Allerton-Blackmoor','Moor Allerton-High','Moor Allerton-Lakes','Pike Hills','Rudding Park Hotel Spa & Golf Course','ScotlandDunbar','Stoneham','Tadcaster','The Alwoodley']},
   'Hamza T':{play:[['Leeds Golf Centre — Wike Ridge',2],['Forest Pines',1]], extra:[]},
@@ -86,7 +85,6 @@ const VENUES = {
   'Mahmood Sadiq':{play:[['Leeds Golf Centre — Wike Ridge',27],['Forest Pines',1],['Hollins Hall',1]], extra:[]},
   'Mansoor M':{play:[['Leeds Golf Centre — Wike Ridge',18],['Forest Pines',1],['Hollins Hall',1]], extra:[]},
   'Matt T':{play:[['Forest Pines',1]], extra:[]},
-  'Mustapha T':{play:[['Forest Pines',1]], extra:[]},
   'Nadeem Ahmed':{play:[['Leeds Golf Centre — Wike Ridge',7],['Forest Pines',1]], extra:[]},
   'Naeem Akhtar':{play:[['Leeds Golf Centre — Wike Ridge',3]], extra:[]},
   'Naveen Ahmed':{play:[['Forest Pines',1],['Hollins Hall',1],['Leeds Golf Centre — Wike Ridge',1]], extra:[]},
@@ -300,13 +298,11 @@ const REGISTER = [
   {n:'Aftab Iqbal',         nhs:6.8,   whs:9.4,     whsOfficial:true, calc:6,     rounds: 2, est:false},
   {n:'Mansoor M',           nhs:16.1,  whs:19.9,    whsOfficial:true, calc:20.9,    rounds:20, est:true},
   {n:'Tariq Javaid',        nhs:22.7, honours:[{t:'Yorkshire · Asia Cup 2026 (vice-captain)', k:'squad'}, {t:'Yorkshire · War of the Roses 2026', k:'squad'}, {t:'Highest doubles score · 45 pts · with Waseem', k:'award'}],  whs:24.1,    whsOfficial:true, calc:29.5,    rounds:14, est:false},
-  {n:'Mustapha T',          nhs:28,    whs:24,    calc:44,    rounds: 1, est:false},
   {n:'Matt T',              nhs:18.6,  whs:19,    calc:36,    rounds: 1, est:false},
   {n:'Hanif Malik',         nhs:17.6,  whs:19,    calc:56,    rounds: 1, est:false},
   {n:'Shufqat Khan',        nhs:12.7, honours:[{t:'Yorkshire · Asia Cup 2026 (vice-captain)', k:'squad'}, {t:'Yorkshire · War of the Roses 2026', k:'squad'}, {t:'Highest individual score · 40 pts', k:'award'}],  whs:15.9,    whsOfficial:true, calc:16.2,  rounds:19, est:false},
   {n:'Imran K',             nhs:14.0, honours:[{t:'Yorkshire · Asia Cup 2026', k:'squad'}, {t:'Yorkshire · War of the Roses 2026', k:'squad'}, {t:'Nearest the pin', k:'award'}],  whs:17,    whsOfficial:true, calc:18.6,  rounds:21, est:true},
   {n:'Shaan Ahmed',         nhs:18.1, honours:[{t:'Golfathon 2026', k:'charity'}],  whs:18,    calc:23.3,  rounds:15, est:false},
-  {n:'Gazanfar Afzal',      nhs:12,    whs:12,    calc:18,    rounds: 1, est:false},
   {n:'Guftar Hussain',      nhs:7.9, honours:[{t:'Yorkshire · Asia Cup 2026', k:'squad'}, {t:'Yorkshire · War of the Roses 2026', k:'squad'}],   whs:9.6,    whsOfficial:true, calc:11.7,  rounds:20, est:true},
   {n:'Raz Shafi',           nhs:10.6, honours:[{t:'Yorkshire · War of the Roses 2026', k:'squad'}],  whs:11.7,    whsOfficial:true, calc:14.2,    rounds:17, est:false},
   {n:'Afrid Iqbal',         nhs:10.6, honours:[{t:'Yorkshire · Asia Cup 2026', k:'squad'}],  whs:13.0,    calc:14.3,    rounds: 9, est:false},
@@ -371,8 +367,6 @@ const SOCIETY_STATS = {
     best:{v:24, d:'20 Apr 2025'}, mark:{v:22, d:'Apr 2025', kind:'peak'}, net:0, ev:[['Stableford rounds',1]]},
   'Basharat2 Ali':{rounds:13, first:'Apr 2024', last:'Aug 2026', idx:18.3, avg:26.3,
     best:{v:15, d:'30 Aug 2026'}, mark:{v:22, d:'Jun 2025', kind:'peak'}, net:-0.7, ev:[['Stableford rounds',8],['Strokeplay rounds',4],['Forest Pines away day',1]]},
-  'Gazanfar Afzal':{rounds:1, first:'Apr 2024', last:'Apr 2024', idx:18, avg:20,
-    best:{v:20, d:'27 Apr 2024'}, mark:{v:18, d:'Apr 2024', kind:'peak'}, net:0, ev:[['Stableford rounds',1]]},
   'Guftar Hussain':{rounds:20, first:'Apr 2024', last:'Sep 2026', idx:11.7, avg:14.9,
     best:{v:9, d:'13 Jul 2025'}, mark:{v:18, d:'Apr 2024', kind:'peak'}, net:-6.3, ev:[['Stableford rounds',15],['Strokeplay rounds',4],['Hollins Hall away day',1]]},
   'Haaris Ahmed':{rounds:4, first:'May 2025', last:'Aug 2026', idx:12.5, avg:19.9,
