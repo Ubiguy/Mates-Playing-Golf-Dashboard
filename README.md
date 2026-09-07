@@ -1,23 +1,26 @@
 # Golf Society 2026
 
-A seven-page static site. No build step, no dependencies, nothing to install —
+An eight-page static site. No build step, no dependencies, nothing to install —
 drop the folder in a repo, switch on GitHub Pages, and the society has one permanent link.
 
-**View it:** https://YOUR-USERNAME.github.io/YOUR-REPO/
+**View it:** https://ubiguy.github.io/mpgolf/
 
 ## What's here
 
 | File | What it is |
 |---|---|
-| `index.html` | **Season hub** — the five majors, then each running competition |
+| `index.html` | **Home** — the team score, this week's fixtures and the next away day, nothing else |
+| `season.html` | **Season hub** — the tournaments, the Golfathon and each championship |
 | `matchplay.html` | **Team match play** — the full Yaseen v Shufqat board |
 | `strokeplay2026.html` | **Strokeplay Singles Championship** — final standings and round by round |
 | `2025season.html` | **2025 season** — the completed Stableford series |
-| `handicaps.html` | **Handicap register** — the NHS playing handicap for all 32 players, with WHS and calculated alongside |
+| `handicaps.html` | **Handicap register** — the NHS playing handicap for all 30 players, with WHS and calculated alongside |
 | `awaygames.html` | **Away games** — tournaments played away from Leeds, each on its own par and course rating |
-| `profiles.html` | **Player profiles** — a card for all 32 players on the register, in two sections |
+| `profiles.html` | **Player profiles** — a card for every player on the register |
 | `data.js` | **All the data.** The only file you edit after a round. |
 | `style.css` | Shared styling for every page. |
+| `fx.js` | The team match play fixture rows, shared by the home and match play pages. |
+| `tools/` | The scripts the results Action runs. Refreshed by `publish.py`; not hand-edited. |
 
 The season has five majors: Stableford Singles (won by Raz Shafi), Strokeplay Singles (Sid Amin),
 Doubles Match Play (Haaris Ahmed & Shaan Ahmed), Singles Match Play and Team Games — the last two
@@ -30,11 +33,17 @@ there or opened on their own.
 ## Updating after a round
 
 Everything lives in `data.js`. Edit it, commit, and GitHub Pages picks it up within a minute —
-all seven pages recalculate themselves from it.
+all eight pages recalculate themselves from it.
 
 ### A new match play result
 
-Add a line to `MATCHES`:
+**Normally you do not touch this file at all.** The captains submit results on a
+Google Form from their phones, and a GitHub Action reads it twice an hour,
+regenerates `MATCHES` and commits. Nothing needs a PC, which is the point: results
+used to need one person at one machine with the Excel tracker open.
+
+Editing by hand still works, and is the fallback if the form is ever down. Add a
+line to `MATCHES`:
 
 ```js
 {date:'2026-09-10', aPlayer:'Nav', aSubFor:null, aPts:15,
@@ -148,3 +157,15 @@ Records under four rounds are greyed and marked `Thin record`, the same threshol
 
 Repo **Settings → Pages → Build and deployment → Deploy from a branch**, branch `main`,
 folder `/ (root)`. Save, wait a minute, and the URL above goes live.
+
+Two things publish to it:
+
+- **The captains' form**, via `.github/workflows/results.yml`. Runs twice an hour and on
+  demand, and only ever rewrites the `MATCHES` block. It needs the repository secret
+  `RESULTS_CSV_URL`, and skips quietly when that is not set.
+- **`publish.py --push`** on the tracker PC, for everything else — handicaps, rounds,
+  away days, profiles. It refuses to push when the remote is ahead, since the Action
+  writes to the same generated file and a silent rebase could drop a result.
+
+The Excel tracker is deliberately **not** in this repo. It holds CDH membership numbers
+and every player's personal record, and this is a public repository.
