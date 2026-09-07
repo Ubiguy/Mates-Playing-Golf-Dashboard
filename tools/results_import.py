@@ -25,8 +25,8 @@ was reported and when, and the site is the fold of it. If a captain fat-fingers
 a score, they submit a Correction; the wrong row stays in the log, which is
 what you want when someone asks why the score changed.
 
-SUBSTITUTES. The fixture belongs to the rostered players, so the form asks for
-them first and only then who actually played. That is the same distinction the
+SUBSTITUTES, ONE PER SIDE. The fixture belongs to the rostered players, so the
+form asks for them first and only then who actually played. That is the same distinction the
 site draws - aSubFor is the team-mate stood in for - and it is why a result can
 be matched to its scheduled week even when neither name on the card is the one
 in the fixture list.
@@ -55,8 +55,8 @@ COL = {
     'date':    'Date played',
     'apts':    'Team Yaseen points',
     'bpts':    'Team Shufqat points',
-    'subside': 'Did anyone stand in?',
-    'subwho':  'Who actually played?',
+    'suba':    'Stand-in for the Team Yaseen player',
+    'subb':    'Stand-in for the Team Shufqat player',
     'by':      'Your name',
 }
 NEW, FIX, DEL = 'New result', 'Correction', 'Delete'
@@ -152,26 +152,37 @@ def resolve(rows):
                             % (where, ap, bp))
             continue
 
+        # A stand-in per side, each its own field. Both teams can substitute in
+        # the same match - a single "did anyone stand in?" could only ever name
+        # one of them, which is exactly the case that went missing.
         a_play, b_play, a_for, b_for = a, b, None, None
-        side, who = g('subside'), g('subwho')
-        if side.lower().startswith('yes'):
+        bad = False
+        for key, rostered, mates, label in (('suba', a, team_a, 'Team Yaseen'),
+                                            ('subb', b, team_b, 'Team Shufqat')):
+            who = g(key)
             if not who:
-                problems.append('%s: a stand-in was ticked but nobody was named' % where)
-                continue
+                continue                       # nobody stood in on that side
             if who not in known:
                 problems.append('%s: stand-in %r not recognised' % (where, who))
-                continue
-            for_a = 'yaseen' in side.lower()
-            side_list = team_a if for_a else team_b
-            if who not in side_list:
+                bad = True
+                break
+            if who not in mates:
                 problems.append('%s: %s cannot stand in for the %s player - wrong team'
-                                % (where, who, 'Team Yaseen' if for_a else 'Team Shufqat'))
-                continue
-            if for_a:
+                                % (where, who, label))
+                bad = True
+                break
+            if who == rostered:
+                problems.append('%s: %s is down as standing in for themselves'
+                                % (where, who))
+                bad = True
+                break
+            if key == 'suba':
                 a_play, a_for = who, a
             else:
                 b_play, b_for = who, b
             subs_used[who] = subs_used.get(who, 0) + 1
+        if bad:
+            continue
 
         if act.startswith(NEW) and (a, b) in state:
             problems.append('%s: entered as a NEW result but %s v %s already had one'
