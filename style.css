@@ -369,6 +369,18 @@ footer b{color:var(--ink-2);font-weight:600;}
 .fx .pending{opacity:.75;}
 .fx.late .fx-r{color:var(--accent);opacity:1;}
 
+/* carried over: fixtures whose week closed without them being played.
+   Set apart from the week's own ten by a rule and a heading, and tinted with
+   the accent wash so an overdue game reads as something to act on rather than
+   as one more row in a list. */
+.wk-carry{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);}
+.carry-h{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:8px;}
+.carry-h b{font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--accent);}
+.carry-h span{font-size:.75rem;color:var(--muted);}
+.wk-carry .fx{background:var(--accent-wash);}
+.wk-carry .fx .fx-r{color:var(--accent);opacity:1;}
+
 /* the legend, once under the list rather than once per week card */
 .fx-key{display:flex;flex-wrap:wrap;align-items:center;gap:7px 16px;margin-top:12px;
   font-size:.73rem;color:var(--muted);}

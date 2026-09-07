@@ -6,7 +6,7 @@
 <title>Team Match Play</title>
 <meta name="description" content="Team Yaseen v Team Shufqat - 9-hole Stableford team match play, full round robin.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=a856bff8">
+<link rel="stylesheet" href="style.css?v=c5d8aae1">
 </head>
 <body>
 <div class="page">
@@ -160,7 +160,7 @@
 </div>
 
 <script src="data.js?v=59c2eda9"></script>
-<script src="fx.js?v=36445e7b"></script>
+<script src="fx.js?v=35840b0c"></script>
 <script>
   const isSub = (p,f) => !!f && f !== p;
   const fmtP  = v => v % 1 === 0 ? String(v) : v.toFixed(1);
@@ -384,7 +384,7 @@
     let played = 0;
     const html = TEAM_SCHEDULE.map(w => {
       played += w.pairs.filter(p => FX.byPair[p[0] + '|' + p[1]]).length;
-      return FX.card(w, {header:true, early:true});
+      return FX.card(w, {header:true, early:true, carry:true});
     }).join('');
 
     const box = document.getElementById('fixtures');

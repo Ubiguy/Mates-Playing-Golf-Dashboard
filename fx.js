@@ -87,6 +87,24 @@ const FX = (function () {
     return live ? live.week : null;
   })();
 
+  /* Fixtures whose week has closed with no result. They are not lost - the
+     pairing still has to be played - but nothing was surfacing them, so a
+     missed week just quietly shrank that week's count and was never chased.
+     Shahzad v Tariq was played a day after week 2 closed and only came to
+     light by eye. These are collected here and shown against the current
+     week, so what is outstanding travels with the fixture list. */
+  function overdue() {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const out = [];
+    TEAM_SCHEDULE.forEach(function (w) {
+      const e = day(w.from); e.setDate(e.getDate() + 6);
+      if (e >= today) return;                       // the week is still open
+      const left = w.pairs.filter(p => !byPair[p[0] + '|' + p[1]]);
+      if (left.length) out.push({ week: w.week, from: w.from, pairs: left });
+    });
+    return out;
+  }
+
   const WORD = { bw: ['big win', 'big wins'], w: ['win', 'wins'],
                  h: ['halved', 'halved'], l: ['loss', 'losses'] };
 
@@ -115,9 +133,18 @@ const FX = (function () {
 
     if (!m) {
       const why = (typeof SUB_REQUIRED !== 'undefined') && SUB_REQUIRED[a + '|' + b];
-      const note = why
-        ? '<span class="src" title="' + esc(why) + '">sub needed</span>'
-        : (opts.late ? 'not yet played' : 'to play');
+      let note;
+      if (opts.from) {
+        // carried over: the week it was due says more than 'not yet played'
+        const t = 'scheduled for week ' + opts.from + ', still to be played'
+                + (why ? ' - ' + why : '');
+        note = '<span class="src" title="' + esc(t) + '">week ' + opts.from
+             + (why ? ' &middot; sub' : '') + '</span>';
+      } else if (why) {
+        note = '<span class="src" title="' + esc(why) + '">sub needed</span>';
+      } else {
+        note = opts.late ? 'not yet played' : 'to play';
+      }
       const fa = opts.form ? pips(a) : '', fb = opts.form ? pips(b) : '';
       return '<li class="fx' + (opts.late ? ' late' : '') + '">'
         + '<span class="no">' + (i + 1) + '</span>'
@@ -154,6 +181,25 @@ const FX = (function () {
     const rows = w.pairs.map((p, i) => row(p[0], p[1], i,
       { late: late, early: opts.early, start: start, form: w.week === CURRENT })).join('');
 
+    /* Carried-over fixtures ride with the week we are in, in their own block
+       so they are never mistaken for this week's ten. */
+    let carry = '';
+    if (opts.carry && w.week === CURRENT) {
+      const items = overdue();
+      if (items.length) {
+        const n = items.reduce((t, x) => t + x.pairs.length, 0);
+        const ws = items.map(x => x.week);
+        const lbl = ws.length === 1 ? 'week ' + ws[0]
+          : 'weeks ' + ws.slice(0, -1).join(', ') + ' and ' + ws[ws.length - 1];
+        let k = 0;
+        const crows = items.map(x => x.pairs.map(p =>
+          row(p[0], p[1], k++, { late: true, from: x.week, form: true })).join('')).join('');
+        carry = '<div class="wk-carry"><div class="carry-h"><b>Carried over</b>'
+          + '<span>' + n + ' still to arrange from ' + lbl + '</span></div>'
+          + '<ul class="fx-list">' + crows + '</ul></div>';
+      }
+    }
+
     let head = '';
     if (opts.header) {
       const state = done === w.pairs.length ? 'done' : (start <= today ? 'live' : '');
@@ -163,7 +209,8 @@ const FX = (function () {
         + '</span><span class="chip ' + state + '">'
         + done + ' of ' + w.pairs.length + '</span></div>';
     }
-    return '<div class="wk">' + head + '<ul class="fx-list">' + rows + '</ul></div>';
+    return '<div class="wk">' + head + '<ul class="fx-list">' + rows + '</ul>'
+         + carry + '</div>';
   }
 
   /* The bars mean nothing without this, so it goes under the list once - not
@@ -181,5 +228,5 @@ const FX = (function () {
   }
 
   return { row: row, card: card, key: key, form: form, byPair: byPair,
-           team: team, current: CURRENT };
+           team: team, current: CURRENT, overdue: overdue };
 })();

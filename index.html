@@ -6,7 +6,7 @@
 <title>Golf Society 2026</title>
 <meta name="description" content="Mates Playing Golf - the team match play score and the next away day.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=a856bff8">
+<link rel="stylesheet" href="style.css?v=c5d8aae1">
 </head>
 <body>
 <div class="page">
@@ -85,7 +85,7 @@
 </div>
 
 <script src="data.js?v=59c2eda9"></script>
-<script src="fx.js?v=36445e7b"></script>
+<script src="fx.js?v=35840b0c"></script>
 <script>
   const fmtP = v => v % 1 === 0 ? String(v) : v.toFixed(1);
 
@@ -155,7 +155,7 @@
       day(w.from).toLocaleDateString('en-GB', {day:'numeric', month:'long'});
 
     const box = document.getElementById('weekBox');
-    box.innerHTML = FX.card(w);
+    box.innerHTML = FX.card(w, {carry:true});
     box.insertAdjacentHTML('afterend', FX.key());   // outside the grid, not a cell
   })();
 
