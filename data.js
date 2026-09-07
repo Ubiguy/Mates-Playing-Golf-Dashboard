@@ -431,8 +431,32 @@ const SOCIETY_PROFILES = [
    excluded by standing instruction.
 
    rows: [position, player, handicap played off, gross, net, Stableford points]
-   points are null where the round was logged without a points card.   */
+   points are null where the round was logged without a points card.
+
+   format:'matchplay' marks a fixture played as matches rather than cards.
+   Those have no leaderboard - rows stays empty - and carry `result`, the
+   `squad` that represented us, and any `awards`. Do not invent gross or net
+   figures for them: none were recorded.                                */
 const AWAY_GAMES = [
+  /* War of the Roses - a Yorkshire representative fixture, not a society
+     competition. Played as matches, so there is no card leaderboard. Course
+     rating, slope and tee are taken from the two squad members whose round
+     that day appears in their own England Golf record; par is not known. */
+  {venue:'Worsley GC', place:'Worsley, Manchester', date:'3 September 2026',
+   par:null, cr:69.8, tee:'Yellow', slope:128, crPlaceholder:false, hasPoints:false,
+   format:'matchplay', result:'Yorkshire won 4-2',
+   title:'War of the Roses 2026', side:'Yorkshire',
+   squad:['Waseem Goldenboy','Guftar Hussain','Raz Shafi','Yaseen Mohammed','Imran K',
+          'Shufqat Khan','Basharat2 Ali','Sid Amin','Shazad Hussain','Tariq Javaid'],
+   awards:[['Highest doubles score, 45 pts','Waseem Goldenboy & Tariq Javaid'],
+           ['Highest individual score, 40 pts','Shufqat Khan'],
+           ['Nearest the pin','Imran K']],
+   note:'Two of the squad have this round in their England Golf record — ' +
+        'Yaseen Mohammed an adjusted gross of 86 and Sid Amin 98. No society ' +
+        'scorecards were collected, so there is no leaderboard and these rounds ' +
+        'are not in the handicap tracker.',
+   rows:[]},
+
   {venue:'Hollins Hall GC', place:'Baildon, BD17 7QW', date:'6 September 2026', par:71, cr:71.0, tee:'White', slope:130, crPlaceholder:false, hasPoints:true,
    rows:[
     [1,'Mahmood Sadiq',20,94,74,33],

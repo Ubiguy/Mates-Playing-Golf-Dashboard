@@ -66,7 +66,7 @@
   </footer>
 </div>
 
-<script src="data.js?v=e3611a15"></script>
+<script src="data.js?v=b7408d0e"></script>
 <script>
   const GAMES = [...AWAY_GAMES].sort((a,b) => new Date(b.date) - new Date(a.date));
 
@@ -79,18 +79,25 @@
       if (best === null || r[4] < best.net) best = {net:r[4], who:r[1], venue:g.venue};
     }));
     document.getElementById('cDays').textContent    = GAMES.length;
-    document.getElementById('sDays').textContent    = GAMES.map(g => g.venue.replace(' GC','')).join(' and ');
+    const names = GAMES.map(g => g.venue.replace(' GC',''));
+    document.getElementById('sDays').textContent    = names.length > 1
+      ? names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1]
+      : names[0];
     document.getElementById('cRounds').textContent  = rounds;
     document.getElementById('cLatest').textContent  = latest.venue.replace(' GC','');
     document.getElementById('sLatest').textContent  = latest.date;
     document.getElementById('cBest').textContent    = best.net;
     document.getElementById('sBest').textContent    = best.who + ', ' + best.venue.replace(' GC','');
+    const mp = GAMES.filter(g => g.format === 'matchplay').length;
     document.getElementById('stamp').innerHTML      =
-      `${GAMES.length} away day${GAMES.length === 1 ? '' : 's'} &middot; ${rounds} rounds<br>each on its own course rating`;
+      `${GAMES.length} away day${GAMES.length === 1 ? '' : 's'} &middot; ${rounds} rounds` +
+      (mp ? ` &middot; ${mp} played as matches` : '') +
+      `<br>each on its own course rating`;
   })();
 
   /* ---------- one section per away day ---------- */
   document.getElementById('games').innerHTML = GAMES.map(g => {
+    if (g.format === 'matchplay') return matchplaySection(g);
     const winner = g.rows[0];
     const head = g.hasPoints
       ? `<th class="rk">#</th><th class="nm">Player</th><th>NHS</th><th>Gross</th><th>Net</th><th>Points</th>`
@@ -125,6 +132,31 @@
       } ${g.rows.length} players out.</p>
     </section>`;
   }).join('');
+
+  /* A representative fixture played as matches: a result and a squad, no cards.
+     Nothing here is invented - if a figure was not recorded, it is not shown. */
+  function matchplaySection(g){
+    return `<section>
+      <div class="head">
+        <div class="head-l">
+          <h2>${g.venue}</h2>
+          <span class="chip done">Final</span>
+          <span class="when">${g.date}</span>
+        </div>
+        <p>${g.title ? `<b>${g.title}</b> &middot; ` : ''}${g.place}${
+          g.tee ? ` &middot; ${g.tee.toLowerCase()} tees` : ''} &middot; rating ${g.cr.toFixed(1)}${
+          g.slope ? `, slope ${g.slope}` : ''} &middot; played as matches, no cards collected</p>
+      </div>
+      <p class="after"><b>${g.result}.</b> ${g.side ? g.side + ' squad, ' : ''}${g.squad.length} of ours out:
+        ${g.squad.join(', ')}.</p>
+      ${g.awards && g.awards.length ? `<div class="t-scroll"><table>
+        <thead><tr><th class="nm">On the day</th><th class="nm">Player</th></tr></thead>
+        <tbody>${g.awards.map(([what, who]) => `<tr class="win">
+          <td class="nm">${what}</td><td class="nm">${who}</td></tr>`).join('')}</tbody>
+      </table></div>` : ''}
+      ${g.note ? `<p class="after">${g.note}</p>` : ''}
+    </section>`;
+  }
 
   /* ---------- placeholder-rating warning, only if one is in play ---------- */
   (function(){
