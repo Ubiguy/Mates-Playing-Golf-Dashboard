@@ -112,38 +112,39 @@ const VENUES = {
    aSubFor / bSubFor: null normally. A name there means that player
    stood in for a team-mate, and it is the team-mate's name.
 
-   Handicaps are the NHS figures from REGISTER, which is the single
-   source - the short name each maps to is in the comment.        */
+   Handicaps are the NHS figures from REGISTER, the single source.
+   A third entry 'comp' marks a handicap agreed for this competition
+   only, which is NOT that player's NHS.                          */
 const ROSTER_A = [
-  ['Yaseen (C)',13.4], // Yaseen Mohammed
-  ['Amriaz',10.6],     // Afrid Iqbal
-  ['Bash',15.9],       // Basharat2 Ali
-  ['Imran',14.0],      // Imran K
-  ['Mansoor',16.1],    // Mansoor M
-  ['Moody',17.0],      // Mahmood Sadiq
-  ['Nav',18.7],        // Naveen Ahmed
-  ['Shaan',18.1],      // Shaan Ahmed
-  ['Shahzad',19.9],    // Shazad Hussain
-  ['Waseem',15.6]     // Waseem Goldenboy
+  ['Yaseen (C)',13.4],       // Yaseen Mohammed
+  ['Amriaz',10.6],           // Afrid Iqbal
+  ['Bash',15.9],             // Basharat2 Ali
+  ['Imran',14.0],            // Imran K
+  ['Mansoor',16.1],          // Mansoor M
+  ['Moody',17.0],            // Mahmood Sadiq
+  ['Nav',18.7],              // Naveen Ahmed
+  ['Shaan',18.1],            // Shaan Ahmed
+  ['Shahzad',19.9],          // Shazad Hussain
+  ['Waseem',15.6]           // Waseem Goldenboy
 ];
 const ROSTER_B = [
-  ['Shufqat (C)',12.7], // Shufqat Khan
-  ['Gaff',7.9],         // Guftar Hussain
-  ['Haaris',12.4],      // Haaris Ahmed
-  ['Jabar',15.7],       // Jabar Mughal
-  ['Tab',10.1],         // Tab Rafique
-  ['Raz',10.6],         // Raz Shafi
-  ['Raza',28.1],        // Raza Efendi
-  ['Sam',16.9],         // Sameer Ahmed
-  ['Sid',17.2],         // Sid Amin
-  ['Tariq',22.7]       // Tariq Javaid
+  ['Shufqat (C)',12.7],       // Shufqat Khan
+  ['Gaff',7.9],               // Guftar Hussain
+  ['Haaris',12.4],            // Haaris Ahmed
+  ['Jabar',15.7],             // Jabar Mughal
+  ['Tab',10.1],               // Tab Rafique
+  ['Raz',10.6],               // Raz Shafi
+  ['Raza',36.0,'comp'],       // Raza Efendi - team games only, NHS is 28.1
+  ['Sam',16.9],               // Sameer Ahmed
+  ['Sid',17.2],               // Sid Amin
+  ['Tariq',22.7]             // Tariq Javaid
 ];
 const BIG_WIN = 5;   // margin that turns a win into 2 points
 
 const MATCHES = [
   {date:'2026-08-24',aPlayer:'Yaseen (C)',aSubFor:null,aPts:13,bPlayer:'Shufqat (C)',bSubFor:null,bPts:18},
   {date:'2026-08-25',aPlayer:'Mansoor',aSubFor:'Moody',aPts:13,bPlayer:'Raz',bSubFor:null,bPts:10},
-  {date:'2026-08-25',aPlayer:'Moody',aSubFor:null,aPts:14,bPlayer:'Sam',bSubFor:null,bPts:10},
+  {date:'2026-08-25',aPlayer:'Moody',aSubFor:'Shaan',aPts:14,bPlayer:'Sam',bSubFor:null,bPts:10},
   {date:'2026-08-25',aPlayer:'Imran',aSubFor:null,aPts:17,bPlayer:'Jabar',bSubFor:null,bPts:12},
   {date:'2026-08-25',aPlayer:'Waseem',aSubFor:null,aPts:10,bPlayer:'Raz',bSubFor:'Tariq',bPts:11},
   {date:'2026-08-25',aPlayer:'Mansoor',aSubFor:null,aPts:10,bPlayer:'Tab',bSubFor:null,bPts:16},
@@ -162,6 +163,30 @@ const MATCHES = [
   {date:'2026-09-03',aPlayer:'Imran',aSubFor:null,aPts:13,bPlayer:'Tab',bSubFor:null,bPts:16},
   {date:'2026-09-05',aPlayer:'Moody',aSubFor:null,aPts:13,bPlayer:'Raza',bSubFor:null,bPts:15}
 ];
+
+/* The published 10-week round robin. A match may be played ahead of
+   its week by agreement, so a result can carry a date earlier than
+   the week it belongs to.                                        */
+const TEAM_SCHEDULE = [
+  {week:1, from:'2026-08-24', pairs:[['Yaseen (C)','Shufqat (C)'],['Amriaz','Gaff'],['Bash','Haaris'],['Imran','Jabar'],['Mansoor','Tab'],['Moody','Raz'],['Nav','Raza'],['Shaan','Sam'],['Shahzad','Sid'],['Waseem','Tariq']]},
+  {week:2, from:'2026-08-31', pairs:[['Yaseen (C)','Gaff'],['Amriaz','Haaris'],['Bash','Jabar'],['Imran','Tab'],['Mansoor','Raz'],['Moody','Raza'],['Nav','Sam'],['Shaan','Sid'],['Shahzad','Tariq'],['Waseem','Shufqat (C)']]},
+  {week:3, from:'2026-09-07', pairs:[['Yaseen (C)','Haaris'],['Amriaz','Jabar'],['Bash','Tab'],['Imran','Raz'],['Mansoor','Raza'],['Moody','Sam'],['Nav','Sid'],['Shaan','Tariq'],['Shahzad','Shufqat (C)'],['Waseem','Gaff']]},
+  {week:4, from:'2026-09-14', pairs:[['Yaseen (C)','Jabar'],['Amriaz','Tab'],['Bash','Raz'],['Imran','Raza'],['Mansoor','Sam'],['Moody','Sid'],['Nav','Tariq'],['Shaan','Shufqat (C)'],['Shahzad','Gaff'],['Waseem','Haaris']]},
+  {week:5, from:'2026-09-21', pairs:[['Yaseen (C)','Tab'],['Amriaz','Raz'],['Bash','Raza'],['Imran','Sam'],['Mansoor','Sid'],['Moody','Tariq'],['Nav','Shufqat (C)'],['Shaan','Gaff'],['Shahzad','Haaris'],['Waseem','Jabar']]},
+  {week:6, from:'2026-09-28', pairs:[['Yaseen (C)','Raz'],['Amriaz','Raza'],['Bash','Sam'],['Imran','Sid'],['Mansoor','Tariq'],['Moody','Shufqat (C)'],['Nav','Gaff'],['Shaan','Haaris'],['Shahzad','Jabar'],['Waseem','Tab']]},
+  {week:7, from:'2026-10-05', pairs:[['Yaseen (C)','Raza'],['Amriaz','Sam'],['Bash','Sid'],['Imran','Tariq'],['Mansoor','Shufqat (C)'],['Moody','Gaff'],['Nav','Haaris'],['Shaan','Jabar'],['Shahzad','Tab'],['Waseem','Raz']]},
+  {week:8, from:'2026-10-12', pairs:[['Yaseen (C)','Sam'],['Amriaz','Sid'],['Bash','Tariq'],['Imran','Shufqat (C)'],['Mansoor','Gaff'],['Moody','Haaris'],['Nav','Jabar'],['Shaan','Tab'],['Shahzad','Raz'],['Waseem','Raza']]},
+  {week:9, from:'2026-10-19', pairs:[['Yaseen (C)','Sid'],['Amriaz','Tariq'],['Bash','Shufqat (C)'],['Imran','Gaff'],['Mansoor','Haaris'],['Moody','Jabar'],['Nav','Tab'],['Shaan','Raz'],['Shahzad','Raza'],['Waseem','Sam']]},
+  {week:10, from:'2026-10-26', pairs:[['Yaseen (C)','Tariq'],['Amriaz','Shufqat (C)'],['Bash','Gaff'],['Imran','Haaris'],['Mansoor','Jabar'],['Moody','Tab'],['Nav','Raz'],['Shaan','Raza'],['Shahzad','Sam'],['Waseem','Sid']]}
+];
+
+/* Fixtures known in advance to need a stand-in, with the reason, so
+   the fixture list can say so rather than showing them as ordinary
+   matches still to arrange.                                      */
+const SUB_REQUIRED = {
+  'Moody|Raz':'Moody does not play Raz',
+  'Moody|Sam':'Moody does not play Sam'
+};
 
 /* ---------- Stableford Singles Championship 2026 ----------
    The society's Stableford singles major, won by Raz Shafi.

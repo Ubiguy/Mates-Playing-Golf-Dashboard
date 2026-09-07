@@ -4,15 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Golf Society 2026</title>
-<meta name="description" content="Golf society season hub - the 2026 season tournaments, representative fixtures, team match play and championship standings.">
+<meta name="description" content="Mates Playing Golf - the team match play score and the next away day.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=3df7bec5">
+<link rel="stylesheet" href="style.css?v=d150f0e6">
 </head>
 <body>
 <div class="page">
 
   <nav class="sitenav">
-    <a href="index.html" aria-current="page">Season hub</a>
+    <a href="index.html" aria-current="page">Home</a>
+    <a href="season.html">2026 season</a>
     <a href="matchplay.html">Team match play</a>
     <a href="strokeplay2026.html">Strokeplay Singles</a>
     <a href="2025season.html">2025 season</a>
@@ -24,18 +25,11 @@
 
   <header class="masthead">
     <div>
-      <div class="eyebrow">Season hub &middot; most recent competition first</div>
+      <div class="eyebrow">Mates Playing Golf</div>
       <h1>Golf Society 2026</h1>
     </div>
     <div class="stamp" id="stamp"></div>
   </header>
-
-  <div class="strip">
-    <div class="stat"><span class="k">Tournaments running</span><span class="v num" id="sLive">0</span><span class="sub" id="sLiveWho"></span></div>
-    <div class="stat"><span class="k">Players on the books</span><span class="v num" id="sPlayers">0</span><span class="sub">see the handicap register</span></div>
-    <div class="stat"><span class="k">Scorecards logged</span><span class="v num" id="sRounds">0</span><span class="sub" id="sSince"></span></div>
-    <div class="stat"><span class="k">Lowest net round</span><span class="v num" id="sBest">0</span><span class="sub" id="sBestWho"></span></div>
-  </div>
 
   <section>
     <div class="head">
@@ -60,94 +54,34 @@
     <p class="mp-note" id="mpNote"></p>
   </section>
 
-  <section>
+  <section id="next" hidden>
     <div class="head">
       <div class="head-l">
-        <h2>2026 Season Tournaments</h2>
-        <span class="when" id="majorsWhen"></span>
+        <h2 id="nextTitle">Next away day</h2>
+        <span class="chip done">Booked</span>
+        <span class="when" id="nextWhen"></span>
       </div>
-      <p id="majorsLead"></p>
+      <p>Once the day has been played it drops off here and moves to the away games page</p>
     </div>
-    <div class="t-scroll"><table id="majors"></table></div>
-  </section>
-
-  <section>
-    <div class="head">
-      <div class="head-l">
-        <h2 id="gaTitle"></h2>
-        <span class="chip done">Charity</span>
-        <span class="when" id="gaWhen"></span>
-      </div>
-      <p id="gaLead"></p>
-    </div>
-    <div class="ga-players" id="golfathon"></div>
-    <p class="after" id="gaNote"></p>
-  </section>
-
-
-  <section>
-    <div class="head">
-      <div class="head-l">
-        <h2>Strokeplay Singles Championship</h2>
-        <span class="chip done">Final</span>
-        <span class="when">9 rounds &middot; Jul&ndash;Aug 2026</span>
-      </div>
-      <p>Average of your best 6 net rounds &middot; 6 rounds needed to qualify</p>
-    </div>
-    <div class="t-scroll"><table id="strokeplay"></table></div>
-    <p class="after" id="spNote"></p>
-  </section>
-
-  <section>
-    <div class="head">
-      <div class="head-l">
-        <h2>Stableford Singles Championship</h2>
-        <span class="chip done">Final</span>
-        <span class="when">13 rounds &middot; Mar&ndash;Jun 2026</span>
-      </div>
-      <p>1st = 12 points, down one per place, nothing below 13th</p>
-    </div>
-    <div class="bars" id="league"></div>
-    <p class="after" id="leagueNote"></p>
-  </section>
-
-  <section>
-    <div class="head">
-      <div class="head-l"><h2>Lowest net rounds</h2></div>
-      <p>Best cards anyone has put in, across every competition</p>
-    </div>
-    <div class="cards" id="best"></div>
+    <div class="cards" id="nextCards"></div>
   </section>
 
   <footer>
-    <div><b>Where the numbers come from.</b> Stroke play and Stableford figures are computed from hole-by-hole scorecards in the society tracker. Net = gross total minus the handicap played off that day.</div>
-    <div><b>The Stableford Singles.</b> The league table for these 13 rounds was read off leaderboard screenshots, and Game 02 and Game 05 were captured only down to 7th place. Full hole-by-hole scorecards have since been logged for Games 01 to 05, so those five now feed the handicap calculation; the remaining eight still sit outside it.</div>
-    <div><b>Earlier seasons.</b> The 2025 Stableford series &mdash; fourteen rounds, won by Shaan Ahmed &mdash; has its own page. Handicaps are on the register. Three systems run in parallel: NHS, the society's own internal handicap and the one everyone plays off; WHS, the official England Golf index; and a calculated figure worked out from the rounds actually submitted. Only NHS is played off.</div>
+    <div><b>Everything else.</b> The season's tournaments, the Golfathon and the championship standings are on the <a href="season.html">2026 season</a> page. Handicaps are on the <a href="handicaps.html">register</a> and every player has a <a href="profiles.html">profile</a>.</div>
+    <div><b>Handicaps.</b> Three systems run in parallel: NHS, the society's own internal handicap and the one everyone plays off; WHS, the official England Golf index; and a calculated figure worked out from the rounds actually submitted. Only NHS is played off.</div>
   </footer>
 </div>
 
-<script src="data.js?v=68a9a39f"></script>
+<script src="data.js?v=71f251c4"></script>
 <script>
   const fmtP = v => v % 1 === 0 ? String(v) : v.toFixed(1);
 
-  /* ---------- society totals ---------- */
-  (function(){
-    document.getElementById('stamp').innerHTML =
-      `${SOCIETY.onBooks} players &middot; ${SOCIETY.rounds} scorecards<br>Last round ${SOCIETY.lastRound}`;
-    const live = MAJORS.filter(m => m[1] === 'live');
-    document.getElementById('sLive').textContent = live.length;
-    document.getElementById('sLiveWho').textContent = live.map(m => m[0]).join(' & ');
-    document.getElementById('sPlayers').textContent = SOCIETY.onBooks;
-    document.getElementById('sRounds').textContent = SOCIETY.rounds;
-    document.getElementById('sSince').textContent = 'hole by hole since ' + SOCIETY.firstRound;
-    const low = Math.min(...BEST.map(b => b[1]));
-    const who = BEST.filter(b => b[1] === low).map(b => b[0]);
-    document.getElementById('sBest').textContent = low;
-    document.getElementById('sBestWho').textContent =
-      who.length > 1 ? who.join(' & ') : who[0] + ', ' + BEST.find(b => b[1] === low)[4].replace(/ \d{4}$/,'');
-  })();
+  /* ---------- the stamp ---------- */
+  document.getElementById('stamp').innerHTML =
+    `${SOCIETY.onBooks} players &middot; ${SOCIETY.rounds} scorecards<br>` +
+    `Last round ${SOCIETY.lastRound}`;
 
-  /* ---------- team match play summary ---------- */
+  /* ---------- team match play, the headline ---------- */
   (function(){
     const isSub = (p,f) => !!f && f !== p;
     let a = 0, b = 0;
@@ -175,87 +109,46 @@
       `<a href="matchplay.html">Full match play board &rarr;</a>`;
   })();
 
-  /* ---------- stroke play standings ---------- */
+  /* ---------- the next away day ----------
+     Strictly what is still to come: a fixture shows on the day itself and is
+     gone the morning after, without anyone republishing the site, because the
+     comparison runs in the reader's browser every time the page loads. A day
+     that has been played but not yet scored is deliberately NOT shown here -
+     it is no longer news - but it stays on the away games page marked as
+     awaiting cards so it cannot be forgotten. */
   (function(){
-    const ranks = STROKEPLAY.map(r => r[0]);
-    document.getElementById('strokeplay').innerHTML =
-      `<thead><tr><th class="rk">#</th><th class="nm">Player</th><th>Rounds</th>
-        <th>Best 6 total</th><th>Average net</th></tr></thead><tbody>` +
-      STROKEPLAY.map(r => `<tr class="${r[0] === 1 ? 'win' : ''}">
-          <td class="rk">${r[0]}${ranks.filter(x => x === r[0]).length > 1 ? '<span class="tie">T</span>' : ''}</td>
-          <td class="nm">${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td>
-          <td class="key">${r[4].toFixed(2)}</td></tr>`).join('') + `</tbody>`;
-    document.getElementById('spNote').innerHTML =
-      `<b>${STROKEPLAY[0][1]}</b> takes the championship on ${STROKEPLAY[0][4].toFixed(2)}. Positions marked T are shared. ` +
-      `Short of the 6-round minimum: ` + SP_UNRANKED.map(u => `${u[0]} (${u[1]})`).join(', ') +
-      `. <a href="strokeplay2026.html">Round by round &rarr;</a>`;
+    const F = (typeof FIXTURES !== 'undefined' ? FIXTURES : []);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const day = d => new Date(d + 'T00:00:00');
+    const soon = F.filter(f => day(f.date) >= today).sort((x,y) => day(x.date) - day(y.date));
+    if (!soon.length) return;                 // nothing booked: the block stays hidden
+
+    const fmt = d => day(d).toLocaleDateString('en-GB',
+      {weekday:'long', day:'numeric', month:'long'});
+    const away = d => Math.round((day(d) - today) / 86400000);
+    const when = n => n === 0 ? 'today' : n === 1 ? 'tomorrow' : `in ${n} days`;
+
+    document.getElementById('next').hidden = false;
+    document.getElementById('nextTitle').textContent =
+      soon.length === 1 ? 'Next away day' : 'Next away days';
+    document.getElementById('nextWhen').textContent =
+      soon.length === 1 ? when(away(soon[0].date))
+                        : `${soon.length} booked · next ${when(away(soon[0].date))}`;
+
+    document.getElementById('nextCards').innerHTML = soon.map(f => `
+      <div class="card">
+        <span class="net num" style="font-size:1.05rem">${fmt(f.date)}</span>
+        <span class="who">${f.venue}</span>
+        <span class="sub">${[f.place, f.note].filter(Boolean).join(' &middot; ')}</span>
+        <span class="sub">${f.tee ? f.tee.toLowerCase() + ' tees' : 'tee to confirm'}${
+          f.cr !== null ? ` &middot; rating ${f.cr.toFixed(1)}` : ' &middot; rating to follow'}</span>
+      </div>`).join('');
   })();
-
-  /* ---------- league points ---------- */
-  (function(){
-    const max = Math.max(...LEAGUE.map(r => r[1]));
-    document.getElementById('league').innerHTML = LEAGUE.map(([n,p,r],i) => `
-      <span class="nm"><span class="rk">${i+1}</span>${n}</span>
-      <span class="track"><span class="fill${i === 0 ? ' top' : ''}" style="width:${(p/max*100).toFixed(1)}%"
-        title="${n}: ${p} points from ${r} rounds"></span></span>
-      <span class="val num">${p}<small>${r} rds</small></span>`).join('');
-    const played = LEAGUE.reduce((s,r) => s + r[2], 0);
-    document.getElementById('leagueNote').textContent =
-      `${LEAGUE[0][0]} takes the championship on ${LEAGUE[0][1]} points from ${LEAGUE[0][2]} rounds. ` +
-      `${LEAGUE.length} players, ${played} entries across the 13 rounds. Totals are raw points rather ` +
-      `than a best-of-N, so turning up counts.`;
-  })();
-
-  /* ---------- the majors, plus the representative fixtures ---------- */
-  (function(){
-    const done = MAJORS.filter(m => m[1] === 'done').length;
-    const rep     = MAJORS.filter(m => /representative/.test(m[3] || '')).length;
-    const charity = MAJORS.filter(m => /^Charity/.test(m[3] || '')).length;
-    const soc     = MAJORS.length - rep - charity;
-    const extras  = [];
-    if (rep) extras.push(`${rep} Yorkshire representative fixture${rep === 1 ? '' : 's'}`);
-    if (charity) extras.push(`${charity} charity event${charity === 1 ? '' : 's'}`);
-    document.getElementById('majorsWhen').textContent =
-      `${done} of ${MAJORS.length} decided`;
-    document.getElementById('majorsLead').textContent =
-      `${soc} society majors` +
-      (extras.length ? ', plus ' + extras.join(' and ') : '') +
-      ` — ${MAJORS.length - done} still being played`;
-    document.getElementById('majors').innerHTML =
-      `<thead><tr><th class="nm">Tournament</th><th class="nm">Status</th>
-        <th class="nm">Champion / result</th></tr></thead><tbody>` +
-      MAJORS.map(([name, status, champ, note, link]) => `<tr class="${champ ? 'win' : ''}">
-          <td class="nm">${link ? `<a href="${link}">${name}</a>` : name}
-            <span class="major-note">${note}</span></td>
-          <td class="nm"><span class="chip ${status}">${status === 'done' ? 'Complete' : 'Playing'}</span></td>
-          <td class="nm">${champ || '<span class="pending">still to be decided</span>'}</td>
-        </tr>`).join('') + `</tbody>`;
-  })();
-
-  /* ---------- the Golfathon ----------
-     A charity day, so the page carries the event and the players who took part.
-     The round-by-round cards are held in the tracker, not shown here. */
-  (function(){
-    const G = GOLFATHON;
-    document.getElementById('gaTitle').textContent = G.event;
-    document.getElementById('gaWhen').textContent  = G.date;
-    document.getElementById('gaLead').textContent  =
-      `${G.venue}, par ${G.par} · ${G.format} · in aid of ${G.charity}`;
-    document.getElementById('gaNote').textContent  = G.note;
-
-    document.getElementById('golfathon').innerHTML =
-      `<span class="lbl">Who took part</span><ul>` +
-      G.players.map(n => `<li>${n}</li>`).join('') + `</ul>`;
-  })();
-
-  /* ---------- lowest net rounds ---------- */
-  document.getElementById('best').innerHTML = BEST.map(([p,net,gross,ev,d]) => `
-    <div class="card">
-      <span class="net num">${net}</span>
-      <span class="who">${p}</span>
-      <span class="meta">${gross} gross &middot; ${ev}</span>
-      <span class="meta">${d}</span>
-    </div>`).join('');
 </script>
+<style>
+  #nextCards .card{gap:3px;}
+  #nextCards .who{font-weight:600;font-size:1rem;}
+  #nextCards .sub{font-size:.82rem;color:var(--muted);}
+</style>
 </body>
 </html>

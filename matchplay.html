@@ -6,13 +6,14 @@
 <title>Team Match Play</title>
 <meta name="description" content="Team Yaseen v Team Shufqat - 9-hole Stableford team match play, full round robin.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=3df7bec5">
+<link rel="stylesheet" href="style.css?v=d150f0e6">
 </head>
 <body>
 <div class="page">
 
   <nav class="sitenav">
-    <a href="index.html">Season hub</a>
+    <a href="index.html">Home</a>
+    <a href="season.html">2026 season</a>
     <a href="matchplay.html" aria-current="page">Team match play</a>
     <a href="strokeplay2026.html">Strokeplay Singles</a>
     <a href="2025season.html">2025 season</a>
@@ -104,15 +105,61 @@
     <div class="grid-scroll"><table class="pg" id="pg"></table></div>
   </section>
 
+  <section>
+    <div class="head">
+      <div class="head-l">
+        <h2>Fixtures</h2>
+        <span class="when" id="fxWhen"></span>
+      </div>
+      <p>The full round robin. A match may be played ahead of its week by agreement, so a
+        result can appear before the week it belongs to.</p>
+    </div>
+    <div class="weeks" id="fixtures"></div>
+  </section>
+
+  <section>
+    <div class="head">
+      <div class="head-l"><h2>Competition rules</h2></div>
+      <p>Agreed at the start of the competition</p>
+    </div>
+    <div class="note">
+      <b>1. Format.</b> All matches are 9 holes &mdash; the front 9 &mdash; played as Stableford
+      off full handicap.
+      <br><br>
+      <b>2. Match points.</b> 1 point for a win, &frac12; for a draw, 0 for a loss.
+      <br><br>
+      <b>3. Bonus point.</b> A player winning by more than 4 Stableford points takes an
+      additional 1 bonus point.
+      <br><br>
+      <b>4. Substitutions and fixture flexibility.</b> If a player cannot fulfil a fixture the
+      captain may replace them with another member of the same team, but no player may stand in
+      more than twice across the competition. Matches may also be played ahead of their week
+      where both players agree. Captains will accommodate players wherever they can,
+      particularly around holidays &mdash; tell your captain as early as you can.
+      <br><br>
+      <b>5. Spirit of the competition.</b> This is a friendly team competition, to be played
+      with good humour, sportsmanship and respect for your opponent.
+      <br><br>
+      <b>6. Dinner and the individual prize.</b> The losing team takes the winning team out for
+      dinner. A trophy goes to the individual with the highest total points across the
+      competition.
+      <br><br>
+      <b>7. Winning team.</b> The winning team receives trophies at the end of the competition.
+      <br><br>
+      <b>8. Disputes.</b> Any dispute over fixtures, results or rules is settled by the two
+      captains, whose decision is final.
+    </div>
+  </section>
+
   <footer>
     <div><b>Scoring.</b> Win 1 pt. Win by 5 or more Stableford points 2 pts. Halved match 0.5 each. Loss 0.</div>
     <div><b>Substitutes.</b> A stand-in's result counts for the team and for their own record, but the rostered player's own pairing stays open until they play it themselves.</div>
-    <div><b>Handicaps.</b> Every handicap shown here is the player's current NHS handicap, the society's reference figure. It is listed for context &mdash; matches are settled on the Stableford points recorded on the card.</div>
-    <div><b>Source.</b> The Match Log tab of Team_Matchplay_Leaderboard.xlsx, mirrored into <code>data.js?v=68a9a39f</code>.</div>
+    <div><b>Handicaps.</b> Handicaps here are the player's current NHS figure from the register, except where marked <span class="src">comp</span> &mdash; a handicap agreed for this competition only, which does not change that player's NHS anywhere else. Matches are settled on the Stableford points recorded on the card.</div>
+    <div><b>Source.</b> The Match Log tab of Team_Matchplay_Leaderboard.xlsx, mirrored into <code>data.js?v=71f251c4</code>.</div>
   </footer>
 </div>
 
-<script src="data.js?v=68a9a39f"></script>
+<script src="data.js?v=71f251c4"></script>
 <script>
   const isSub = (p,f) => !!f && f !== p;
   const fmtP  = v => v % 1 === 0 ? String(v) : v.toFixed(1);
@@ -137,8 +184,11 @@
   const donePairs = new Set(M.filter(m => !m.aIsSub && !m.bIsSub).map(m => m.aPlayer + '|' + m.bPlayer));
   const TOTAL_PAIRS = ROSTER_A.length * ROSTER_B.length;
 
+  /* A roster entry is [name, handicap] or [name, handicap, 'comp'] where the
+     figure was agreed for this competition and is NOT that player's NHS. */
   function records(roster, side){
-    const hcp = Object.fromEntries(roster);
+    const hcp = Object.fromEntries(roster.map(r => [r[0], r[1]]));
+    const comp = new Set(roster.filter(r => r[2] === 'comp').map(r => r[0]));
     const names = new Set(roster.map(r => r[0]));
     M.forEach(m => names.add(side === 'A' ? m.aPlayer : m.bPlayer));
     return [...names].map(name => {
@@ -149,7 +199,8 @@
       const stars = mine.filter(m => m.big && m.winner === side).length;
       const pts = mine.reduce((s,m) => s + (side === 'A' ? m.aTeam : m.bTeam), 0);
       const avg = mine.length ? mine.reduce((s,m) => s + (side === 'A' ? m.aPts : m.bPts), 0) / mine.length : null;
-      return {name, hcp: hcp[name], p: mine.length, won, lost, h, stars, pts, avg};
+      return {name, hcp: hcp[name], comp: comp.has(name),
+              p: mine.length, won, lost, h, stars, pts, avg};
     }).sort((x,y) => y.pts - x.pts || y.won - x.won || y.p - x.p || x.name.localeCompare(y.name));
   }
 
@@ -157,8 +208,9 @@
   const lastDate = M.reduce((d,m) => m.date > d ? m.date : d, M[0].date);
   document.getElementById('stamp').innerHTML =
     M.length + ' matches played<br>Latest card ' + fmtD(lastDate) + ' 2026';
-  document.getElementById('capA').innerHTML = 'Captain Yaseen &middot; NHS ' + ROSTER_A[0][1].toFixed(1);
-  document.getElementById('capB').innerHTML = 'Captain Shufqat &middot; NHS ' + ROSTER_B[0][1].toFixed(1);
+  const capHcp = r => r[1].toFixed(1) + (r[2] === 'comp' ? ' (competition)' : '');
+  document.getElementById('capA').innerHTML = 'Captain Yaseen &middot; NHS ' + capHcp(ROSTER_A[0]);
+  document.getElementById('capB').innerHTML = 'Captain Shufqat &middot; NHS ' + capHcp(ROSTER_B[0]);
   document.getElementById('scoreA').textContent = fmtP(totalA);
   document.getElementById('scoreB').textContent = fmtP(totalB);
   if (totalA !== totalB) document.getElementById(totalA > totalB ? 'sideA' : 'sideB').classList.add('lead');
@@ -265,10 +317,11 @@
   /* ---------- player tables ---------- */
   function renderTable(el, rows){
     el.innerHTML = `<thead><tr>
-        <th class="nm">Player</th><th>NHS</th><th>P</th><th>W</th><th>L</th><th>H</th><th>Pts</th><th>Avg</th>
+        <th class="nm">Player</th><th>Handicap</th><th>P</th><th>W</th><th>L</th><th>H</th><th>Pts</th><th>Avg</th>
       </tr></thead><tbody>` + rows.map(r => `<tr class="${r.p ? '' : 'idle'}">
         <td class="nm">${r.name}</td>
-        <td>${r.hcp != null ? r.hcp.toFixed(1) : '&ndash;'}</td>
+        <td>${r.hcp == null ? '&ndash;' : r.hcp.toFixed(1) +
+          (r.comp ? ' <span class="src" title="Agreed for this competition only, not an NHS handicap">comp</span>' : '')}</td>
         <td>${r.p}</td>
         <td>${r.won}${r.stars ? `<span class="star">&#9733;${r.stars}</span>` : ''}</td>
         <td>${r.lost}</td>
@@ -317,6 +370,68 @@
           const done = donePairs.has(an + '|' + bn);
           return `<td class="${done ? 'done' : 'open'}" title="${an} v ${bn}${done ? ' — played' : ' — to arrange'}">${done ? '&#10003;' : ''}</td>`;
         }).join('') + '</tr>').join('') + '</tbody>';
+
+  /* ---------- the fixture list ----------
+     Every scheduled pairing, with its result where one exists. A result is
+     tied to a pairing by who was DUE to play it: a substitute stands in for a
+     team-mate, so the match belongs to the rostered player's fixture, not the
+     stand-in's. The rules allow a match to be played ahead of its week, so a
+     date earlier than the week is expected and is shown as 'played early'. */
+  (function(){
+    if (typeof TEAM_SCHEDULE === 'undefined') return;
+    const byPair = {};
+    MATCHES.forEach(m => {
+      byPair[(m.aSubFor || m.aPlayer) + '|' + (m.bSubFor || m.bPlayer)] = m;
+    });
+    const today = new Date(); today.setHours(0,0,0,0);
+    const day = d => new Date(d + 'T00:00:00');
+    const dmy = d => day(d).toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+
+    let played = 0;
+    const html = TEAM_SCHEDULE.map(w => {
+      const start = day(w.from);
+      const end = new Date(start); end.setDate(end.getDate() + 6);
+      const rows = w.pairs.map(([a, b]) => {
+        const m = byPair[a + '|' + b];
+        if (!m) {
+          const state = end < today ? 'late' : (start <= today ? 'now' : '');
+          // some pairings are known in advance to need a stand-in
+          const why = (typeof SUB_REQUIRED !== 'undefined') && SUB_REQUIRED[a + '|' + b];
+          return `<li class="fx ${state}">
+            <span class="fx-a">${a}</span>
+            <span class="fx-v">v</span>
+            <span class="fx-b">${b}</span>
+            <span class="fx-r pending">${why
+              ? `<span class="src" title="${why}">sub needed</span>`
+              : (end < today ? 'not yet played' : 'to play')}</span></li>`;
+        }
+        played++;
+        const early = day(m.date) < start;
+        const sub = (p, f) => f && f !== p ? ` <span class="src" title="stood in for ${f}">${p}</span>` : '';
+        const win = m.aPts === m.bPts ? 'halved' : (m.aPts > m.bPts ? 'a' : 'b');
+        return `<li class="fx done">
+          <span class="fx-a ${win === 'a' ? 'won' : ''}">${a}${sub(m.aPlayer, m.aSubFor)}</span>
+          <span class="fx-v">${m.aPts}&ndash;${m.bPts}</span>
+          <span class="fx-b ${win === 'b' ? 'won' : ''}">${b}${sub(m.bPlayer, m.bSubFor)}</span>
+          <span class="fx-r">${dmy(m.date)}${early ? ' <span class="src" title="played ahead of its week, which the rules allow">early</span>' : ''}</span></li>`;
+      }).join('');
+      const done = w.pairs.filter(([a, b]) => byPair[a + '|' + b]).length;
+      const state = done === w.pairs.length ? 'done' : (start <= today ? 'live' : '');
+      return `<div class="wk">
+        <div class="wk-h">
+          <b>Week ${w.week}</b>
+          <span class="when">commencing Monday ${day(w.from).toLocaleDateString('en-GB',
+            {day:'numeric', month:'long'})}</span>
+          <span class="chip ${state}">${done} of ${w.pairs.length}</span>
+        </div>
+        <ul class="fx-list">${rows}</ul>
+      </div>`;
+    }).join('');
+
+    document.getElementById('fixtures').innerHTML = html;
+    document.getElementById('fxWhen').textContent =
+      `${played} of ${TEAM_SCHEDULE.reduce((n, w) => n + w.pairs.length, 0)} played`;
+  })();
 </script>
 <style>
   code{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.92em;
