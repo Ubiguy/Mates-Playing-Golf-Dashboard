@@ -441,7 +441,7 @@ const WHS_STATS = {
    cr null means the club has not supplied a rating yet, and the page
    says so instead of standing par in for it.                    */
 const FIXTURES = [
-
+  {date:'2026-09-13', venue:'Cookridge Hall Golf Club', place:'Cookridge Ln, Cookridge, Leeds LS16 7NL', tee:null, cr:null, slope:null, par:null, note:'12:30 tee time'}
 ];
 
 /* ---------- WHS Away Games ----------
