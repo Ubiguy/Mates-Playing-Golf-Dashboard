@@ -51,6 +51,19 @@
   <section>
     <div class="head">
       <div class="head-l">
+        <h2 id="gaTitle"></h2>
+        <span class="chip done">Charity</span>
+        <span class="when" id="gaWhen"></span>
+      </div>
+      <p id="gaLead"></p>
+    </div>
+    <div class="t-scroll"><table id="golfathon"></table></div>
+    <p class="after" id="gaNote"></p>
+  </section>
+
+  <section>
+    <div class="head">
+      <div class="head-l">
         <h2>Team Match Play</h2>
         <span class="chip live">Running</span>
         <span class="when" id="mpWhen"></span>
@@ -112,7 +125,7 @@
   </footer>
 </div>
 
-<script src="data.js?v=b7408d0e"></script>
+<script src="data.js?v=cd4f7083"></script>
 <script>
   const fmtP = v => v % 1 === 0 ? String(v) : v.toFixed(1);
 
@@ -195,13 +208,17 @@
   /* ---------- the majors, plus the representative fixtures ---------- */
   (function(){
     const done = MAJORS.filter(m => m[1] === 'done').length;
-    const rep  = MAJORS.filter(m => /representative/.test(m[3] || '')).length;
-    const soc  = MAJORS.length - rep;
+    const rep     = MAJORS.filter(m => /representative/.test(m[3] || '')).length;
+    const charity = MAJORS.filter(m => /^Charity/.test(m[3] || '')).length;
+    const soc     = MAJORS.length - rep - charity;
+    const extras  = [];
+    if (rep) extras.push(`${rep} Yorkshire representative fixture${rep === 1 ? '' : 's'}`);
+    if (charity) extras.push(`${charity} charity event${charity === 1 ? '' : 's'}`);
     document.getElementById('majorsWhen').textContent =
       `${done} of ${MAJORS.length} decided`;
     document.getElementById('majorsLead').textContent =
       `${soc} society majors` +
-      (rep ? `, plus ${rep} Yorkshire representative fixtures` : '') +
+      (extras.length ? ', plus ' + extras.join(' and ') : '') +
       ` — ${MAJORS.length - done} still being played`;
     document.getElementById('majors').innerHTML =
       `<thead><tr><th class="nm">Tournament</th><th class="nm">Status</th>
@@ -212,6 +229,44 @@
           <td class="nm"><span class="chip ${status}">${status === 'done' ? 'Complete' : 'Playing'}</span></td>
           <td class="nm">${champ || '<span class="pending">still to be decided</span>'}</td>
         </tr>`).join('') + `</tbody>`;
+  })();
+
+  /* ---------- the Golfathon ----------
+     Four rounds in a day. Cards exist for three of the five who played, so a
+     player with no card for a round shows a dash, never a filled-in number. */
+  (function(){
+    const G = GOLFATHON;
+    document.getElementById('gaTitle').textContent = G.event;
+    document.getElementById('gaWhen').textContent  = G.date;
+    document.getElementById('gaLead').textContent  =
+      `${G.venue}, par ${G.par} · ${G.format} · in aid of ${G.charity}`;
+    document.getElementById('gaNote').textContent  = G.note;
+
+    const byPlayer = {};
+    G.players.forEach(n => byPlayer[n] = {pts:[null,null,null,null], gross:[null,null,null,null]});
+    G.rounds.forEach(([r, n, hcp, gross, pts]) => {
+      byPlayer[n].pts[r - 1] = pts;
+      byPlayer[n].gross[r - 1] = gross;
+      byPlayer[n].hcp = hcp;
+    });
+    const rows = G.players.map(n => {
+      const d = byPlayer[n];
+      const played = d.pts.filter(v => v !== null);
+      return {n, d, total: played.reduce((s, v) => s + v, 0), played: played.length};
+    }).sort((x, y) => y.played - x.played || y.total - x.total);
+
+    document.getElementById('golfathon').innerHTML =
+      `<thead><tr><th class="nm">Player</th><th>NHS</th>
+        <th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>Points</th><th>Rounds</th></tr></thead><tbody>` +
+      rows.map(r => `<tr class="${r.played === 4 ? 'win' : ''}">
+        <td class="nm">${r.n}</td>
+        <td>${r.d.hcp === undefined ? '&ndash;' : r.d.hcp}</td>
+        ${r.d.pts.map((v, i) => `<td title="${r.d.gross[i] === null ? 'no card recorded'
+          : 'gross ' + r.d.gross[i]}">${v === null
+            ? '<span class="pending">&ndash;</span>' : v}</td>`).join('')}
+        <td class="key">${r.played ? r.total : '<span class="pending">&ndash;</span>'}</td>
+        <td>${r.played} of 4</td>
+      </tr>`).join('') + `</tbody>`;
   })();
 
   /* ---------- lowest net rounds ---------- */

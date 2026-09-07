@@ -29,8 +29,42 @@ const MAJORS = [
   ['Asia Cup 2026','done','Joint 2nd in the section',
    'Yorkshire representative fixture · 2 Aug 2026, The Warwickshire Golf Club','profiles.html'],
   ['War of the Roses 2026','done','Yorkshire won 4-2',
-   'Yorkshire representative fixture · Thursday 3 Sep 2026, Worsley','profiles.html']
+   'Yorkshire representative fixture · Thursday 3 Sep 2026, Worsley','profiles.html'],
+  ['Golfathon 2026','done','Waseem Goldenboy, 139 pts',
+   'Charity, The Park Lane Foundation · 72 holes in a day · 18 Jun 2026, Wike Ridge',null]
 ];
+
+/* ---------- Golfathon ----------
+   An annual charity event, not a society competition: four rounds in one day,
+   72 holes, teeing off at 5am and aiming to finish by 6pm, played for
+   The Park Lane Foundation.
+
+   rounds: [round, player, handicap played off, gross, Stableford points,
+            position in that round's field]
+   Every card here was checked hole by hole - Out, In, gross and all 18
+   Stableford points reproduce from the handicap and stroke index. Cards were
+   only captured for three of the five who took part, so the table is
+   deliberately incomplete rather than filled in with guesses.           */
+const GOLFATHON = {
+  event:'Golfathon 2026', date:'18 June 2026',
+  venue:'Leeds Golf Centre — Wike Ridge', par:72,
+  charity:'The Park Lane Foundation',
+  format:'72 holes in a day, four rounds from a 5am start, aiming to finish by 6pm',
+  players:['Waseem Goldenboy','Naeem Akhtar','Naveen Ahmed','Sameer Ahmed','Shaan Ahmed'],
+  rounds:[
+    [1,'Waseem Goldenboy',16, 93,33,1],
+    [1,'Naeem Akhtar',    14,100,23,3],
+    [2,'Waseem Goldenboy',16, 88,36,1],
+    [2,'Naeem Akhtar',    14, 96,26,2],
+    [3,'Waseem Goldenboy',16, 90,34,1],
+    [3,'Naveen Ahmed',    19,100,29,2],
+    [4,'Waseem Goldenboy',16, 88,36,1],
+    [4,'Naveen Ahmed',    19,106,22,3]
+  ],
+  note:'Scorecards were captured for three of the five who played. Sameer Ahmed and ' +
+       'Shaan Ahmed took part but no cards were recorded, so their rows are blank rather ' +
+       'than estimated. These rounds are not in the handicap tracker.'
+};
 
 /* ---------- Team match play (TeamGames2026) ----------
    Mirrors the Match Log tab of Team_Matchplay_Leaderboard.xlsx.
@@ -189,9 +223,9 @@ const SF_UNRANKED = [['Shufqat Khan',7],['Basharat2 Ali',7],['Nadeem Ahmed',5],[
 const REGISTER = [
   {n:'Yaseen Mohammed',     nhs:13.4, honours:[{t:'Yorkshire · Asia Cup 2026', k:'squad'}, {t:'Yorkshire · War of the Roses 2026', k:'squad'}],  whs:15.2,    whsOfficial:true, calc:14.9,  rounds:18, est:false},
   {n:'Hamza T',             nhs:3,     whs:3,     calc:-3,    rounds: 3, est:false},
-  {n:'Waseem Goldenboy',    nhs:15.6, honours:[{t:'Yorkshire · Asia Cup 2026 (captain)', k:'squad'}, {t:'Yorkshire · War of the Roses 2026 (captain)', k:'squad'}, {t:'Highest doubles score · 45 pts · with Tariq Javaid', k:'award'}],  whs:18,    whsOfficial:true, calc:19.6,  rounds:25, est:true},
-  {n:'Sameer Ahmed',        nhs:16.9,  whs:17,    calc:20.2,  rounds:16, est:false},
-  {n:'Naveen Ahmed',        nhs:18.7,  whs:19,    calc:22,    rounds: 3, est:false},
+  {n:'Waseem Goldenboy',    nhs:15.6, honours:[{t:'Yorkshire · Asia Cup 2026 (captain)', k:'squad'}, {t:'Yorkshire · War of the Roses 2026 (captain)', k:'squad'}, {t:'Highest doubles score · 45 pts · with Tariq Javaid', k:'award'}, {t:'Golfathon 2026', k:'charity'}],  whs:18,    whsOfficial:true, calc:19.6,  rounds:25, est:true},
+  {n:'Sameer Ahmed',        nhs:16.9, honours:[{t:'Golfathon 2026', k:'charity'}],  whs:17,    calc:20.2,  rounds:16, est:false},
+  {n:'Naveen Ahmed',        nhs:18.7, honours:[{t:'Golfathon 2026', k:'charity'}],  whs:19,    calc:22,    rounds: 3, est:false},
   {n:'Umer Akbar',          nhs:11.2,  whs:12,    calc:10,    rounds: 2, est:false},
   {n:'Sid Amin',            nhs:17.2, honours:[{t:'Yorkshire · War of the Roses 2026', k:'squad'}],  whs:20.1,    whsOfficial:true, calc:22,  rounds:23, est:true},
   {n:'Nadeem Ahmed',        nhs:13.7,  whs:14,    calc:14.5,  rounds: 8, est:false},
@@ -207,7 +241,7 @@ const REGISTER = [
   {n:'Hanif Malik',         nhs:17.6,  whs:19,    calc:56,    rounds: 1, est:false},
   {n:'Shufqat Khan',        nhs:12.7, honours:[{t:'Yorkshire · Asia Cup 2026 (vice-captain)', k:'squad'}, {t:'Yorkshire · War of the Roses 2026', k:'squad'}, {t:'Highest individual score · 40 pts', k:'award'}],  whs:15.9,    whsOfficial:true, calc:16.2,  rounds:19, est:false},
   {n:'Imran K',             nhs:14.0, honours:[{t:'Yorkshire · Asia Cup 2026', k:'squad'}, {t:'Yorkshire · War of the Roses 2026', k:'squad'}, {t:'Nearest the pin', k:'award'}],  whs:17,    whsOfficial:true, calc:18.6,  rounds:21, est:true},
-  {n:'Shaan Ahmed',         nhs:18.1,  whs:18,    calc:23.3,  rounds:15, est:false},
+  {n:'Shaan Ahmed',         nhs:18.1, honours:[{t:'Golfathon 2026', k:'charity'}],  whs:18,    calc:23.3,  rounds:15, est:false},
   {n:'Gazanfar Afzal',      nhs:12,    whs:12,    calc:18,    rounds: 1, est:false},
   {n:'Guftar Hussain',      nhs:7.9, honours:[{t:'Yorkshire · Asia Cup 2026', k:'squad'}, {t:'Yorkshire · War of the Roses 2026', k:'squad'}],   whs:9.6,    whsOfficial:true, calc:11.7,  rounds:20, est:true},
   {n:'Raz Shafi',           nhs:10.6, honours:[{t:'Yorkshire · War of the Roses 2026', k:'squad'}],  whs:11.7,    whsOfficial:true, calc:14.2,    rounds:17, est:false},
@@ -215,7 +249,7 @@ const REGISTER = [
   {n:'Haaris Ahmed',        nhs:12.4,  whs:16.6,    whsOfficial:true, calc:12.5,    rounds: 4, est:false},
   {n:'Jabar Mughal',        nhs:15.7,  whs:16,    calc:17,    rounds:13, est:false},
   {n:'Sabar Riaz',          nhs:24.3,  whs:24,    calc:28,    rounds: 3, est:false},
-  {n:'Naeem Akhtar',        nhs:14.3,  whs:14,    calc:23,    rounds: 3, est:false},
+  {n:'Naeem Akhtar',        nhs:14.3, honours:[{t:'Golfathon 2026', k:'charity'}],  whs:14,    calc:23,    rounds: 3, est:false},
   {n:'Noor',                nhs:8.5,   whs:null,  calc:null,  rounds: 0, est:false},
   {n:'Raza Efendi',         nhs:28.1,  whs:null,  calc:null,  rounds: 0, est:false},
   {n:'Ayaz Alam',           nhs:14,    whs:null,  calc:22,    rounds: 1, est:false}
@@ -254,21 +288,21 @@ const BEST = [
    CDH membership numbers are deliberately NOT published here - this file is
    served publicly. They live in the 'Player IDs' sheet of the tracker.    */
 const PROFILES = [
-  {n:'Guftar Hussain', egName:null, init:'GH', role:null,
+  {n:'Guftar Hussain', egName:null, init:'GH',
    idx:9.6, since:'May 2018', scores:124, avgDiff:12.6,
    best:{v:4.8, d:'2 Jul 2022'}, mark:{v:5.7, d:'11 Aug 2018', kind:'low'}, net:1,
    home:'Leeds Golf Centre',
    courses:[['Leeds GC — White','69 rounds'],['Leeds GC — Yellow','16 rounds'],['Leeds GC — Indigo','14 rounds'],['Leeds GC — White F9','8 rounds'],['Leeds GC — Red','6 rounds'],['Elsewhere','11 rounds']],
    note:'Much the longest record in the squad - 124 rounds over eight years, nearly all at Leeds. The index has held between roughly 7.5 and 10.5 throughout, so the 5.7 in 2018 stands well clear of everything since. Thirteen rounds through 2025 carry a WHS exceptional-score reduction of 1.0 shot.'},
 
-  {n:'Tab Rafique', egName:'Tabbussam Rafique', init:'TR', noExport:true, role:null,
+  {n:'Tab Rafique', egName:'Tabbussam Rafique', init:'TR', noExport:true,
    idx:9.9, since:'May 2026', scores:6, avgDiff:14.7,
    best:{v:9.9, d:'17 Jun 2026'}, mark:{v:11.7, d:'9 May 2026', kind:'peak'}, net:-1.8,
    home:'Leeds Golf Centre',
    courses:[['Leeds GC — Yellow','5 rounds'],['Leeds GC — White','1 round']],
    note:'Lowest index in the squad, but a very short history — six rounds, all at Leeds. Improved fast (11.7 to 8.9) then bounced back to 9.9; still a small sample.'},
 
-  {n:'Afrid Iqbal', egName:null, init:'AI', noExport:true, role:null,
+  {n:'Afrid Iqbal', egName:null, init:'AI', noExport:true,
    idx:13.0, since:'Jul 2023', scores:20, avgDiff:16.9,
    best:{v:9.8, d:'17 Aug 2024'}, mark:{v:13.1, d:'18 Apr 2026', kind:'peak'}, net:0.5,
    home:'Leeds Golf Centre',
@@ -277,42 +311,42 @@ const PROFILES = [
             ['Leeds GC — Red F9','1 round']],
    note:'Remarkably stable — 12.2 to 13.1 across nearly three years, every round at Leeds, with two long reporting gaps. The 29 Jul 2023 round was missing its adjusted gross and was back-calculated to about 89 from the differential.'},
 
-  {n:'Shufqat Khan', egName:null, init:'SK', role:'Vice-captain',
+  {n:'Shufqat Khan', egName:null, init:'SK',
    idx:15.9, since:'May 2025', scores:60, avgDiff:21.3,
    best:{v:10.8, d:'9 Aug 2026'}, mark:{v:20.4, d:'3 Aug 2025', kind:'peak'}, net:-2,
    home:'Leeds Golf Centre',
    courses:[['Leeds GC — Yellow','21 rounds'],['Leeds GC — White','8 rounds'],['Leeds GC — Red','5 rounds'],['Bradford — Yellow','3 rounds'],['Leeds GC — Yellow F9','3 rounds'],['Elsewhere','20 rounds']],
    note:'The steepest improver here: 20.4 at the peak in August 2025 down to 15.9 now, though the run is uneven rather than a steady slide. The export stops at England Golf&rsquo;s 60-round limit, so this history starts in May 2025 rather than at his first card.'},
 
-  {n:'Imran K', egName:'Imran Abbas', init:'IA', role:null,
+  {n:'Imran K', egName:'Imran Abbas', init:'IA',
    idx:17, since:'Apr 2023', scores:60, avgDiff:19.6,
    best:{v:11.6, d:'22 Aug 2026'}, mark:{v:14.5, d:'3 Aug 2025', kind:'low'}, net:0.9,
    home:'Leeds Golf Centre',
    courses:[['Leeds GC — Yellow','29 rounds'],['Leeds GC — White','24 rounds'],['Leeds GC — Red','3 rounds'],['Leeds GC — Indigo','3 rounds'],['Hollins Hall Hotel & Country Club — White','1 round']],
    note:'Remarkably level - the index has sat between about 14.5 and 19 across three years with no real trend either way. Rounds split almost evenly between the Leeds yellow and white tees. The export stops at England Golf&rsquo;s 60-round limit.'},
 
-  {n:'Yaseen Mohammed', egName:'Yaseen Mohammad', init:'YM', role:null,
+  {n:'Yaseen Mohammed', egName:'Yaseen Mohammad', init:'YM',
    idx:15.2, since:'Jan 2023', scores:29, avgDiff:19.1,
    best:{v:10.8, d:'8 Sep 2024'}, mark:{v:12.2, d:'26 Jan 2023', kind:'low'}, net:3,
    home:'Leeds Golf Centre',
    courses:[['Leeds GC — Yellow','16 rounds'],['Leeds GC — White','2 rounds'],['Horsforth — Yellow','1 round'],['Formby Hall Golf Resort & Spa — White','1 round'],['Wetherby — Yellow','1 round'],['Elsewhere','8 rounds']],
    note:'Has drifted about three shots up from the 12.2 first recorded in January 2023. Plays away from Leeds more than most of the squad, which is why his average differential sits above where his index alone would suggest.'},
 
-  {n:'Waseem Goldenboy', egName:'Waseem Javeed', init:'WJ', role:'Captain',
+  {n:'Waseem Goldenboy', egName:'Waseem Javeed', init:'WJ',
    idx:18, since:'Apr 2025', scores:28, avgDiff:22.1,
    best:{v:11.8, d:'28 Jul 2025'}, mark:{v:26.9, d:'3 Jul 2025', kind:'peak'}, net:-4,
    home:'Leeds Golf Centre',
    courses:[['Leeds GC — Yellow','18 rounds'],['Leeds GC — White','5 rounds'],['Tankersley Park — Yellow','1 round'],['Tankersley Park — White','1 round'],['Bradford — White','1 round'],['Elsewhere','2 rounds']],
    note:'The sharpest swing in the squad - out to 26.9 in early July 2025, back to 18.0 since. Three April 2025 rounds in the England Golf record carry an adjusted gross higher than the society scorecard for the same day, which is a data-entry error to be corrected with England Golf.'},
 
-  {n:'Basharat2 Ali', egName:'Basharat Ali', init:'BA', role:null,
+  {n:'Basharat2 Ali', egName:'Basharat Ali', init:'BA',
    idx:18.3, since:'Jul 2021', scores:39, avgDiff:24.9,
    best:{v:14.5, d:'28 May 2025'}, mark:{v:25.3, d:'30 Oct 2022', kind:'peak'}, net:-5.1,
    home:'Leeds Golf Centre',
    courses:[['Leeds GC — Yellow','27 rounds'],['Leeds GC — White','4 rounds'],['Leeds GC — Indigo','2 rounds'],['Leeds GC — Red','2 rounds'],['The Mere Golf Resort & Spa — Yellow Alt','1 round'],['Elsewhere','3 rounds']],
    note:'The biggest long-run improvement here - 25.3 in late 2022 to 18.3 now, and gradually rather than in jumps. One June 2026 round was missing its score differential in the export; it was rebuilt from the course rating, slope and PCC.'},
 
-  {n:'Tariq Javaid', egName:'Tariq Javid', init:'TJ', role:'Vice-captain',
+  {n:'Tariq Javaid', egName:'Tariq Javid', init:'TJ',
    idx:24.1, since:'May 2018', scores:33, avgDiff:29.6,
    best:{v:20.8, d:'19 Aug 2024'}, mark:{v:31, d:'8 Aug 2023', kind:'peak'}, net:-2.1,
    home:'Leeds Golf Centre',

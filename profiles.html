@@ -37,6 +37,24 @@
     <div class="stat"><span class="k">Biggest improver</span><span class="v num" id="cImp" style="font-size:1.15rem">&mdash;</span><span class="sub" id="sImp"></span></div>
   </div>
 
+  <div class="controls">
+    <label class="ctl-search">
+      <span class="lbl">Find a player</span>
+      <input id="q" type="search" placeholder="name, course or honour" autocomplete="off">
+    </label>
+    <label class="ctl-sort">
+      <span class="lbl">Order by</span>
+      <select id="sort">
+        <option value="nhs">NHS handicap</option>
+        <option value="name">Name</option>
+        <option value="rounds">Society rounds</option>
+        <option value="whs">WHS index</option>
+      </select>
+    </label>
+    <button id="dir" type="button" class="ctl-dir" aria-label="Reverse the order">Low to high</button>
+    <span class="ctl-count" id="count"></span>
+  </div>
+
   <section>
     <div class="head">
       <div class="head-l">
@@ -112,7 +130,7 @@
   </footer>
 </div>
 
-<script src="data.js?v=b7408d0e"></script>
+<script src="data.js?v=cd4f7083"></script>
 <script>
   const REG = Object.fromEntries(REGISTER.map(r => [r.n, r]));
   const f1  = v => v.toFixed(1);
@@ -159,7 +177,7 @@
   })();
 
   /* ---------- profile cards ---------- */
-  document.getElementById('profiles').innerHTML = ROWS.map(p => {
+  function whsCard(p){
     const r = REG[p.n];
     const markLabel = p.mark.kind === 'low' ? 'Lowest index' : 'Peak index';
     return `<article class="prof">
@@ -171,7 +189,6 @@
           <span class="alias">${p.home}</span>
           ${honour(r)}
         </span>
-        ${p.role ? `<span class="pill role">${p.role}</span>` : ''}
       </header>
 
       <div class="hcs">
@@ -204,7 +221,72 @@
 
       <p class="prof-note">${p.note}</p>
     </article>`;
-  }).join('');
+  }
+
+  /* ---------- ordering and search ----------
+     One set of controls drives both grids. Sorting is on the register, so the
+     two sections stay in step with each other and with the handicap page.
+     A player with no figure for the chosen key always sorts last, whichever
+     direction the order runs - the same rule the register uses. */
+  const SORTS = {
+    nhs:    {label:'NHS handicap',   low:'Low to high', get: p => REG[p.n].nhs},
+    name:   {label:'name',           low:'A to Z',      get: p => p.n},
+    rounds: {label:'society rounds', low:'Fewest first',get: p => REG[p.n].rounds},
+    whs:    {label:'WHS index',      low:'Low to high', get: p => REG[p.n].whs}
+  };
+  let sortKey = 'nhs', dir = 1, query = '';
+
+  function haystack(p){
+    const r = REG[p.n] || {};
+    return [p.n, p.egName, p.home, p.venue,
+            (r.honours || []).map(h => h.t).join(' '),
+            (p.courses || []).map(c => c[0]).join(' '),
+            (p.ev || []).map(e => e[0]).join(' ')]
+           .filter(Boolean).join(' ').toLowerCase();
+  }
+
+  function view(list){
+    const q = query.trim().toLowerCase();
+    const out = q ? list.filter(p => haystack(p).includes(q)) : [...list];
+    const get = SORTS[sortKey].get;
+    return out.sort((a, b) => {
+      const x = get(a), y = get(b);
+      const nx = x === null || x === undefined, ny = y === null || y === undefined;
+      if (nx && ny) return a.n.localeCompare(b.n);
+      if (nx) return 1;                 // blanks last, both directions
+      if (ny) return -1;
+      if (typeof x === 'string') return dir * x.localeCompare(y);
+      return dir * (x - y);
+    });
+  }
+
+  function render(){
+    const a = view(PROFILES), b = view(SOCIETY_PROFILES);
+    const empty = who => `<p class="prof-empty">No ${who} match that search.</p>`;
+    document.getElementById('profiles').innerHTML =
+      a.length ? a.map(whsCard).join('') : empty('WHS records');
+    document.getElementById('society').innerHTML =
+      b.length ? b.map(socCard).join('') : empty('players');
+    const total = a.length + b.length;
+    document.getElementById('count').textContent = query.trim()
+      ? `${total} of ${PROFILES.length + SOCIETY_PROFILES.length} shown`
+      : `${total} players`;
+    document.querySelectorAll('.head-l .when').forEach(el =>
+      el.textContent = 'ordered by ' + SORTS[sortKey].label);
+    document.getElementById('dir').textContent =
+      dir === 1 ? SORTS[sortKey].low : 'Reversed';
+  }
+
+  document.getElementById('q').addEventListener('input', e => {
+    query = e.target.value; render();
+  });
+  document.getElementById('sort').addEventListener('change', e => {
+    sortKey = e.target.value; dir = 1; render();
+  });
+  document.getElementById('dir').addEventListener('click', () => {
+    dir = -dir; render();
+  });
+  render();
 
   /* ---------- narrative under the cards ---------- */
   (function(){
@@ -225,7 +307,6 @@
       `current export` +
       (older ? `; the remaining ${older} carry an earlier WHS record until a fresh export is supplied, and are marked est.`
             : '.');
-    renderSociety();
     document.getElementById('othersLine').textContent =
       `The other ${SQUAD_OTHERS.length} in the squad do not play in this society, so they have no card here: ` +
       SQUAD_OTHERS.join(', ') + '.';
@@ -252,8 +333,7 @@
     return r.whsOfficial === true ? 'official' : 'est';
   }
 
-  function renderSociety(){
-    document.getElementById('society').innerHTML = SOC.map(p => {
+  function socCard(p){
       const r = REG[p.n];
       const nhs = r && r.nhs != null;
       const none = p.rounds === 0;
@@ -303,7 +383,9 @@
 
         <p class="prof-note">${socNote(p)}</p>`}
       </article>`;
-    }).join('');
+  }
+
+  (function(){
 
     const played = SOCIETY_PROFILES.filter(p => p.rounds > 0);
     const none   = SOCIETY_PROFILES.filter(p => p.rounds === 0);
@@ -319,7 +401,7 @@
                : `, and the rest stay blank until an export is supplied.`)
       : 'None of them has an England Golf index on file, so that column stays blank until one is supplied.');
     document.getElementById('socNote').textContent = bits.join(' ');
-  }
+  })();
 
   /* A short, honest line per player, written from their own numbers. */
   function socNote(p){
@@ -349,7 +431,6 @@
     letter-spacing:.06em;padding:1px 4px;border-radius:2px;background:var(--surface-sunk);
     color:var(--muted);vertical-align:middle;}
   .hc.stale .big{color:var(--muted);}
-  .pill.role{flex:none;margin-left:auto;background:var(--gold-wash);color:var(--gold);}
 
   .hcs{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);
     border:1px solid var(--border);border-radius:4px;overflow:hidden;}
@@ -388,11 +469,31 @@
   .av.soc{background:var(--surface-sunk);color:var(--ink-2);}
   .hc.empty .big{color:var(--muted);opacity:.55;}
   .pill.thin-pill{flex:none;margin-left:auto;}
+  .controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;margin:0 0 18px;
+    padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .controls .lbl{display:block;font-family:'IBM Plex Mono',ui-monospace,monospace;
+    font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:4px;}
+  .ctl-search{flex:1 1 220px;}
+  .ctl-search input,.ctl-sort select{width:100%;font:inherit;font-size:.85rem;
+    padding:6px 9px;border:1px solid var(--border);border-radius:4px;
+    background:var(--surface-sunk);color:inherit;}
+  .ctl-search input:focus,.ctl-sort select:focus{outline:2px solid var(--accent);outline-offset:1px;}
+  .ctl-sort{flex:0 1 190px;}
+  .ctl-dir{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.7rem;font-weight:600;
+    padding:7px 11px;border:1px solid var(--border);border-radius:4px;cursor:pointer;
+    background:var(--surface-sunk);color:var(--muted);}
+  .ctl-dir:hover{color:var(--ink);border-color:var(--muted);}
+  .ctl-count{margin-left:auto;font-family:'IBM Plex Mono',ui-monospace,monospace;
+    font-size:.7rem;color:var(--muted);}
+  .prof-empty{padding:18px 2px;color:var(--muted);font-size:.9rem;}
+  @media (max-width:560px){ .ctl-count{margin-left:0;} }
   .honours{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;}
   .honour{display:inline-block;font-family:'IBM Plex Mono',ui-monospace,monospace;
     font-size:.58rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
     padding:2px 6px;border-radius:2px;background:var(--gold-wash);color:var(--gold);}
   .honour.award{background:var(--live-wash);color:var(--live);}
+  .honour.charity{background:var(--surface-sunk);color:var(--muted);}
   .facts.faded dd{color:var(--muted);}
 
   @media (max-width:420px){
