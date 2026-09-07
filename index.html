@@ -6,7 +6,7 @@
 <title>Golf Society 2026</title>
 <meta name="description" content="Mates Playing Golf - the team match play score and the next away day.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=d150f0e6">
+<link rel="stylesheet" href="style.css?v=ce460277">
 </head>
 <body>
 <div class="page">
@@ -146,11 +146,12 @@
     const dmy = d => day(d).toLocaleDateString('en-GB', {day:'numeric', month:'short'});
     const started = day(w.from) <= today;
 
-    const rows = w.pairs.map(([a, b]) => {
+    const rows = w.pairs.map(([a, b], i) => {
       const m = byPair[a + '|' + b];
       if (!m) {
         const why = (typeof SUB_REQUIRED !== 'undefined') && SUB_REQUIRED[a + '|' + b];
         return `<li class="fx">
+          <span class="no">${i + 1}</span>
           <span class="fx-a">${a}</span><span class="fx-v">v</span><span class="fx-b">${b}</span>
           <span class="fx-r pending">${why
             ? `<span class="src" title="${why}">sub needed</span>` : 'to play'}</span></li>`;
@@ -158,6 +159,7 @@
       const sub = (p, f) => f && f !== p ? ` <span class="src" title="stood in for ${f}">${p}</span>` : '';
       const win = m.aPts === m.bPts ? '' : (m.aPts > m.bPts ? 'a' : 'b');
       return `<li class="fx done">
+        <span class="no">${i + 1}</span>
         <span class="fx-a ${win === 'a' ? 'won' : ''}">${a}${sub(m.aPlayer, m.aSubFor)}</span>
         <span class="fx-v">${m.aPts}&ndash;${m.bPts}</span>
         <span class="fx-b ${win === 'b' ? 'won' : ''}">${b}${sub(m.bPlayer, m.bSubFor)}</span>

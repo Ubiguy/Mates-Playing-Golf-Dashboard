@@ -297,27 +297,41 @@ footer b{color:var(--ink-2);font-weight:600;}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
 
 
-/* team match play fixture list */
+/* team match play fixture list
+   Two columns on a wide screen so ten matches read at a glance rather than as
+   a long strip. A played match carries its score and the winner's name in the
+   team colour; an outstanding one stays quiet, so what is still to arrange is
+   what stands out. */
 .weeks{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;}
 .wk{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:13px 14px;}
-.wk-h{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:9px;
+.wk-h{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:10px;
   padding-bottom:7px;border-bottom:1px solid var(--border);}
 .wk-h b{font-size:.95rem;}
 .wk-h .chip{margin-left:auto;}
-.fx-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;}
-.fx{display:grid;grid-template-columns:1fr auto 1fr auto;align-items:baseline;gap:8px;
-  padding:3px 0;font-size:.86rem;}
-.fx-a{text-align:right;color:var(--muted);}
-.fx-b{color:var(--muted);}
-.fx.done .fx-a,.fx.done .fx-b{color:var(--ink);}
-.fx .won{font-weight:700;}
-.fx-v{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.78rem;color:var(--muted);
-  min-width:3.2em;text-align:center;}
-.fx.done .fx-v{color:var(--ink);font-weight:600;}
-.fx-r{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.68rem;color:var(--muted);
-  min-width:6.4em;text-align:right;}
-.fx.late .fx-r{color:var(--accent);}
-@media (max-width:420px){
-  .fx{grid-template-columns:1fr auto 1fr;}
-  .fx-r{grid-column:1 / -1;text-align:right;}
+.fx-list{list-style:none;margin:0;padding:0;display:grid;gap:1px 26px;
+  grid-template-columns:1fr;}
+/* two columns, never three: at three the names are squeezed to about 70px and
+   the row stops being readable at a glance */
+@media (min-width:660px){ .fx-list{grid-template-columns:1fr 1fr;} }
+.fx{display:grid;grid-template-columns:1.4em minmax(0,1fr) auto minmax(0,1fr) auto;
+  align-items:baseline;gap:7px;padding:4px 6px;border-radius:3px;font-size:.87rem;}
+.fx + .fx{box-shadow:inset 0 1px 0 var(--hairline);}
+.fx .no{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.64rem;color:var(--muted);
+  text-align:right;}
+.fx-a{text-align:right;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fx-b{color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fx .won{font-weight:700;color:var(--ink);}
+.fx-a.won{color:var(--teamA);} .fx-b.won{color:var(--teamB);}
+.fx-v{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.72rem;color:var(--muted);
+  min-width:3.4em;text-align:center;}
+.fx.done .fx-v{font-size:.8rem;font-weight:600;color:var(--ink);
+  background:var(--surface-sunk);border-radius:3px;padding:1px 5px;font-variant-numeric:tabular-nums;}
+.fx-r{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.66rem;color:var(--muted);
+  min-width:5.6em;text-align:right;}
+.fx .pending{opacity:.75;}
+.fx.late .fx-r{color:var(--accent);opacity:1;}
+@media (max-width:430px){
+  .fx{grid-template-columns:1.4em minmax(0,1fr) auto minmax(0,1fr);row-gap:1px;}
+  .fx-r{grid-column:2 / -1;text-align:right;}
+}
 }
