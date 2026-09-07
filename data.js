@@ -30,7 +30,7 @@ const MAJORS = [
    'Yorkshire representative fixture · 2 Aug 2026, The Warwickshire Golf Club','profiles.html'],
   ['War of the Roses 2026','done','Yorkshire won 4-2',
    'Yorkshire representative fixture · Thursday 3 Sep 2026, Worsley','profiles.html'],
-  ['Golfathon 2026','done','Waseem Goldenboy, 139 pts',
+  ['Golfathon 2026','done','5 players took part',
    'Charity, The Park Lane Foundation · 72 holes in a day · 18 Jun 2026, Wike Ridge',null]
 ];
 
@@ -61,9 +61,47 @@ const GOLFATHON = {
     [4,'Waseem Goldenboy',16, 88,36,1],
     [4,'Naveen Ahmed',    19,106,22,3]
   ],
-  note:'Scorecards were captured for three of the five who played. Sameer Ahmed and ' +
-       'Shaan Ahmed took part but no cards were recorded, so their rows are blank rather ' +
-       'than estimated. These rounds are not in the handicap tracker.'
+  note:'An annual charity day rather than a society competition. Cards were kept for ' +
+       'some of the round-by-round scoring and are held in the society tracker; none of ' +
+       'these rounds counts towards a handicap.'
+};
+
+/* ---------- Where each player has played ----------
+   play  : society rounds by venue, from the tracker's Rounds sheet.
+   extra : other courses in that player's own My England Golf record -
+           their general play, not society golf. Search only.
+   Built by venues_write.py; do not hand-edit.              */
+const VENUES = {
+  'Afrid Iqbal':{play:[['Leeds Golf Centre — Wike Ridge',9]], extra:[]},
+  'Aftab Iqbal':{play:[['Forest Pines',1],['Leeds Golf Centre — Wike Ridge',1]], extra:['Waterton Park','York']},
+  'Ayaz Alam':{play:[['Leeds Golf Centre — Wike Ridge',1]], extra:[]},
+  'Basharat2 Ali':{play:[['Leeds Golf Centre — Wike Ridge',12],['Forest Pines',1]], extra:['Bradford','The Mere Golf Resort & Spa','Wychwood Park']},
+  'Gazanfar Afzal':{play:[['Leeds Golf Centre — Wike Ridge',1]], extra:[]},
+  'Guftar Hussain':{play:[['Leeds Golf Centre — Wike Ridge',19],['Hollins Hall',1]], extra:['Dewsbury District','Doncaster Town Moor','Stoke Rochford','Tankersley Park','Whitefield']},
+  'Haaris Ahmed':{play:[['Leeds Golf Centre — Wike Ridge',4]], extra:['Farleigh-Green (Yellow & Blue)','Finchley','Foxhills Country Club & Resort- Longcross','Moor Allerton-Blackmoor','Moor Allerton-High','Moor Allerton-Lakes','Pike Hills','Rudding Park Hotel Spa & Golf Course','ScotlandDunbar','Stoneham','Tadcaster','The Alwoodley']},
+  'Hamza T':{play:[['Leeds Golf Centre — Wike Ridge',2],['Forest Pines',1]], extra:[]},
+  'Hanif Malik':{play:[['Forest Pines',1]], extra:[]},
+  'Imran K':{play:[['Leeds Golf Centre — Wike Ridge',20],['Hollins Hall',1]], extra:[]},
+  'Jabar Mughal':{play:[['Leeds Golf Centre — Wike Ridge',13]], extra:[]},
+  'Mahmood Sadiq':{play:[['Leeds Golf Centre — Wike Ridge',27],['Forest Pines',1],['Hollins Hall',1]], extra:[]},
+  'Mansoor M':{play:[['Leeds Golf Centre — Wike Ridge',18],['Forest Pines',1],['Hollins Hall',1]], extra:[]},
+  'Matt T':{play:[['Forest Pines',1]], extra:[]},
+  'Mustapha T':{play:[['Forest Pines',1]], extra:[]},
+  'Nadeem Ahmed':{play:[['Leeds Golf Centre — Wike Ridge',7],['Forest Pines',1]], extra:[]},
+  'Naeem Akhtar':{play:[['Leeds Golf Centre — Wike Ridge',3]], extra:[]},
+  'Naveen Ahmed':{play:[['Forest Pines',1],['Hollins Hall',1],['Leeds Golf Centre — Wike Ridge',1]], extra:[]},
+  'Raz Shafi':{play:[['Leeds Golf Centre — Wike Ridge',16],['Hollins Hall',1]], extra:['Moor Allerton-Blackmoor','Moor Allerton-High','Moor Allerton-Lakes','Walsall']},
+  'Sabar Riaz':{play:[['Leeds Golf Centre — Wike Ridge',3]], extra:[]},
+  'Sameer Ahmed':{play:[['Leeds Golf Centre — Wike Ridge',15],['Forest Pines',1]], extra:[]},
+  'Shaan Ahmed':{play:[['Leeds Golf Centre — Wike Ridge',15]], extra:[]},
+  'Shazad Hussain':{play:[['Leeds Golf Centre — Wike Ridge',26],['Forest Pines',1],['Hollins Hall',1]], extra:[]},
+  'Shufqat Khan':{play:[['Leeds Golf Centre — Wike Ridge',18],['Hollins Hall',1]], extra:['Birley Wood','Bradford','Burnley','Calderfields Golf & Country Club','Coventry Hearsall','Denton','Dewsbury District','Forest Of Arden Marriott Golf & Country Club-Arden','Forest Pines-Forest Pines','Lees Hall','Moor Allerton-Blackmoor','Pike Fold','Pleasington','Walsall','Woburn-Marquess Course']},
+  'Sid Amin':{play:[['Leeds Golf Centre — Wike Ridge',21],['Forest Pines',1],['Hollins Hall',1]], extra:['Bradford','Bradley Park','Dewsbury District','Scarcroft','Worsley']},
+  'Tab Rafique':{play:[['Leeds Golf Centre — Wike Ridge',25],['Forest Pines',1]], extra:[]},
+  'Tariq Javaid':{play:[['Leeds Golf Centre — Wike Ridge',13],['Forest Pines',1]], extra:['Bradford','Formby Hall Golf Resort & Spa','Scarcroft','The Mere Golf Resort & Spa','The Warwickshire Golf & Country Club-The Kings Course']},
+  'Umer Akbar':{play:[['Forest Pines',1],['Leeds Golf Centre — Wike Ridge',1]], extra:[]},
+  'Waseem Goldenboy':{play:[['Leeds Golf Centre — Wike Ridge',23],['Forest Pines',1],['Hollins Hall',1]], extra:['Bradford','Cookridge Hall','Tankersley Park']},
+  'Yaseen Mohammed':{play:[['Leeds Golf Centre — Wike Ridge',16],['Forest Pines',1],['Hollins Hall',1]], extra:['Bradford','Dewsbury District','Formby Hall Golf Resort & Spa','Horsforth','Rudding Park Hotel Spa & Golf Course','The Warwickshire Golf & Country Club-The Earls Course','Wetherby','Woodsome Hall','Worsley']}
 };
 
 /* ---------- Team match play (TeamGames2026) ----------

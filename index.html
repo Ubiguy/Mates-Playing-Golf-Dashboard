@@ -6,7 +6,7 @@
 <title>Golf Society 2026</title>
 <meta name="description" content="Golf society season hub - the 2026 season tournaments, representative fixtures, team match play and championship standings.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=3df7bec5">
 </head>
 <body>
 <div class="page">
@@ -40,30 +40,6 @@
   <section>
     <div class="head">
       <div class="head-l">
-        <h2>2026 Season Tournaments</h2>
-        <span class="when" id="majorsWhen"></span>
-      </div>
-      <p id="majorsLead"></p>
-    </div>
-    <div class="t-scroll"><table id="majors"></table></div>
-  </section>
-
-  <section>
-    <div class="head">
-      <div class="head-l">
-        <h2 id="gaTitle"></h2>
-        <span class="chip done">Charity</span>
-        <span class="when" id="gaWhen"></span>
-      </div>
-      <p id="gaLead"></p>
-    </div>
-    <div class="t-scroll"><table id="golfathon"></table></div>
-    <p class="after" id="gaNote"></p>
-  </section>
-
-  <section>
-    <div class="head">
-      <div class="head-l">
         <h2>Team Match Play</h2>
         <span class="chip live">Running</span>
         <span class="when" id="mpWhen"></span>
@@ -83,6 +59,31 @@
     </div>
     <p class="mp-note" id="mpNote"></p>
   </section>
+
+  <section>
+    <div class="head">
+      <div class="head-l">
+        <h2>2026 Season Tournaments</h2>
+        <span class="when" id="majorsWhen"></span>
+      </div>
+      <p id="majorsLead"></p>
+    </div>
+    <div class="t-scroll"><table id="majors"></table></div>
+  </section>
+
+  <section>
+    <div class="head">
+      <div class="head-l">
+        <h2 id="gaTitle"></h2>
+        <span class="chip done">Charity</span>
+        <span class="when" id="gaWhen"></span>
+      </div>
+      <p id="gaLead"></p>
+    </div>
+    <div class="ga-players" id="golfathon"></div>
+    <p class="after" id="gaNote"></p>
+  </section>
+
 
   <section>
     <div class="head">
@@ -125,7 +126,7 @@
   </footer>
 </div>
 
-<script src="data.js?v=cd4f7083"></script>
+<script src="data.js?v=49736653"></script>
 <script>
   const fmtP = v => v % 1 === 0 ? String(v) : v.toFixed(1);
 
@@ -232,8 +233,8 @@
   })();
 
   /* ---------- the Golfathon ----------
-     Four rounds in a day. Cards exist for three of the five who played, so a
-     player with no card for a round shows a dash, never a filled-in number. */
+     A charity day, so the page carries the event and the players who took part.
+     The round-by-round cards are held in the tracker, not shown here. */
   (function(){
     const G = GOLFATHON;
     document.getElementById('gaTitle').textContent = G.event;
@@ -242,31 +243,9 @@
       `${G.venue}, par ${G.par} · ${G.format} · in aid of ${G.charity}`;
     document.getElementById('gaNote').textContent  = G.note;
 
-    const byPlayer = {};
-    G.players.forEach(n => byPlayer[n] = {pts:[null,null,null,null], gross:[null,null,null,null]});
-    G.rounds.forEach(([r, n, hcp, gross, pts]) => {
-      byPlayer[n].pts[r - 1] = pts;
-      byPlayer[n].gross[r - 1] = gross;
-      byPlayer[n].hcp = hcp;
-    });
-    const rows = G.players.map(n => {
-      const d = byPlayer[n];
-      const played = d.pts.filter(v => v !== null);
-      return {n, d, total: played.reduce((s, v) => s + v, 0), played: played.length};
-    }).sort((x, y) => y.played - x.played || y.total - x.total);
-
     document.getElementById('golfathon').innerHTML =
-      `<thead><tr><th class="nm">Player</th><th>NHS</th>
-        <th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>Points</th><th>Rounds</th></tr></thead><tbody>` +
-      rows.map(r => `<tr class="${r.played === 4 ? 'win' : ''}">
-        <td class="nm">${r.n}</td>
-        <td>${r.d.hcp === undefined ? '&ndash;' : r.d.hcp}</td>
-        ${r.d.pts.map((v, i) => `<td title="${r.d.gross[i] === null ? 'no card recorded'
-          : 'gross ' + r.d.gross[i]}">${v === null
-            ? '<span class="pending">&ndash;</span>' : v}</td>`).join('')}
-        <td class="key">${r.played ? r.total : '<span class="pending">&ndash;</span>'}</td>
-        <td>${r.played} of 4</td>
-      </tr>`).join('') + `</tbody>`;
+      `<span class="lbl">Who took part</span><ul>` +
+      G.players.map(n => `<li>${n}</li>`).join('') + `</ul>`;
   })();
 
   /* ---------- lowest net rounds ---------- */

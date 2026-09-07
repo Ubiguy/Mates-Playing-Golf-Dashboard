@@ -6,7 +6,7 @@
 <title>Player Profiles</title>
 <meta name="description" content="WHS (England Golf) round histories for society players, alongside their NHS society handicap.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=3df7bec5">
 </head>
 <body>
 <div class="page">
@@ -130,7 +130,7 @@
   </footer>
 </div>
 
-<script src="data.js?v=cd4f7083"></script>
+<script src="data.js?v=49736653"></script>
 <script>
   const REG = Object.fromEntries(REGISTER.map(r => [r.n, r]));
   const f1  = v => v.toFixed(1);
@@ -238,10 +238,13 @@
 
   function haystack(p){
     const r = REG[p.n] || {};
+    const v = (typeof VENUES !== 'undefined' && VENUES[p.n]) || {play:[], extra:[]};
     return [p.n, p.egName, p.home, p.venue,
             (r.honours || []).map(h => h.t).join(' '),
             (p.courses || []).map(c => c[0]).join(' '),
-            (p.ev || []).map(e => e[0]).join(' ')]
+            (p.ev || []).map(e => e[0]).join(' '),
+            v.play.map(c => c[0]).join(' '),      // every player, society venues
+            v.extra.join(' ')]                    // plus their own general play
            .filter(Boolean).join(' ').toLowerCase();
   }
 
@@ -380,6 +383,7 @@
           <span class="lbl">Rounds logged</span>
           <ul>${p.ev.map(([e,n]) => `<li><span>${e}</span><b>${n}</b></li>`).join('')}</ul>
         </div>
+        ${venueBlock(p.n)}
 
         <p class="prof-note">${socNote(p)}</p>`}
       </article>`;
@@ -402,6 +406,20 @@
       : 'None of them has an England Golf index on file, so that column stays blank until one is supplied.');
     document.getElementById('socNote').textContent = bits.join(' ');
   })();
+
+  /* Where a player has played, for the cards that do not already show it.
+     Society venues carry a round count; anything from their own England Golf
+     record is listed separately, because it is general play, not society golf. */
+  function venueBlock(name){
+    const v = (typeof VENUES !== 'undefined' && VENUES[name]) || null;
+    if (!v || !v.play.length) return '';
+    return `<div class="courses">
+      <span class="lbl">Where they play</span>
+      <ul>${v.play.map(([c,n]) => `<li><span>${c}</span><b>${n} round${n === 1 ? '' : 's'}</b></li>`).join('')}
+      ${v.extra.length ? `<li class="elsewhere"><span>Also on their England Golf record</span>
+        <b>${v.extra.join(', ')}</b></li>` : ''}</ul>
+    </div>`;
+  }
 
   /* A short, honest line per player, written from their own numbers. */
   function socNote(p){
@@ -487,6 +505,8 @@
   .ctl-count{margin-left:auto;font-family:'IBM Plex Mono',ui-monospace,monospace;
     font-size:.7rem;color:var(--muted);}
   .prof-empty{padding:18px 2px;color:var(--muted);font-size:.9rem;}
+  .courses li.elsewhere{align-items:flex-start;gap:10px;}
+  .courses li.elsewhere b{font-weight:400;color:var(--muted);text-align:right;}
   @media (max-width:560px){ .ctl-count{margin-left:0;} }
   .honours{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;}
   .honour{display:inline-block;font-family:'IBM Plex Mono',ui-monospace,monospace;
