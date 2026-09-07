@@ -16,7 +16,8 @@ that does not exist. A stamp belongs in a URL and nowhere else.
 import hashlib, re, glob, os
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-ASSETS = ['data.js', 'fx.js', 'style.css', 'favicon.svg', 'apple-touch-icon.png']
+ASSETS = ['data.js', 'fx.js', 'style.css',
+          'favicon-16.png', 'favicon-32.png', 'apple-touch-icon.png']
 
 
 def sha8(path):
