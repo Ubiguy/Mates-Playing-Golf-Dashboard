@@ -54,15 +54,23 @@
       <div class="head-l"><h2>What each column means</h2></div>
     </div>
     <div class="note">
-      <b>NHS &mdash; the playing handicap.</b> Whenever a player's handicap is quoted anywhere on this
-      site, it is their NHS handicap, unless the competition in question states otherwise. Supplied
-      figure: no underlying round data is held, so nothing here is computed &mdash; the number is
-      recorded as given.
+      <b>Three different systems, tracked in parallel.</b> They answer different questions and are not
+      interchangeable. Only the first one is played off.
       <br><br>
-      <b>WHS</b> &mdash; supplied figure, held for comparison. Not used as a playing figure.
+      <b>NHS &mdash; the society's own handicap, and the playing figure.</b> This is the society's
+      internal mechanism: it is largely <b>relative</b>, sized so members compete fairly against each
+      other rather than against a national standard. Whenever a handicap is quoted anywhere on this site
+      &mdash; a match play roster, an away-day card, a profile &mdash; it is the NHS figure, unless the
+      competition in question says otherwise. Critically, the handicap recorded against every round in
+      the tracker is the NHS handicap the player actually played off that day.
       <br><br>
-      <b>Calculated HC</b> &mdash; worked out here from the hole-by-hole scorecards the society has
-      logged, and also held for comparison only. Score differential = round total minus course rating,
+      <b>WHS &mdash; the official England Golf handicap index.</b> Supplied per player from their England
+      Golf record, held here for comparison. It is a national figure computed to the WHS method from
+      cards submitted at their own clubs, so it answers a different question from NHS and will usually
+      disagree with it. Never used as a playing figure here.
+      <br><br>
+      <b>Calculated HC &mdash; what the submitted rounds actually say.</b> Worked out here from the
+      hole-by-hole scorecards the society has logged, as an independent third opinion on the other two. Score differential = round total minus course rating,
       then the average of the best N differentials with the WHS low-round adjustment applied. It stays
       <span class="pill">Provisional</span> until a player has 20 rounds on record, at which point it
       becomes <span class="pill est">Established</span>. Below four rounds it swings wildly on a single
@@ -79,10 +87,11 @@
     <div><b>Editing the register.</b> Every figure lives in <code>data.js</code>, in the <code>REGISTER</code> list, one line per player. Change a number, commit, and this page and its counts update themselves.</div>
     <div><b>Sorting.</b> Players without a published figure in the column being sorted always sit at the bottom, whichever direction you sort in.</div>
     <div><b>Source.</b> All three figures come from the Player HC tab of the society tracker &mdash; NHS from the &ldquo;NHS App HCP&rdquo; column, WHS from the &ldquo;WHS&rdquo; column, and the calculated index from the logged scorecards. The NHS column is the one that counts.</div>
+    <div><b>Tees.</b> Every round logged in 2025 and 2026 was played off the yellow tees, so the calculated figures for that period rest on a single consistent set of tees rather than a mixture.</div>
   </footer>
 </div>
 
-<script src="data.js?v=5eff53d2"></script>
+<script src="data.js?v=756132bf"></script>
 <script>
   const has = v => v !== null && v !== undefined;
   const fmtH = v => has(v) ? v.toFixed(1) : '&ndash;';

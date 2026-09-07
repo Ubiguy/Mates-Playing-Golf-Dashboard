@@ -62,11 +62,11 @@
   <footer>
     <div><b>Source.</b> Hole-by-hole scorecards from Golf GameBook, transcribed into the society tracker and checked card by card &mdash; every printed Out, In, gross total and Stableford points figure reproduced from the raw hole scores before loading.</div>
     <div><b>Net.</b> Gross total minus the handicap played off that day, as recorded on the card. It is not adjusted between courses, so net scores compare within an away day rather than across them.</div>
-    <div><b>Handicaps.</b> Society handicaps are on the register, and every player is quoted on their NHS figure. The handicap shown here is what they actually played off on the day.</div>
+    <div><b>Handicaps.</b> The figure in the NHS column is the society's own internal handicap &mdash; the one the player actually played off that day, and the one every net score here is worked out from. It is not their WHS index, which is a separate national figure held on the register for comparison.</div>
   </footer>
 </div>
 
-<script src="data.js?v=5eff53d2"></script>
+<script src="data.js?v=756132bf"></script>
 <script>
   const GAMES = [...AWAY_GAMES].sort((a,b) => new Date(b.date) - new Date(a.date));
 
@@ -93,8 +93,8 @@
   document.getElementById('games').innerHTML = GAMES.map(g => {
     const winner = g.rows[0];
     const head = g.hasPoints
-      ? `<th class="rk">#</th><th class="nm">Player</th><th>Hcp</th><th>Gross</th><th>Net</th><th>Points</th>`
-      : `<th class="rk">#</th><th class="nm">Player</th><th>Hcp</th><th>Gross</th><th>Net</th>`;
+      ? `<th class="rk">#</th><th class="nm">Player</th><th>NHS</th><th>Gross</th><th>Net</th><th>Points</th>`
+      : `<th class="rk">#</th><th class="nm">Player</th><th>NHS</th><th>Gross</th><th>Net</th>`;
     return `<section>
       <div class="head">
         <div class="head-l">
