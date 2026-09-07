@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Golf Society 2026</title>
-<meta name="description" content="Golf society season hub - the season's five majors, team match play and championship standings.">
+<meta name="description" content="Golf society season hub - the 2026 season tournaments, representative fixtures, team match play and championship standings.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -31,7 +31,7 @@
   </header>
 
   <div class="strip">
-    <div class="stat"><span class="k">Majors running</span><span class="v num" id="sLive">0</span><span class="sub" id="sLiveWho"></span></div>
+    <div class="stat"><span class="k">Tournaments running</span><span class="v num" id="sLive">0</span><span class="sub" id="sLiveWho"></span></div>
     <div class="stat"><span class="k">Players on the books</span><span class="v num" id="sPlayers">0</span><span class="sub">see the handicap register</span></div>
     <div class="stat"><span class="k">Scorecards logged</span><span class="v num" id="sRounds">0</span><span class="sub" id="sSince"></span></div>
     <div class="stat"><span class="k">Lowest net round</span><span class="v num" id="sBest">0</span><span class="sub" id="sBestWho"></span></div>
@@ -40,10 +40,10 @@
   <section>
     <div class="head">
       <div class="head-l">
-        <h2>The season's five majors</h2>
+        <h2>2026 Season Tournaments</h2>
         <span class="when" id="majorsWhen"></span>
       </div>
-      <p>Three settled, two still being played</p>
+      <p id="majorsLead"></p>
     </div>
     <div class="t-scroll"><table id="majors"></table></div>
   </section>
@@ -112,7 +112,7 @@
   </footer>
 </div>
 
-<script src="data.js?v=b6d0f7bf"></script>
+<script src="data.js?v=e3611a15"></script>
 <script>
   const fmtP = v => v % 1 === 0 ? String(v) : v.toFixed(1);
 
@@ -192,14 +192,20 @@
       `than a best-of-N, so turning up counts.`;
   })();
 
-  /* ---------- the five majors ---------- */
+  /* ---------- the majors, plus the representative fixtures ---------- */
   (function(){
     const done = MAJORS.filter(m => m[1] === 'done').length;
+    const rep  = MAJORS.filter(m => /representative/.test(m[3] || '')).length;
+    const soc  = MAJORS.length - rep;
     document.getElementById('majorsWhen').textContent =
       `${done} of ${MAJORS.length} decided`;
+    document.getElementById('majorsLead').textContent =
+      `${soc} society majors` +
+      (rep ? `, plus ${rep} Yorkshire representative fixtures` : '') +
+      ` — ${MAJORS.length - done} still being played`;
     document.getElementById('majors').innerHTML =
       `<thead><tr><th class="nm">Tournament</th><th class="nm">Status</th>
-        <th class="nm">Champion</th></tr></thead><tbody>` +
+        <th class="nm">Champion / result</th></tr></thead><tbody>` +
       MAJORS.map(([name, status, champ, note, link]) => `<tr class="${champ ? 'win' : ''}">
           <td class="nm">${link ? `<a href="${link}">${name}</a>` : name}
             <span class="major-note">${note}</span></td>

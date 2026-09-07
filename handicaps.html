@@ -64,7 +64,8 @@
       competition in question says otherwise. Critically, the handicap recorded against every round in
       the tracker is the NHS handicap the player actually played off that day.
       <br><br>
-      <b>WHS &mdash; the official England Golf handicap index.</b> Supplied per player from their England
+      <b>WHS &mdash; the official England Golf handicap index.</b> WHS and &ldquo;England Golf index&rdquo;
+      are two names for the same figure; the player profiles page uses both. Supplied per player from their England
       Golf record, held here for comparison. It is a national figure computed to the WHS method from
       cards submitted at their own clubs, so it answers a different question from NHS and will usually
       disagree with it. Never used as a playing figure here.
@@ -96,7 +97,7 @@
   </footer>
 </div>
 
-<script src="data.js?v=b6d0f7bf"></script>
+<script src="data.js?v=e3611a15"></script>
 <script>
   const has = v => v !== null && v !== undefined;
   const fmtH = v => has(v) ? v.toFixed(1) : '&ndash;';
@@ -150,7 +151,7 @@
     const cols = [
       {t:'Player',           k:'n',      cls:'nm'},
       {t:'NHS &middot; playing', k:'nhs'},
-      {t:'WHS',              k:'whs'},
+      {t:'WHS &middot; England Golf', k:'whs'},
       {t:'Calculated HC',    k:'calc'},
       {t:'Rounds',           k:'rounds'},
       {t:'Status',           k:'est'}
