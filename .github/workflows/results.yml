@@ -37,21 +37,36 @@ jobs:
           python-version: '3.12'
           # no pip install: with the form as the source this is pure stdlib
 
+      # The cron runs twice an hour from the moment this lands on main, which is
+      # before the form exists. Skipping cleanly rather than failing keeps that
+      # from mailing a failure notice every thirty minutes.
+      - name: Is the form configured yet?
+        id: cfg
+        env:
+          RESULTS_CSV_URL: ${{ secrets.RESULTS_CSV_URL }}
+        run: |
+          if [ -z "$RESULTS_CSV_URL" ]; then
+            echo "RESULTS_CSV_URL is not set - skipping until the form is live"
+            echo "ready=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=yes" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Read the form and regenerate data.js
+        if: steps.cfg.outputs.ready == 'yes'
         env:
           RESULTS_CSV_URL: ${{ secrets.RESULTS_CSV_URL }}
           DATA_JS: data.js
         run: |
-          if [ -z "$RESULTS_CSV_URL" ]; then
-            echo "RESULTS_CSV_URL secret is not set - nothing to do"; exit 1
-          fi
           python tools/results_import.py          # report first, so the log is readable
           python tools/matches_write.py
 
       - name: Restamp the pages
+        if: steps.cfg.outputs.ready == 'yes'
         run: python stamp.py .
 
       - name: Commit if anything changed
+        if: steps.cfg.outputs.ready == 'yes'
         run: |
           if git diff --quiet; then
             echo "no change - no result has been submitted since the last run"
