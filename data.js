@@ -303,191 +303,134 @@ const BEST = [
   ['Mansoor M',67,85,'Stroke Play R8','23 Aug 2026']
 ];
 
-/* ---------- Asia Cup 2026 player profiles ----------
-   Source: Asia_Cup_2026_Squad_Profiles.vF2.pptx, compiled from England Golf
-   round histories taken from each player's own My England Golf (WHS) export,
-   loaded into the WHS Rounds sheet of the tracker and recomputed from there.
-
-   `idx` is the WHS handicap index, also called the England Golf index - a
-   different figure from the society's NHS handicap, which stays the playing
-   number per the society rule. Both are shown side by side on the page.
-
-   egName   - the name England Golf holds, where it differs from ours
-   noExport - no My England Golf export loaded yet, so the figures are an
-              earlier WHS record rather than a current one
-   kind     - whether `mark` is that player's highest ('peak') or lowest
-              ('low') recorded index
-   net      - change in index over the whole history; negative is improvement
-
-   Squad selections and tournament awards are accolades held on the player
-   (REGISTER.honours), never a source of data. k:'squad' is a selection,
-   k:'award' a result.
-
-   CDH membership numbers are deliberately NOT published here - this file is
-   served publicly. They live in the 'Player IDs' sheet of the tracker.    */
-const PROFILES = [
-  {n:'Guftar Hussain', egName:null, init:'GH',
-   idx:9.6, since:'May 2018', scores:124, avgDiff:12.6,
-   best:{v:4.8, d:'2 Jul 2022'}, mark:{v:5.7, d:'11 Aug 2018', kind:'low'}, net:1,
-   home:'Leeds Golf Centre',
-   courses:[['Leeds GC — White','69 rounds'],['Leeds GC — Yellow','16 rounds'],['Leeds GC — Indigo','14 rounds'],['Leeds GC — White F9','8 rounds'],['Leeds GC — Red','6 rounds'],['Elsewhere','11 rounds']],
-   note:'Much the longest record in the squad - 124 rounds over eight years, nearly all at Leeds. The index has held between roughly 7.5 and 10.5 throughout, so the 5.7 in 2018 stands well clear of everything since. Thirteen rounds through 2025 carry a WHS exceptional-score reduction of 1.0 shot.'},
-
-  {n:'Tab Rafique', egName:'Tabbussam Rafique', init:'TR', noExport:true,
-   idx:9.9, since:'May 2026', scores:6, avgDiff:14.7,
-   best:{v:9.9, d:'17 Jun 2026'}, mark:{v:11.7, d:'9 May 2026', kind:'peak'}, net:-1.8,
-   home:'Leeds Golf Centre',
-   courses:[['Leeds GC — Yellow','5 rounds'],['Leeds GC — White','1 round']],
-   note:'Lowest index in the squad, but a very short history — six rounds, all at Leeds. Improved fast (11.7 to 8.9) then bounced back to 9.9; still a small sample.'},
-
-  {n:'Afrid Iqbal', egName:null, init:'AI', noExport:true,
-   idx:13.0, since:'Jul 2023', scores:20, avgDiff:16.9,
-   best:{v:9.8, d:'17 Aug 2024'}, mark:{v:13.1, d:'18 Apr 2026', kind:'peak'}, net:0.5,
-   home:'Leeds Golf Centre',
-   courses:[['Leeds GC — White','10 rounds'],['Leeds GC — Indigo','4 rounds'],
-            ['Leeds GC — Yellow','3 rounds'],['Leeds GC — Red','2 rounds'],
-            ['Leeds GC — Red F9','1 round']],
-   note:'Remarkably stable — 12.2 to 13.1 across nearly three years, every round at Leeds, with two long reporting gaps. The 29 Jul 2023 round was missing its adjusted gross and was back-calculated to about 89 from the differential.'},
-
-  {n:'Shufqat Khan', egName:null, init:'SK',
-   idx:15.9, since:'May 2025', scores:60, avgDiff:21.3,
-   best:{v:10.8, d:'9 Aug 2026'}, mark:{v:20.4, d:'3 Aug 2025', kind:'peak'}, net:-2,
-   home:'Leeds Golf Centre',
-   courses:[['Leeds GC — Yellow','21 rounds'],['Leeds GC — White','8 rounds'],['Leeds GC — Red','5 rounds'],['Bradford — Yellow','3 rounds'],['Leeds GC — Yellow F9','3 rounds'],['Elsewhere','20 rounds']],
-   note:'The steepest improver here: 20.4 at the peak in August 2025 down to 15.9 now, though the run is uneven rather than a steady slide. The export stops at England Golf&rsquo;s 60-round limit, so this history starts in May 2025 rather than at his first card.'},
-
-  {n:'Imran K', egName:'Imran Abbas', init:'IA',
-   idx:17, since:'Apr 2023', scores:60, avgDiff:19.6,
-   best:{v:11.6, d:'22 Aug 2026'}, mark:{v:14.5, d:'3 Aug 2025', kind:'low'}, net:0.9,
-   home:'Leeds Golf Centre',
-   courses:[['Leeds GC — Yellow','29 rounds'],['Leeds GC — White','24 rounds'],['Leeds GC — Red','3 rounds'],['Leeds GC — Indigo','3 rounds'],['Hollins Hall Hotel & Country Club — White','1 round']],
-   note:'Remarkably level - the index has sat between about 14.5 and 19 across three years with no real trend either way. Rounds split almost evenly between the Leeds yellow and white tees. The export stops at England Golf&rsquo;s 60-round limit.'},
-
-  {n:'Yaseen Mohammed', egName:'Yaseen Mohammad', init:'YM',
-   idx:15.2, since:'Jan 2023', scores:29, avgDiff:19.1,
-   best:{v:10.8, d:'8 Sep 2024'}, mark:{v:12.2, d:'26 Jan 2023', kind:'low'}, net:3,
-   home:'Leeds Golf Centre',
-   courses:[['Leeds GC — Yellow','16 rounds'],['Leeds GC — White','2 rounds'],['Horsforth — Yellow','1 round'],['Formby Hall Golf Resort & Spa — White','1 round'],['Wetherby — Yellow','1 round'],['Elsewhere','8 rounds']],
-   note:'Has drifted about three shots up from the 12.2 first recorded in January 2023. Plays away from Leeds more than most of the squad, which is why his average differential sits above where his index alone would suggest.'},
-
-  {n:'Waseem Goldenboy', egName:'Waseem Javeed', init:'WJ',
-   idx:18, since:'Apr 2025', scores:28, avgDiff:22.1,
-   best:{v:11.8, d:'28 Jul 2025'}, mark:{v:26.9, d:'3 Jul 2025', kind:'peak'}, net:-4,
-   home:'Leeds Golf Centre',
-   courses:[['Leeds GC — Yellow','18 rounds'],['Leeds GC — White','5 rounds'],['Tankersley Park — Yellow','1 round'],['Tankersley Park — White','1 round'],['Bradford — White','1 round'],['Elsewhere','2 rounds']],
-   note:'The sharpest swing in the squad - out to 26.9 in early July 2025, back to 18.0 since. Three April 2025 rounds in the England Golf record carry an adjusted gross higher than the society scorecard for the same day, which is a data-entry error to be corrected with England Golf.'},
-
-  {n:'Basharat2 Ali', egName:'Basharat Ali', init:'BA',
-   idx:18.3, since:'Jul 2021', scores:39, avgDiff:24.9,
-   best:{v:14.5, d:'28 May 2025'}, mark:{v:25.3, d:'30 Oct 2022', kind:'peak'}, net:-5.1,
-   home:'Leeds Golf Centre',
-   courses:[['Leeds GC — Yellow','27 rounds'],['Leeds GC — White','4 rounds'],['Leeds GC — Indigo','2 rounds'],['Leeds GC — Red','2 rounds'],['The Mere Golf Resort & Spa — Yellow Alt','1 round'],['Elsewhere','3 rounds']],
-   note:'The biggest long-run improvement here - 25.3 in late 2022 to 18.3 now, and gradually rather than in jumps. One June 2026 round was missing its score differential in the export; it was rebuilt from the course rating, slope and PCC.'},
-
-  {n:'Tariq Javaid', egName:'Tariq Javid', init:'TJ',
-   idx:24.1, since:'May 2018', scores:33, avgDiff:29.6,
-   best:{v:20.8, d:'19 Aug 2024'}, mark:{v:31, d:'8 Aug 2023', kind:'peak'}, net:-2.1,
-   home:'Leeds Golf Centre',
-   courses:[['Leeds GC — Yellow','24 rounds'],['Leeds GC — White','2 rounds'],['Formby Hall Golf Resort & Spa — White','1 round'],['Scarcroft — Yellow','1 round'],['The Mere Golf Resort & Spa — Yellow Alt','1 round'],['Elsewhere','4 rounds']],
-   note:'The highest index in the squad, off a long but sparse record - 33 rounds spread over eight years, with a four-year gap between 2018 and 2023. Almost everything is played off the Leeds yellow tees.'}
-];
-
-/* The other nine of the eighteen-strong Asia Cup squad. Not society players,
-   so they have no profile card here.                                    */
+/* ---------- Asia Cup 2026 squad ----------
+   The event and the members of the squad who are not society players.
+   Squad selection itself is an accolade on the player, in REGISTER.honours. */
 const SQUAD_OTHERS = ['Kamran Jawaid','Sajid Mahmood','Ikhlaq Sulaman','Adam Butt',
   'Owais Mohammad','Shabir Hussain','Zain Ul-Abidin','Abdullah Noor','Tahir Shah'];
 
-/* Where the profiles were compiled and when.                            */
 const ASIA_CUP = {
   event:'Asia Cup 2026', date:'2 August 2026',
   venue:'The Warwickshire, Leek Wootton', squad:18,
   format:'Four-team round robin — Manchester, Yorkshire, East London, West London'
 };
 
-/* ---------- Society player profiles ----------
-   The other 23 on the register: everyone who is NOT in the Asia Cup squad.
-   Unlike PROFILES above, these are computed here from the society's own
-   hole-by-hole scorecards in Golf_Scores_Tracker_19.xlsx, not from England
-   Golf. None of them has an England Golf / WHS index on file yet, so that
-   figure is deliberately left blank on their card until one is supplied.
+/* ---------- Profile cards ----------
+   One card per player. SOCIETY_STATS is what our own scorecards say,
+   WHS_STATS what that player's My England Golf export says; a card shows
+   whichever it has, and the two are never merged - they are built the
+   same way but from different rounds, so they are not comparable.
 
-   idx   - the society calculated index: score differential (round total minus
-           course rating, 70 at Forest Pines, otherwise 69) averaged over the
-           best N differentials with the WHS low-round adjustment. Verified to
-           match the tracker exactly for all 30 players who have rounds.
-   avg   - mean score differential across every round logged
-   mark  - the peak index for players who have improved, the lowest for those
-           who have not; `kind` says which
-   net   - change in index from their first round to now; negative is better
-   ev    - how their rounds break down by competition
-   rounds:0 means nothing logged yet, so only their NHS handicap shows.   */
-const SOCIETY_PROFILES = [
-  {n:'Hamza T', init:'HT', rounds:3, first:'Jul 2025', last:'Mar 2026',
-   idx:-3.0, avg:3.7, best:{v:-1, d:'13 Jul 2025'}, mark:{v:5.0, d:'Jul 2025', kind:'peak'}, net:-8.0,
-   ev:[['Stableford rounds',2],['Forest Pines away day',1]]},
-  {n:'Aftab Iqbal', init:'AI', rounds:2, first:'Mar 2026', last:'Aug 2026',
-   idx:6.0, avg:14.5, best:{v:8, d:'1 Aug 2026'}, mark:{v:19.0, d:'Mar 2026', kind:'peak'}, net:-13.0,
-   ev:[['Forest Pines away day',1],['Strokeplay rounds',1]]},
-  {n:'Noor', init:'NO', rounds:0},
-  {n:'Raz Shafi', init:'RS', rounds:17, first:'Apr 2025', last:'Sep 2026',
-   idx:13.8, avg:19.1, best:{v:13, d:'19 Apr 2026'}, mark:{v:24.0, d:'Apr 2025', kind:'peak'}, net:-10.2,
-   ev:[['Stableford rounds',9],['Strokeplay rounds',7],['Hollins Hall away day',1]]},
-  {n:'Umer Akbar', init:'UA', rounds:2, first:'Jul 2025', last:'Mar 2026',
-   idx:10.0, avg:14.5, best:{v:12, d:'13 Jul 2025'}, mark:{v:10.0, d:'Jul 2025', kind:'low'}, net:0.0,
-   ev:[['Stableford rounds',1],['Forest Pines away day',1]]},
-  {n:'Gazanfar Afzal', init:'GA', rounds:1, first:'Apr 2024', last:'Apr 2024',
-   idx:18.0, avg:20.0, best:{v:20, d:'27 Apr 2024'}, mark:{v:18.0, d:'Apr 2024', kind:'low'}, net:0.0,
-   ev:[['Stableford rounds',1]]},
-  {n:'Haaris Ahmed', init:'HA', rounds:4, first:'May 2025', last:'Aug 2026',
-   idx:14.0, avg:21.8, best:{v:15, d:'15 Aug 2026'}, mark:{v:28.0, d:'May 2025', kind:'peak'}, net:-14.0,
-   ev:[['Stableford rounds',3],['Strokeplay rounds',1]]},
-  {n:'Nadeem Ahmed', init:'NA', rounds:8, first:'Apr 2025', last:'Aug 2026',
-   idx:14.5, avg:20.9, best:{v:13, d:'20 Apr 2025'}, mark:{v:11.0, d:'Apr 2025', kind:'low'}, net:3.5,
-   ev:[['Stableford rounds',5],['Strokeplay rounds',2],['Forest Pines away day',1]]},
-  {n:'Ayaz Alam', init:'AA', rounds:1, first:'Apr 2025', last:'Apr 2025',
-   idx:22.0, avg:24.0, best:{v:24, d:'20 Apr 2025'}, mark:{v:22.0, d:'Apr 2025', kind:'low'}, net:0.0,
-   ev:[['Stableford rounds',1]]},
-  {n:'Naeem Akhtar', init:'NA', rounds:3, first:'Apr 2025', last:'Jul 2026',
-   idx:23.0, avg:28.3, best:{v:25, d:'11 Jul 2026'}, mark:{v:30.0, d:'Apr 2025', kind:'peak'}, net:-7.0,
-   ev:[['Strokeplay rounds',2],['Stableford rounds',1]]},
-  {n:'Jabar Mughal', init:'JM', rounds:13, first:'Apr 2025', last:'Aug 2026',
-   idx:16.5, avg:21.8, best:{v:16, d:'1 Aug 2026'}, mark:{v:23.0, d:'Apr 2025', kind:'peak'}, net:-6.5,
-   ev:[['Strokeplay rounds',7],['Stableford rounds',6]]},
-  {n:'Mansoor M', init:'MM', rounds:20, first:'Apr 2024', last:'Sep 2026',
-   idx:20.9, avg:27.5, best:{v:16, d:'23 Aug 2026'}, mark:{v:38.0, d:'Apr 2024', kind:'peak'}, net:-17.1,
-   ev:[['Stableford rounds',15],['Strokeplay rounds',3],['Forest Pines away day',1],['Hollins Hall away day',1]]},
-  {n:'Sameer Ahmed', init:'SA', rounds:16, first:'May 2025', last:'Aug 2026',
-   idx:20.2, avg:26.1, best:{v:19, d:'23 Aug 2026'}, mark:{v:18.0, d:'May 2025', kind:'low'}, net:2.2,
-   ev:[['Stableford rounds',10],['Strokeplay rounds',5],['Forest Pines away day',1]]},
-  {n:'Mahmood Sadiq', init:'MS', rounds:29, first:'Apr 2024', last:'Sep 2026',
-   idx:20.4, avg:26.8, best:{v:14, d:'5 Apr 2026'}, mark:{v:24.0, d:'Apr 2024', kind:'peak'}, net:-3.6,
-   ev:[['Stableford rounds',18],['Strokeplay rounds',9],['Forest Pines away day',1],['Hollins Hall away day',1]]},
-  {n:'Sid Amin', init:'SA', rounds:23, first:'Apr 2025', last:'Sep 2026',
-   idx:21.9, avg:27.1, best:{v:20, d:'20 Apr 2025'}, mark:{v:24.0, d:'Apr 2025', kind:'peak'}, net:-2.1,
-   ev:[['Stableford rounds',14],['Strokeplay rounds',7],['Forest Pines away day',1],['Hollins Hall away day',1]]},
-  {n:'Hanif Malik', init:'HM', rounds:1, first:'Mar 2026', last:'Mar 2026',
-   idx:56.0, avg:58.0, best:{v:58, d:'23 Mar 2026'}, mark:{v:56.0, d:'Mar 2026', kind:'low'}, net:0.0,
-   ev:[['Forest Pines away day',1]]},
-  {n:'Shaan Ahmed', init:'SA', rounds:15, first:'Apr 2024', last:'Aug 2026',
-   idx:23.4, avg:30.3, best:{v:23, d:'20 Apr 2025'}, mark:{v:33.0, d:'Apr 2024', kind:'peak'}, net:-9.6,
-   ev:[['Stableford rounds',11],['Strokeplay rounds',4]]},
-  {n:'Matt T', init:'MT', rounds:1, first:'Mar 2026', last:'Mar 2026',
-   idx:36.0, avg:38.0, best:{v:38, d:'23 Mar 2026'}, mark:{v:36.0, d:'Mar 2026', kind:'low'}, net:0.0,
-   ev:[['Forest Pines away day',1]]},
-  {n:'Naveen Ahmed', init:'NA', rounds:3, first:'Apr 2025', last:'Sep 2026',
-   idx:22.0, avg:35.0, best:{v:24, d:'23 Mar 2026'}, mark:{v:34.0, d:'Apr 2025', kind:'peak'}, net:-12.0,
-   ev:[['Stableford rounds',1],['Forest Pines away day',1],['Hollins Hall away day',1]]},
-  {n:'Shazad Hussain', init:'SH', rounds:28, first:'Apr 2024', last:'Sep 2026',
-   idx:23.0, avg:29.5, best:{v:19, d:'15 Jun 2025'}, mark:{v:20.0, d:'Jul 2025', kind:'low'}, net:1.0,
-   ev:[['Stableford rounds',19],['Strokeplay rounds',7],['Forest Pines away day',1],['Hollins Hall away day',1]]},
-  {n:'Sabar Riaz', init:'SR', rounds:3, first:'Jul 2026', last:'Aug 2026',
-   idx:28.0, avg:38.7, best:{v:30, d:'11 Jul 2026'}, mark:{v:52.0, d:'Jul 2026', kind:'peak'}, net:-24.0,
-   ev:[['Strokeplay rounds',3]]},
-  {n:'Mustapha T', init:'MT', rounds:1, first:'Mar 2026', last:'Mar 2026',
-   idx:44.0, avg:46.0, best:{v:46, d:'23 Mar 2026'}, mark:{v:44.0, d:'Mar 2026', kind:'low'}, net:0.0,
-   ev:[['Forest Pines away day',1]]},
-  {n:'Raza Efendi', init:'RE', rounds:0}
-];
+   Generated by cards_write.py from the tracker. Do not hand-edit: the
+   block this replaced was hand-built and had drifted out of step with
+   the handicap register after the tee corrections.
+
+   noExport marks a WHS record carried from an earlier figure rather than
+   a current export. kind says whether mark is a peak or a low.        */
+const EG_NAMES = {
+  'Basharat2 Ali':'Basharat Ali',
+  'Imran K':'Imran Abbas',
+  'Tab Rafique':'Tabbussam Rafique',
+  'Tariq Javaid':'Tariq Javid',
+  'Waseem Goldenboy':'Waseem Javeed',
+  'Yaseen Mohammed':'Yaseen Mohammad'
+};
+
+const SOCIETY_STATS = {
+  'Afrid Iqbal':{rounds:9, first:'Apr 2025', last:'Aug 2026', idx:14.3, avg:21.8,
+    best:{v:13, d:'9 Aug 2026'}, mark:{v:18, d:'Apr 2026', kind:'peak'}, net:-1.7, ev:[['Stableford rounds',5],['Strokeplay rounds',4]]},
+  'Aftab Iqbal':{rounds:2, first:'Mar 2026', last:'Aug 2026', idx:6, avg:14.5,
+    best:{v:8, d:'1 Aug 2026'}, mark:{v:19, d:'Mar 2026', kind:'peak'}, net:-13, ev:[['Forest Pines away day',1],['Strokeplay rounds',1]]},
+  'Ayaz Alam':{rounds:1, first:'Apr 2025', last:'Apr 2025', idx:22, avg:24,
+    best:{v:24, d:'20 Apr 2025'}, mark:{v:22, d:'Apr 2025', kind:'peak'}, net:0, ev:[['Stableford rounds',1]]},
+  'Basharat2 Ali':{rounds:13, first:'Apr 2024', last:'Aug 2026', idx:18.3, avg:26.3,
+    best:{v:15, d:'30 Aug 2026'}, mark:{v:22, d:'Jun 2025', kind:'peak'}, net:-0.7, ev:[['Stableford rounds',8],['Strokeplay rounds',4],['Forest Pines away day',1]]},
+  'Gazanfar Afzal':{rounds:1, first:'Apr 2024', last:'Apr 2024', idx:18, avg:20,
+    best:{v:20, d:'27 Apr 2024'}, mark:{v:18, d:'Apr 2024', kind:'peak'}, net:0, ev:[['Stableford rounds',1]]},
+  'Guftar Hussain':{rounds:20, first:'Apr 2024', last:'Sep 2026', idx:11.7, avg:14.9,
+    best:{v:9, d:'13 Jul 2025'}, mark:{v:18, d:'Apr 2024', kind:'peak'}, net:-6.3, ev:[['Stableford rounds',15],['Strokeplay rounds',4],['Hollins Hall away day',1]]},
+  'Haaris Ahmed':{rounds:4, first:'May 2025', last:'Aug 2026', idx:12.5, avg:19.9,
+    best:{v:13.5, d:'21 Jun 2025'}, mark:{v:25.5, d:'May 2025', kind:'peak'}, net:-13, ev:[['Stableford rounds',3],['Strokeplay rounds',1]]},
+  'Hamza T':{rounds:3, first:'Jul 2025', last:'Mar 2026', idx:-3, avg:2.8,
+    best:{v:-1, d:'13 Jul 2025'}, mark:{v:2.5, d:'Jul 2025', kind:'peak'}, net:-5.5, ev:[['Stableford rounds',2],['Forest Pines away day',1]]},
+  'Hanif Malik':{rounds:1, first:'Mar 2026', last:'Mar 2026', idx:56, avg:58,
+    best:{v:58, d:'23 Mar 2026'}, mark:{v:56, d:'Mar 2026', kind:'peak'}, net:0, ev:[['Forest Pines away day',1]]},
+  'Imran K':{rounds:21, first:'Apr 2024', last:'Sep 2026', idx:18.6, avg:22.4,
+    best:{v:15, d:'19 Apr 2026'}, mark:{v:14.5, d:'Apr 2025', kind:'low'}, net:-2.4, ev:[['Stableford rounds',13],['Strokeplay rounds',7],['Hollins Hall away day',1]]},
+  'Jabar Mughal':{rounds:13, first:'Apr 2025', last:'Aug 2026', idx:17, avg:21.6,
+    best:{v:16, d:'1 Aug 2026'}, mark:{v:23, d:'Apr 2025', kind:'peak'}, net:-6, ev:[['Strokeplay rounds',7],['Stableford rounds',6]]},
+  'Mahmood Sadiq':{rounds:29, first:'Apr 2024', last:'Sep 2026', idx:20.9, avg:26.7,
+    best:{v:15.9, d:'5 Apr 2026'}, mark:{v:24, d:'Apr 2024', kind:'peak'}, net:-3.1, ev:[['Stableford rounds',18],['Strokeplay rounds',9],['Forest Pines away day',1],['Hollins Hall away day',1]]},
+  'Mansoor M':{rounds:20, first:'Apr 2024', last:'Sep 2026', idx:20.9, avg:27.1,
+    best:{v:16, d:'23 Aug 2026'}, mark:{v:38, d:'Apr 2024', kind:'peak'}, net:-17.1, ev:[['Stableford rounds',15],['Strokeplay rounds',3],['Forest Pines away day',1],['Hollins Hall away day',1]]},
+  'Matt T':{rounds:1, first:'Mar 2026', last:'Mar 2026', idx:36, avg:38,
+    best:{v:38, d:'23 Mar 2026'}, mark:{v:36, d:'Mar 2026', kind:'peak'}, net:0, ev:[['Forest Pines away day',1]]},
+  'Mustapha T':{rounds:1, first:'Mar 2026', last:'Mar 2026', idx:44, avg:46,
+    best:{v:46, d:'23 Mar 2026'}, mark:{v:44, d:'Mar 2026', kind:'peak'}, net:0, ev:[['Forest Pines away day',1]]},
+  'Nadeem Ahmed':{rounds:8, first:'Apr 2025', last:'Aug 2026', idx:14.5, avg:20.9,
+    best:{v:13, d:'20 Apr 2025'}, mark:{v:11, d:'Apr 2025', kind:'low'}, net:3.5, ev:[['Stableford rounds',5],['Strokeplay rounds',2],['Forest Pines away day',1]]},
+  'Naeem Akhtar':{rounds:3, first:'Apr 2025', last:'Jul 2026', idx:23, avg:28.3,
+    best:{v:25, d:'11 Jul 2026'}, mark:{v:30, d:'Apr 2025', kind:'peak'}, net:-7, ev:[['Strokeplay rounds',2],['Stableford rounds',1]]},
+  'Naveen Ahmed':{rounds:3, first:'Apr 2025', last:'Sep 2026', idx:22, avg:35,
+    best:{v:24, d:'23 Mar 2026'}, mark:{v:34, d:'Apr 2025', kind:'peak'}, net:-12, ev:[['Forest Pines away day',1],['Hollins Hall away day',1],['Stableford rounds',1]]},
+  'Raz Shafi':{rounds:17, first:'Apr 2025', last:'Sep 2026', idx:14.2, avg:19.1,
+    best:{v:13, d:'19 Apr 2026'}, mark:{v:24, d:'Apr 2025', kind:'peak'}, net:-9.8, ev:[['Stableford rounds',9],['Strokeplay rounds',7],['Hollins Hall away day',1]]},
+  'Sabar Riaz':{rounds:3, first:'Jul 2026', last:'Aug 2026', idx:28, avg:38.7,
+    best:{v:30, d:'11 Jul 2026'}, mark:{v:52, d:'Jul 2026', kind:'peak'}, net:-24, ev:[['Strokeplay rounds',3]]},
+  'Sameer Ahmed':{rounds:16, first:'May 2025', last:'Aug 2026', idx:20.2, avg:25.7,
+    best:{v:19, d:'23 Aug 2026'}, mark:{v:22.5, d:'Apr 2026', kind:'peak'}, net:2.2, ev:[['Stableford rounds',10],['Strokeplay rounds',5],['Forest Pines away day',1]]},
+  'Shaan Ahmed':{rounds:15, first:'Apr 2024', last:'Aug 2026', idx:23.3, avg:30.1,
+    best:{v:20.5, d:'8 Jun 2025'}, mark:{v:33, d:'Apr 2024', kind:'peak'}, net:-9.7, ev:[['Stableford rounds',11],['Strokeplay rounds',4]]},
+  'Shazad Hussain':{rounds:28, first:'Apr 2024', last:'Sep 2026', idx:22.4, avg:29.2,
+    best:{v:18.5, d:'5 Jul 2025'}, mark:{v:25.8, d:'May 2025', kind:'peak'}, net:0.4, ev:[['Stableford rounds',19],['Strokeplay rounds',7],['Forest Pines away day',1],['Hollins Hall away day',1]]},
+  'Shufqat Khan':{rounds:19, first:'Apr 2024', last:'Sep 2026', idx:16.2, avg:23.9,
+    best:{v:10, d:'9 Aug 2026'}, mark:{v:22, d:'Jun 2025', kind:'peak'}, net:-1.8, ev:[['Stableford rounds',13],['Strokeplay rounds',5],['Hollins Hall away day',1]]},
+  'Sid Amin':{rounds:23, first:'Apr 2025', last:'Sep 2026', idx:22, avg:26.8,
+    best:{v:20, d:'20 Apr 2025'}, mark:{v:18, d:'Apr 2025', kind:'low'}, net:0.5, ev:[['Stableford rounds',14],['Strokeplay rounds',7],['Forest Pines away day',1],['Hollins Hall away day',1]]},
+  'Tab Rafique':{rounds:26, first:'Apr 2024', last:'Aug 2026', idx:14.7, avg:18.3,
+    best:{v:11, d:'27 Apr 2024'}, mark:{v:9, d:'Apr 2024', kind:'low'}, net:5.7, ev:[['Stableford rounds',20],['Strokeplay rounds',5],['Forest Pines away day',1]]},
+  'Tariq Javaid':{rounds:14, first:'Apr 2024', last:'Aug 2026', idx:29.5, avg:34.4,
+    best:{v:27, d:'13 Jul 2025'}, mark:{v:27.5, d:'Jul 2025', kind:'low'}, net:-0.5, ev:[['Stableford rounds',8],['Strokeplay rounds',5],['Forest Pines away day',1]]},
+  'Umer Akbar':{rounds:2, first:'Jul 2025', last:'Mar 2026', idx:10, avg:14.5,
+    best:{v:12, d:'13 Jul 2025'}, mark:{v:10, d:'Jul 2025', kind:'peak'}, net:0, ev:[['Forest Pines away day',1],['Stableford rounds',1]]},
+  'Waseem Goldenboy':{rounds:25, first:'Apr 2024', last:'Sep 2026', idx:19.6, avg:24.6,
+    best:{v:18, d:'18 May 2025'}, mark:{v:17.7, d:'Jun 2025', kind:'low'}, net:1.6, ev:[['Stableford rounds',18],['Strokeplay rounds',5],['Forest Pines away day',1],['Hollins Hall away day',1]]},
+  'Yaseen Mohammed':{rounds:18, first:'Apr 2025', last:'Sep 2026', idx:14.9, avg:19.7,
+    best:{v:14, d:'15 Jun 2025'}, mark:{v:25, d:'Apr 2025', kind:'peak'}, net:-10.1, ev:[['Stableford rounds',14],['Strokeplay rounds',2],['Forest Pines away day',1],['Hollins Hall away day',1]]}
+};
+
+const WHS_STATS = {
+  'Afrid Iqbal':{idx:13, scores:20, since:'Jul 2023', avgDiff:16.9,
+    best:{v:9.8, d:'17 Aug 2024'}, mark:{v:13.1, d:'18 Apr 2026', kind:'peak'}, net:0.5, noExport:true, note:'Remarkably stable — 12.2 to 13.1 across nearly three years, every round at Leeds, with two long reporting gaps. The 29 Jul 2023 round was missing its adjusted gross and was back-calculated to about 89 from the differential.'},
+  'Aftab Iqbal':{idx:9.4, scores:51, since:'Aug 2018', avgDiff:12.1,
+    best:{v:4.2, d:'30 May 2026'}, mark:{v:10.6, d:'28 Nov 2023', kind:'peak'}, net:-0.2},
+  'Basharat2 Ali':{idx:18.3, scores:39, since:'Jul 2021', avgDiff:24.9,
+    best:{v:14.5, d:'28 May 2025'}, mark:{v:25.3, d:'30 Oct 2022', kind:'peak'}, net:-5.1, note:'The biggest long-run improvement here - 25.3 in late 2022 to 18.3 now, and gradually rather than in jumps. One June 2026 round was missing its score differential in the export; it was rebuilt from the course rating, slope and PCC.'},
+  'Guftar Hussain':{idx:9.6, scores:124, since:'May 2018', avgDiff:12.6,
+    best:{v:4.8, d:'2 Jul 2022'}, mark:{v:5.7, d:'11 Aug 2018', kind:'low'}, net:1, note:'Much the longest record in the squad - 124 rounds over eight years, nearly all at Leeds. The index has held between roughly 7.5 and 10.5 throughout, so the 5.7 in 2018 stands well clear of everything since. Thirteen rounds through 2025 carry a WHS exceptional-score reduction of 1.0 shot.'},
+  'Haaris Ahmed':{idx:16.6, scores:59, since:'Aug 2020', avgDiff:20.4,
+    best:{v:10.8, d:'19 Jun 2025'}, mark:{v:19, d:'26 Mar 2022', kind:'peak'}, net:-2.1},
+  'Imran K':{idx:17, scores:60, since:'Apr 2023', avgDiff:19.6,
+    best:{v:11.6, d:'22 Aug 2026'}, mark:{v:14.5, d:'3 Aug 2025', kind:'low'}, net:0.9, note:'Remarkably level - the index has sat between about 14.5 and 19 across three years with no real trend either way. Rounds split almost evenly between the Leeds yellow and white tees. The export stops at England Golf&rsquo;s 60-round limit.'},
+  'Mansoor M':{idx:19.9, scores:19, since:'Apr 2026', avgDiff:24.9,
+    best:{v:16.3, d:'21 Jun 2026'}, mark:{v:21, d:'25 Apr 2026', kind:'peak'}, net:-1.1},
+  'Raz Shafi':{idx:11.7, scores:60, since:'Jul 2023', avgDiff:15.4,
+    best:{v:9, d:'26 Aug 2026'}, mark:{v:12.6, d:'6 Apr 2025', kind:'peak'}, net:0.1},
+  'Shazad Hussain':{idx:21.6, scores:40, since:'Aug 2022', avgDiff:27.5,
+    best:{v:14.5, d:'10 Sep 2023'}, mark:{v:18.7, d:'11 Sep 2022', kind:'low'}, net:2.9},
+  'Shufqat Khan':{idx:15.9, scores:60, since:'May 2025', avgDiff:21.3,
+    best:{v:10.8, d:'9 Aug 2026'}, mark:{v:20.4, d:'3 Aug 2025', kind:'peak'}, net:-2, note:'The steepest improver here: 20.4 at the peak in August 2025 down to 15.9 now, though the run is uneven rather than a steady slide. The export stops at England Golf&rsquo;s 60-round limit, so this history starts in May 2025 rather than at his first card.'},
+  'Sid Amin':{idx:20.1, scores:60, since:'Aug 2023', avgDiff:24.4,
+    best:{v:18.1, d:'20 Apr 2025'}, mark:{v:24.7, d:'16 Jun 2024', kind:'peak'}, net:-4.2},
+  'Tab Rafique':{idx:9.9, scores:6, since:'May 2026', avgDiff:14.7,
+    best:{v:9.9, d:'17 Jun 2026'}, mark:{v:11.7, d:'9 May 2026', kind:'peak'}, net:-1.8, noExport:true, note:'Lowest index in the squad, but a very short history — six rounds, all at Leeds. Improved fast (11.7 to 8.9) then bounced back to 9.9; still a small sample.'},
+  'Tariq Javaid':{idx:24.1, scores:33, since:'May 2018', avgDiff:29.6,
+    best:{v:20.8, d:'19 Aug 2024'}, mark:{v:31, d:'8 Aug 2023', kind:'peak'}, net:-2.1, note:'The highest index in the squad, off a long but sparse record - 33 rounds spread over eight years, with a four-year gap between 2018 and 2023. Almost everything is played off the Leeds yellow tees.'},
+  'Waseem Goldenboy':{idx:18, scores:28, since:'Apr 2025', avgDiff:22.1,
+    best:{v:11.8, d:'28 Jul 2025'}, mark:{v:26.9, d:'3 Jul 2025', kind:'peak'}, net:-4, note:'The sharpest swing in the squad - out to 26.9 in early July 2025, back to 18.0 since. Three April 2025 rounds in the England Golf record carry an adjusted gross higher than the society scorecard for the same day, which is a data-entry error to be corrected with England Golf.'},
+  'Yaseen Mohammed':{idx:15.2, scores:29, since:'Jan 2023', avgDiff:19.1,
+    best:{v:10.8, d:'8 Sep 2024'}, mark:{v:12.2, d:'26 Jan 2023', kind:'low'}, net:3, note:'Has drifted about three shots up from the 12.2 first recorded in January 2023. Plays away from Leeds more than most of the squad, which is why his average differential sits above where his index alone would suggest.'}
+};
 
 /* ---------- WHS Away Games ----------
    Tournaments played away from Leeds Golf Centre. Each entry carries its own

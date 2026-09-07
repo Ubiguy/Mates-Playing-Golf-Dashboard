@@ -58,27 +58,14 @@
   <section>
     <div class="head">
       <div class="head-l">
-        <h2>Built from WHS records</h2>
-        <span class="chip done">My England Golf</span>
-        <span class="when">ordered by NHS handicap</span>
+        <h2>Every player</h2>
+        <span class="when" id="orderNote">ordered by NHS handicap</span>
       </div>
-      <p>NHS society handicap first, WHS &mdash; the England Golf index &mdash; second; they are not the same number</p>
+      <p>NHS society handicap first, WHS &mdash; the England Golf index &mdash; second; they are not the
+        same number. Each card carries whichever records exist for that player.</p>
     </div>
-    <div class="profiles" id="profiles"></div>
-    <p class="after" id="profNote"></p>
-  </section>
-
-  <section>
-    <div class="head">
-      <div class="head-l">
-        <h2>The rest of the society</h2>
-        <span class="chip live">Society data</span>
-        <span class="when">ordered by NHS handicap</span>
-      </div>
-      <p id="socLead">Worked out from our own scorecards, with the WHS (England Golf) index shown where an export has been supplied</p>
-    </div>
-    <div class="profiles" id="society"></div>
-    <p class="after" id="socNote"></p>
+    <div class="profiles" id="cards"></div>
+    <p class="after" id="cardsNote"></p>
   </section>
 
   <section>
@@ -91,21 +78,16 @@
       other, and the one they actually play off. Nothing else on this page changes that, whichever
       section a player appears in.
       <br><br>
-      <b>Two different sources, deliberately kept apart.</b> The first group's cards are built from
-      each player's own <b>My England Golf</b> export &mdash; their <b>WHS index</b>, the same thing as
-      an England Golf index and referred to by both names here and on the handicap register, calculated
-      by England Golf to the WHS (World Handicap System) method from cards submitted at their clubs.
-      Each card is rebuilt from that player's own round history, so the figures move as new exports
-      arrive; where no export has been supplied the card shows an earlier WHS record and is marked
-      <span class="src">est</span>.
-      The other twenty-three have a <b>society index</b>, worked out here from the hole-by-hole
-      scorecards in our own tracker. They are built the same way but from different rounds, so a
-      number from one section is not comparable with a number from the other. Where a player in the
-      second group has supplied their My England Golf export, their WHS index is shown on their card
-      too; where only an earlier or estimated figure exists it is marked <span class="src">est</span>,
-      and where there is nothing the tile stays blank. Those three states match the handicap register
-      exactly, because both pages read the same figures.
-      <br><br>
+      <b>Two records, on one card, deliberately kept apart.</b> A player can have two histories here
+      and they answer different questions. The <b>society record</b> is worked out from the hole-by-hole
+      scorecards in our own tracker. The <b>England Golf record</b> comes from that player&rsquo;s own
+      <b>My England Golf</b> export &mdash; their <b>WHS index</b>, the same thing as an England Golf
+      index and referred to by both names here and on the handicap register, calculated by England Golf
+      from cards submitted at their clubs. They are built the same way but from different rounds, so a
+      number from one is not comparable with a number from the other, and they are never merged. A card
+      shows whichever it has: both, one, or neither. Where a WHS figure is an older estimate rather than
+      a loaded export it is marked <span class="src">est</span>, exactly as on the handicap register,
+      because both pages read the same figures.
       <b>Score differential</b> is a round's gross total minus the course rating &mdash; 70 at Forest
       Pines, 69 at Leeds &mdash; so it measures a round against the course rather than against par.
       Lower is better, and the averages here run over a player's whole record, not just this season.
@@ -124,205 +106,36 @@
 
   <footer>
     <div><b>Source.</b> <span id="srcLine"></span> CDH membership numbers are deliberately not published here.</div>
-    <div><b>Society figures.</b> Computed here from the hole-by-hole scorecards in the society tracker, replaying the same WHS low-round method the handicap register uses. Checked against the tracker's own calculation for all thirty players who have rounds: no discrepancies.</div>
+    <div><b>Society figures.</b> Computed from the hole-by-hole scorecards in the society tracker, replaying the same WHS low-round method the handicap register uses, and checked against the register for every player who has rounds. Both the society and England Golf blocks are generated from the tracker, never edited by hand.</div>
     <div><b>The Asia Cup squad.</b> <span id="othersLine"></span></div>
     <div><b>As at.</b> Every figure on a card &mdash; index, cards played, differentials, peak and low marks, courses &mdash; is recomputed from the My England Golf export loaded into the tracker, so a card refreshes whenever a newer export is supplied. A card marked <span class="src">est</span> has no export yet and still shows an earlier WHS record. Society handicaps and results come from the tracker as usual.</div>
   </footer>
 </div>
 
-<script src="data.js?v=49736653"></script>
+<script src="data.js?v=b14206ef"></script>
 <script>
   const REG = Object.fromEntries(REGISTER.map(r => [r.n, r]));
   const f1  = v => v.toFixed(1);
   const sgn = v => (v > 0 ? '+' : '−') + Math.abs(v).toFixed(1);
 
-  /* Sorted by the society handicap, the same order the register uses. */
-  const ROWS = [...PROFILES].sort((a,b) => REG[a.n].nhs - REG[b.n].nhs);
-
-  /* A society index off fewer than this many rounds swings too wildly on a
-     single card to lean on, so it is greyed and flagged, exactly as the
-     handicap register does. */
+  /* A record off fewer than this many rounds swings too wildly on a single
+     card to lean on, so it is greyed and flagged, exactly as the handicap
+     register does. */
   const MIN_ROUNDS = 4;
-  const thin = p => p.rounds > 0 && p.rounds < MIN_ROUNDS;
+  const thin = st => st && st.rounds > 0 && st.rounds < MIN_ROUNDS;
 
-  const SOC = [...SOCIETY_PROFILES].sort((a,b) => {
-    const x = REG[a.n].nhs, y = REG[b.n].nhs;
-    if (x == null && y == null) return a.n.localeCompare(b.n);
-    if (x == null) return 1;
-    if (y == null) return -1;
-    return x - y;
-  });
-
-  /* ---------- summary tiles ---------- */
-  (function(){
-    const socRounds = SOCIETY_PROFILES.reduce((s,p) => s + p.rounds, 0);
-    const sqRounds  = REGISTER.filter(r => PROFILES.some(p => p.n === r.n))
-                              .reduce((s,r) => s + r.rounds, 0);
-    /* Improvement only means something once a player has a few cards behind
-       them, so thin records are left out of this comparison. */
-    const solid = SOCIETY_PROFILES.filter(p => p.rounds >= 8);
-    const imp   = solid.reduce((m,p) => p.net < m.net ? p : m);
-    document.getElementById('cProf').textContent   = PROFILES.length + SOCIETY_PROFILES.length;
-    document.getElementById('sProf').textContent   = 'everyone on the register';
-    const egLoaded = REGISTER.filter(r => r.whsOfficial === true).length;
-    document.getElementById('cEG').textContent     = egLoaded;
-    document.getElementById('sEG').textContent     =
-      `verified exports loaded, of ${REGISTER.length}`;
-    document.getElementById('cRounds').textContent = socRounds + sqRounds;
-    document.getElementById('cImp').textContent    = imp.n;
-    document.getElementById('sImp').textContent    =
-      sgn(imp.net) + ` since ${imp.first}, on society cards`;
-    document.getElementById('stamp').innerHTML     =
-      `${PROFILES.length} from WHS records &middot; ${SOCIETY_PROFILES.length} from our own cards`;
-  })();
-
-  /* ---------- profile cards ---------- */
-  function whsCard(p){
-    const r = REG[p.n];
-    const markLabel = p.mark.kind === 'low' ? 'Lowest index' : 'Peak index';
-    return `<article class="prof">
-      <header class="prof-top">
-        <span class="av">${p.init}</span>
-        <span class="id">
-          <b>${p.n}</b>
-          ${p.egName ? `<span class="alias">England Golf: ${p.egName}</span>` : ''}
-          <span class="alias">${p.home}</span>
-          ${honour(r)}
-        </span>
-      </header>
-
-      <div class="hcs">
-        <div class="hc lead">
-          <span class="lbl">NHS &middot; plays off</span>
-          <span class="big num">${f1(r.nhs)}</span>
-          <span class="foot">${r.rounds} society round${r.rounds === 1 ? '' : 's'} logged</span>
-        </div>
-        <div class="hc${p.noExport ? ' stale' : ''}">
-          <span class="lbl">WHS &middot; England Golf${
-            p.noExport ? ' <span class="src" title="An earlier WHS record — no My England Golf export loaded for this player yet">est</span>' : ''}</span>
-          <span class="big num">${f1(p.idx)}</span>
-          <span class="foot">${p.noExport
-            ? `earlier WHS record &middot; ${p.scores} cards since ${p.since}`
-            : `${p.scores} cards since ${p.since}`}</span>
-        </div>
-      </div>
-
-      <dl class="facts">
-        <div><dt>Avg differential</dt><dd class="num">${f1(p.avgDiff)}</dd></div>
-        <div><dt>Best differential</dt><dd class="num">${f1(p.best.v)}<span class="when">${p.best.d}</span></dd></div>
-        <div><dt>${markLabel}</dt><dd class="num">${f1(p.mark.v)}<span class="when">${p.mark.d}</span></dd></div>
-        <div><dt>Net change</dt><dd class="num ${p.net < 0 ? 'good' : ''}">${sgn(p.net)}</dd></div>
-      </dl>
-
-      <div class="courses">
-        <span class="lbl">Where they play</span>
-        <ul>${p.courses.map(([c,n]) => `<li><span>${c}</span><b>${n}</b></li>`).join('')}</ul>
-      </div>
-
-      <p class="prof-note">${p.note}</p>
-    </article>`;
-  }
-
-  /* ---------- ordering and search ----------
-     One set of controls drives both grids. Sorting is on the register, so the
-     two sections stay in step with each other and with the handicap page.
-     A player with no figure for the chosen key always sorts last, whichever
-     direction the order runs - the same rule the register uses. */
-  const SORTS = {
-    nhs:    {label:'NHS handicap',   low:'Low to high', get: p => REG[p.n].nhs},
-    name:   {label:'name',           low:'A to Z',      get: p => p.n},
-    rounds: {label:'society rounds', low:'Fewest first',get: p => REG[p.n].rounds},
-    whs:    {label:'WHS index',      low:'Low to high', get: p => REG[p.n].whs}
+  const initials = n => {
+    const w = n.trim().split(/\s+/);
+    return (w.length > 1 ? w[0][0] + w[1][0] : n.slice(0, 2)).toUpperCase();
   };
-  let sortKey = 'nhs', dir = 1, query = '';
 
-  function haystack(p){
-    const r = REG[p.n] || {};
-    const v = (typeof VENUES !== 'undefined' && VENUES[p.n]) || {play:[], extra:[]};
-    return [p.n, p.egName, p.home, p.venue,
-            (r.honours || []).map(h => h.t).join(' '),
-            (p.courses || []).map(c => c[0]).join(' '),
-            (p.ev || []).map(e => e[0]).join(' '),
-            v.play.map(c => c[0]).join(' '),      // every player, society venues
-            v.extra.join(' ')]                    // plus their own general play
-           .filter(Boolean).join(' ').toLowerCase();
-  }
-
-  function view(list){
-    const q = query.trim().toLowerCase();
-    const out = q ? list.filter(p => haystack(p).includes(q)) : [...list];
-    const get = SORTS[sortKey].get;
-    return out.sort((a, b) => {
-      const x = get(a), y = get(b);
-      const nx = x === null || x === undefined, ny = y === null || y === undefined;
-      if (nx && ny) return a.n.localeCompare(b.n);
-      if (nx) return 1;                 // blanks last, both directions
-      if (ny) return -1;
-      if (typeof x === 'string') return dir * x.localeCompare(y);
-      return dir * (x - y);
-    });
-  }
-
-  function render(){
-    const a = view(PROFILES), b = view(SOCIETY_PROFILES);
-    const empty = who => `<p class="prof-empty">No ${who} match that search.</p>`;
-    document.getElementById('profiles').innerHTML =
-      a.length ? a.map(whsCard).join('') : empty('WHS records');
-    document.getElementById('society').innerHTML =
-      b.length ? b.map(socCard).join('') : empty('players');
-    const total = a.length + b.length;
-    document.getElementById('count').textContent = query.trim()
-      ? `${total} of ${PROFILES.length + SOCIETY_PROFILES.length} shown`
-      : `${total} players`;
-    document.querySelectorAll('.head-l .when').forEach(el =>
-      el.textContent = 'ordered by ' + SORTS[sortKey].label);
-    document.getElementById('dir').textContent =
-      dir === 1 ? SORTS[sortKey].low : 'Reversed';
-  }
-
-  document.getElementById('q').addEventListener('input', e => {
-    query = e.target.value; render();
-  });
-  document.getElementById('sort').addEventListener('change', e => {
-    sortKey = e.target.value; dir = 1; render();
-  });
-  document.getElementById('dir').addEventListener('click', () => {
-    dir = -dir; render();
-  });
-  render();
-
-  /* ---------- narrative under the cards ---------- */
-  (function(){
-    const gaps = ROWS.map(p => p.idx - REG[p.n].nhs);
-    const avgGap = gaps.reduce((s,v) => s + v, 0) / gaps.length;
-    const widest = ROWS.reduce((m,p) =>
-      (p.idx - REG[p.n].nhs) > (m.idx - REG[m.n].nhs) ? p : m);
-    const bits = [];
-    bits.push(`${ROWS.length} of the ${ASIA_CUP.squad} players picked to represent Yorkshire at the ` +
-      `${ASIA_CUP.event} are on our register, and carry that accolade on their card.`);
-    bits.push(`Their WHS index runs ${avgGap.toFixed(1)} shots above their NHS handicap on ` +
-      `average, widest for ${widest.n} at ${(widest.idx - REG[widest.n].nhs).toFixed(1)}.`);
-    document.getElementById('profNote').textContent = bits.join(' ');
-    const fresh = ROWS.filter(p => !p.noExport).length, older = ROWS.length - fresh;
-    document.getElementById('srcLine').textContent =
-      `Every figure comes from the player's own My England Golf (WHS) export, loaded into the ` +
-      `tracker and recomputed from there. ${fresh} of these ${ROWS.length} cards are built from a ` +
-      `current export` +
-      (older ? `; the remaining ${older} carry an earlier WHS record until a fresh export is supplied, and are marked est.`
-            : '.');
-    document.getElementById('othersLine').textContent =
-      `The other ${SQUAD_OTHERS.length} in the squad do not play in this society, so they have no card here: ` +
-      SQUAD_OTHERS.join(', ') + '.';
-  })();
-
-  /* ---------- the rest of the society ----------
-     Same card. The England Golf slot is filled from the register where that
-     player's export has been loaded, marked est where only an older estimate
-     exists, and left empty otherwise. Everything else on the card is computed
-     from our own hole-by-hole scorecards.                                  */
   /* Three states, identical to the handicap register: a verified England Golf
-     index, an older estimate, or nothing on file. Both pages read REGISTER, so
-     a card and the register row for the same player always agree. */
+     index, an older estimate, or nothing on file. Both pages read REGISTER. */
+  function egState(r){
+    if (!r || r.whs == null) return 'none';
+    return r.whsOfficial === true ? 'official' : 'est';
+  }
+
   /* Squad selections and tournament awards are achievements held against the
      player, never a source of any figure on this page. */
   function honour(r){
@@ -331,85 +144,9 @@
       `<span class="honour ${h.k}">${h.t}</span>`).join('') + `</span>`;
   }
 
-  function egState(r){
-    if (!r || r.whs == null) return 'none';
-    return r.whsOfficial === true ? 'official' : 'est';
-  }
-
-  function socCard(p){
-      const r = REG[p.n];
-      const nhs = r && r.nhs != null;
-      const none = p.rounds === 0;
-      const markLabel = none ? '' : (p.mark.kind === 'low' ? 'Lowest index' : 'Peak index');
-      return `<article class="prof">
-        <header class="prof-top">
-          <span class="av soc">${p.init}</span>
-          <span class="id">
-            <b>${p.n}</b>
-            <span class="alias">${none ? 'No rounds logged yet'
-              : `${p.rounds} round${p.rounds === 1 ? '' : 's'}, ${p.first} to ${p.last}`}</span>
-            ${honour(r)}
-          </span>
-          ${thin(p) ? '<span class="pill thin-pill">Thin record</span>' : ''}
-        </header>
-
-        <div class="hcs">
-          <div class="hc lead">
-            <span class="lbl">NHS &middot; plays off</span>
-            <span class="big num">${nhs ? f1(r.nhs) : '&ndash;'}</span>
-            <span class="foot">${nhs ? 'the figure that counts' : 'no NHS figure on file'}</span>
-          </div>
-          <div class="hc${egState(r) === 'none' ? ' empty' : ''}${egState(r) === 'est' ? ' stale' : ''}">
-            <span class="lbl">WHS &middot; England Golf${
-              egState(r) === 'est' ? ' <span class="src" title="Estimate held pending this player&rsquo;s England Golf export — not a verified WHS index">est</span>' : ''}</span>
-            <span class="big num">${egState(r) === 'none' ? '&ndash;' : f1(r.whs)}</span>
-            <span class="foot">${
-              egState(r) === 'official' ? 'from their England Golf export'
-              : egState(r) === 'est' ? 'estimate, not a verified index'
-              : 'not on file yet'}</span>
-          </div>
-        </div>
-
-        ${none ? '<p class="prof-note">Nothing on record to work from — this card fills itself in as soon as a scorecard is logged.</p>' : `
-        <dl class="facts${thin(p) ? ' faded' : ''}">
-          <div><dt>Society index</dt><dd class="num">${f1(p.idx)}</dd></div>
-          <div><dt>Avg differential</dt><dd class="num">${f1(p.avg)}</dd></div>
-          <div><dt>Best differential</dt><dd class="num">${f1(p.best.v)}<span class="when">${p.best.d}</span></dd></div>
-          <div><dt>${markLabel}</dt><dd class="num">${f1(p.mark.v)}<span class="when">${p.mark.d}</span></dd></div>
-          ${p.rounds > 1 ? `<div><dt>Net change</dt><dd class="num ${p.net < 0 ? 'good' : ''}">${sgn(p.net)}</dd></div>` : ''}
-        </dl>
-
-        <div class="courses">
-          <span class="lbl">Rounds logged</span>
-          <ul>${p.ev.map(([e,n]) => `<li><span>${e}</span><b>${n}</b></li>`).join('')}</ul>
-        </div>
-        ${venueBlock(p.n)}
-
-        <p class="prof-note">${socNote(p)}</p>`}
-      </article>`;
-  }
-
-  (function(){
-
-    const played = SOCIETY_PROFILES.filter(p => p.rounds > 0);
-    const none   = SOCIETY_PROFILES.filter(p => p.rounds === 0);
-    const thinN  = SOCIETY_PROFILES.filter(thin).length;
-    const bits = [`${played.length} of these ${SOCIETY_PROFILES.length} players have rounds on record.`];
-    if (thinN) bits.push(`${thinN} have fewer than ${MIN_ROUNDS}, so their index is greyed out — it moves several shots on a single card.`);
-    if (none.length) bits.push(`No rounds at all yet for ` + none.map(p => p.n).join(' and ') + `.`);
-    const egOff = SOCIETY_PROFILES.filter(p => egState(REG[p.n]) === 'official').length;
-    const egEst = SOCIETY_PROFILES.filter(p => egState(REG[p.n]) === 'est').length;
-    bits.push(egOff
-      ? `${egOff} of them now have a verified England Golf index from their own export` +
-        (egEst ? `, ${egEst} carry an older estimate marked est, and the rest stay blank until an export is supplied.`
-               : `, and the rest stay blank until an export is supplied.`)
-      : 'None of them has an England Golf index on file, so that column stays blank until one is supplied.');
-    document.getElementById('socNote').textContent = bits.join(' ');
-  })();
-
-  /* Where a player has played, for the cards that do not already show it.
-     Society venues carry a round count; anything from their own England Golf
-     record is listed separately, because it is general play, not society golf. */
+  /* Where a player has played. Society venues carry a round count; anything
+     from their own England Golf record is listed separately, because it is
+     general play, not society golf. */
   function venueBlock(name){
     const v = (typeof VENUES !== 'undefined' && VENUES[name]) || null;
     if (!v || !v.play.length) return '';
@@ -420,6 +157,176 @@
         <b>${v.extra.join(', ')}</b></li>` : ''}</ul>
     </div>`;
   }
+
+  /* One block of figures, used for both records so they read identically and
+     can never be mistaken for each other. */
+  function recordBlock(title, source, st, o){
+    const markLabel = st.mark.kind === 'low' ? 'Lowest index' : 'Peak index';
+    return `<div class="rec${o.faded ? ' faded' : ''}">
+      <span class="rec-h">${title}<em>${source}</em></span>
+      <dl class="facts">
+        <div><dt>${o.idxLabel}</dt><dd class="num">${f1(st.idx)}</dd></div>
+        <div><dt>${o.countLabel}</dt><dd class="num">${o.count}</dd></div>
+        <div><dt>Avg differential</dt><dd class="num">${f1(o.avg)}</dd></div>
+        <div><dt>Best differential</dt><dd class="num">${f1(st.best.v)}<span class="when">${st.best.d}</span></dd></div>
+        <div><dt>${markLabel}</dt><dd class="num">${f1(st.mark.v)}<span class="when">${st.mark.d}</span></dd></div>
+        ${o.one ? '' :
+          `<div><dt>Net change</dt><dd class="num ${st.net < 0 ? 'good' : ''}">${sgn(st.net)}</dd></div>`}
+      </dl>
+    </div>`;
+  }
+
+  function card(r){
+    const soc = SOCIETY_STATS[r.n], whs = WHS_STATS[r.n];
+    const eg  = egState(r), egname = EG_NAMES[r.n];
+    const span = soc ? (soc.first === soc.last ? soc.first : `${soc.first} to ${soc.last}`) : null;
+
+    return `<article class="prof">
+      <header class="prof-top">
+        <span class="av${soc ? '' : ' soc'}">${initials(r.n)}</span>
+        <span class="id">
+          <b>${r.n}</b>
+          ${egname ? `<span class="alias">England Golf: ${egname}</span>` : ''}
+          <span class="alias">${soc
+            ? `${soc.rounds} society round${soc.rounds === 1 ? '' : 's'}, ${span}`
+            : 'No rounds logged yet'}</span>
+          ${honour(r)}
+        </span>
+        ${thin(soc) ? '<span class="pill thin-pill">Thin record</span>' : ''}
+      </header>
+
+      <div class="hcs">
+        <div class="hc lead">
+          <span class="lbl">NHS &middot; plays off</span>
+          <span class="big num">${r.nhs == null ? '&ndash;' : f1(r.nhs)}</span>
+          <span class="foot">${r.nhs == null ? 'no NHS figure on file' : 'the figure that counts'}</span>
+        </div>
+        <div class="hc${eg === 'none' ? ' empty' : ''}${eg === 'est' ? ' stale' : ''}">
+          <span class="lbl">WHS &middot; England Golf${
+            eg === 'est' ? ' <span class="src" title="An earlier WHS record, no My England Golf export loaded for this player yet">est</span>' : ''}</span>
+          <span class="big num">${eg === 'none' ? '&ndash;' : f1(r.whs)}</span>
+          <span class="foot">${
+            eg === 'official' ? 'from their England Golf export'
+            : eg === 'est' ? 'an earlier record, not a current export'
+            : 'not on file yet'}</span>
+        </div>
+      </div>
+
+      ${soc ? recordBlock('Society record', 'from our own scorecards', soc,
+          {idxLabel:'Society index', avg:soc.avg, faded:thin(soc), one:soc.rounds === 1,
+           countLabel:'Rounds', count:soc.rounds})
+        : `<p class="prof-note">Nothing on record to work from &mdash; this card fills itself in as soon as a scorecard is logged.</p>`}
+
+      ${whs ? recordBlock('England Golf record',
+          whs.noExport ? 'an earlier WHS record, no export loaded' : 'from their My England Golf export',
+          whs, {idxLabel:'WHS index', avg:whs.avgDiff, faded:!!whs.noExport, one:false,
+                countLabel:'Cards', count:`${whs.scores} since ${whs.since}`}) : ''}
+
+      ${soc ? `<div class="courses">
+        <span class="lbl">Rounds logged</span>
+        <ul>${soc.ev.map(([e,n]) => `<li><span>${e}</span><b>${n}</b></li>`).join('')}</ul>
+      </div>` : ''}
+      ${venueBlock(r.n)}
+
+      ${soc ? `<p class="prof-note">${socNote(soc)}</p>` : ''}
+      ${whs && whs.note ? `<p class="prof-note">${whs.note}</p>` : ''}
+    </article>`;
+  }
+
+  /* ---------- summary tiles ---------- */
+  (function(){
+    const rounds = Object.values(SOCIETY_STATS).reduce((s,p) => s + p.rounds, 0);
+    /* Improvement only means something once a player has a few cards behind
+       them, so thin records are left out of this comparison. */
+    const solid = Object.entries(SOCIETY_STATS).filter(([,p]) => p.rounds >= 8);
+    const imp = solid.reduce((m,e) => e[1].net < m[1].net ? e : m);
+    const egLoaded = REGISTER.filter(r => r.whsOfficial === true).length;
+    document.getElementById('cProf').textContent   = REGISTER.length;
+    document.getElementById('sProf').textContent   = 'everyone on the register';
+    document.getElementById('cEG').textContent     = egLoaded;
+    document.getElementById('sEG').textContent     = `verified exports loaded, of ${REGISTER.length}`;
+    document.getElementById('cRounds').textContent = rounds;
+    document.getElementById('cImp').textContent    = imp[0];
+    document.getElementById('sImp').textContent    = sgn(imp[1].net) + ` since ${imp[1].first}, on society cards`;
+    document.getElementById('stamp').innerHTML     =
+      `${REGISTER.length} cards &middot; ${Object.keys(SOCIETY_STATS).length} with a society record` +
+      `<br>${egLoaded} with an England Golf export`;
+  })();
+
+  /* ---------- ordering and search ----------
+     Sorting is on the register, so this page stays in step with the handicap
+     page. A player with no figure for the chosen key always sorts last,
+     whichever direction the order runs. */
+  const SORTS = {
+    nhs:    {label:'NHS handicap',   low:'Low to high',  get: r => r.nhs},
+    name:   {label:'name',           low:'A to Z',       get: r => r.n},
+    rounds: {label:'society rounds', low:'Fewest first', get: r => r.rounds},
+    whs:    {label:'WHS index',      low:'Low to high',  get: r => r.whs}
+  };
+  let sortKey = 'nhs', dir = 1, query = '';
+
+  function haystack(r){
+    const v = (typeof VENUES !== 'undefined' && VENUES[r.n]) || {play:[], extra:[]};
+    const soc = SOCIETY_STATS[r.n];
+    return [r.n, EG_NAMES[r.n],
+            (r.honours || []).map(h => h.t).join(' '),
+            (soc ? soc.ev.map(e => e[0]).join(' ') : ''),
+            v.play.map(c => c[0]).join(' '),
+            v.extra.join(' ')]
+           .filter(Boolean).join(' ').toLowerCase();
+  }
+
+  function render(){
+    const q = query.trim().toLowerCase();
+    const rows = (q ? REGISTER.filter(r => haystack(r).includes(q)) : [...REGISTER])
+      .sort((a, b) => {
+        const get = SORTS[sortKey].get, x = get(a), y = get(b);
+        const nx = x === null || x === undefined, ny = y === null || y === undefined;
+        if (nx && ny) return a.n.localeCompare(b.n);
+        if (nx) return 1;                 // blanks last, both directions
+        if (ny) return -1;
+        if (typeof x === 'string') return dir * x.localeCompare(y);
+        return dir * (x - y);
+      });
+
+    document.getElementById('cards').innerHTML = rows.length
+      ? rows.map(card).join('')
+      : '<p class="prof-empty">No players match that search.</p>';
+    document.getElementById('count').textContent = q
+      ? `${rows.length} of ${REGISTER.length} shown`
+      : `${REGISTER.length} players`;
+    document.getElementById('orderNote').textContent = 'ordered by ' + SORTS[sortKey].label;
+    document.getElementById('dir').textContent = dir === 1 ? SORTS[sortKey].low : 'Reversed';
+  }
+
+  document.getElementById('q').addEventListener('input', e => { query = e.target.value; render(); });
+  document.getElementById('sort').addEventListener('change', e => { sortKey = e.target.value; dir = 1; render(); });
+  document.getElementById('dir').addEventListener('click', () => { dir = -dir; render(); });
+  render();
+
+  /* ---------- narrative under the cards ---------- */
+  (function(){
+    const both    = REGISTER.filter(r => SOCIETY_STATS[r.n] && WHS_STATS[r.n]).length;
+    const socOnly = REGISTER.filter(r => SOCIETY_STATS[r.n] && !WHS_STATS[r.n]).length;
+    const egOnly  = REGISTER.filter(r => !SOCIETY_STATS[r.n] && WHS_STATS[r.n]).length;
+    const neither = REGISTER.length - both - socOnly - egOnly;
+    const gaps = REGISTER.filter(r => r.nhs != null && r.whsOfficial === true)
+                         .map(r => ({n:r.n, d:r.whs - r.nhs}));
+    const avgGap = gaps.reduce((s,g) => s + g.d, 0) / gaps.length;
+    const widest = gaps.reduce((m,g) => g.d > m.d ? g : m);
+    const bits = [`${both} of the ${REGISTER.length} players carry both a society record and an England Golf record.`];
+    if (socOnly) bits.push(`${socOnly} have society rounds only.`);
+    if (egOnly)  bits.push(`${egOnly} have an England Golf record but no society rounds.`);
+    if (neither) bits.push(`${neither} have neither yet.`);
+    bits.push(`Across the ${gaps.length} with a verified WHS index it runs ${avgGap.toFixed(1)} shots above their NHS handicap on average, widest for ${widest.n} at ${widest.d.toFixed(1)}.`);
+    document.getElementById('cardsNote').textContent = bits.join(' ');
+
+    document.getElementById('srcLine').textContent =
+      "Society figures come from the tracker's Rounds sheet; England Golf figures from each player's own My England Golf export loaded into it.";
+    document.getElementById('othersLine').textContent =
+      `The other ${SQUAD_OTHERS.length} in the squad do not play in this society, so they have no card here: ` +
+      SQUAD_OTHERS.join(', ') + '.';
+  })();
 
   /* A short, honest line per player, written from their own numbers. */
   function socNote(p){
@@ -505,6 +412,14 @@
   .ctl-count{margin-left:auto;font-family:'IBM Plex Mono',ui-monospace,monospace;
     font-size:.7rem;color:var(--muted);}
   .prof-empty{padding:18px 2px;color:var(--muted);font-size:.9rem;}
+  .rec{border-top:1px solid var(--border);padding-top:11px;}
+  .rec.faded{opacity:.62;}
+  .rec-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:7px;margin-bottom:9px;
+    font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.62rem;font-weight:600;
+    letter-spacing:.07em;text-transform:uppercase;color:var(--ink);}
+  .rec-h em{font-style:normal;font-weight:400;letter-spacing:.02em;text-transform:none;
+    font-size:.7rem;color:var(--muted);}
+  .rec .facts{margin:0;}
   .courses li.elsewhere{align-items:flex-start;gap:10px;}
   .courses li.elsewhere b{font-weight:400;color:var(--muted);text-align:right;}
   @media (max-width:560px){ .ctl-count{margin-left:0;} }
