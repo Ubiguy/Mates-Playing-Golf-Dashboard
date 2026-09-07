@@ -6,7 +6,7 @@
 <title>Golf Society 2026</title>
 <meta name="description" content="Mates Playing Golf - the team match play score and the next away day.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=ce460277">
+<link rel="stylesheet" href="style.css?v=a856bff8">
 </head>
 <body>
 <div class="page">
@@ -85,6 +85,7 @@
 </div>
 
 <script src="data.js?v=71f251c4"></script>
+<script src="fx.js?v=3ff4cce9"></script>
 <script>
   const fmtP = v => v % 1 === 0 ? String(v) : v.toFixed(1);
 
@@ -124,9 +125,12 @@
   /* ---------- this week's team fixtures ----------
      The week is chosen by date, so the block moves on by itself every Monday
      and disappears once the last week has finished - nobody has to republish.
-     Matches played ahead of their week are already done, so the list is a
-     mix of results and outstanding games; both are shown, because what is
-     still to arrange is the point of putting it here. */
+     Matches played ahead of their week are already done, so the list is a mix
+     of results and outstanding games; both are shown, because what is still to
+     arrange is the point of putting it here.
+
+     The rows are drawn by fx.js, which the match play page uses too, so the
+     two lists cannot drift apart. */
   (function(){
     if (typeof TEAM_SCHEDULE === 'undefined' || !TEAM_SCHEDULE.length) return;
     const today = new Date(); today.setHours(0,0,0,0);
@@ -139,43 +143,20 @@
     const w = TEAM_SCHEDULE.find(x => endOf(x) >= today);
     if (!w) return;
 
-    const byPair = {};
-    MATCHES.forEach(m => {
-      byPair[(m.aSubFor || m.aPlayer) + '|' + (m.bSubFor || m.bPlayer)] = m;
-    });
-    const dmy = d => day(d).toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+    const done = w.pairs.filter(p => FX.byPair[p[0] + '|' + p[1]]).length;
     const started = day(w.from) <= today;
 
-    const rows = w.pairs.map(([a, b], i) => {
-      const m = byPair[a + '|' + b];
-      if (!m) {
-        const why = (typeof SUB_REQUIRED !== 'undefined') && SUB_REQUIRED[a + '|' + b];
-        return `<li class="fx">
-          <span class="no">${i + 1}</span>
-          <span class="fx-a">${a}</span><span class="fx-v">v</span><span class="fx-b">${b}</span>
-          <span class="fx-r pending">${why
-            ? `<span class="src" title="${why}">sub needed</span>` : 'to play'}</span></li>`;
-      }
-      const sub = (p, f) => f && f !== p ? ` <span class="src" title="stood in for ${f}">${p}</span>` : '';
-      const win = m.aPts === m.bPts ? '' : (m.aPts > m.bPts ? 'a' : 'b');
-      return `<li class="fx done">
-        <span class="no">${i + 1}</span>
-        <span class="fx-a ${win === 'a' ? 'won' : ''}">${a}${sub(m.aPlayer, m.aSubFor)}</span>
-        <span class="fx-v">${m.aPts}&ndash;${m.bPts}</span>
-        <span class="fx-b ${win === 'b' ? 'won' : ''}">${b}${sub(m.bPlayer, m.bSubFor)}</span>
-        <span class="fx-r">${dmy(m.date)}</span></li>`;
-    }).join('');
-
-    const done = w.pairs.filter(([a, b]) => byPair[a + '|' + b]).length;
     document.getElementById('week').hidden = false;
     document.getElementById('weekTitle').textContent =
-      started ? `This week &mdash; week ${w.week}`.replace('&mdash;', '—')
-              : `Next week &mdash; week ${w.week}`.replace('&mdash;', '—');
+      (started ? 'This week — week ' : 'Next week — week ') + w.week;
     document.getElementById('weekChip').textContent = `${done} of ${w.pairs.length}`;
     document.getElementById('weekWhen').textContent =
       (started ? 'commencing Monday ' : 'starts Monday ') +
       day(w.from).toLocaleDateString('en-GB', {day:'numeric', month:'long'});
-    document.getElementById('weekBox').innerHTML = `<div class="wk"><ul class="fx-list">${rows}</ul></div>`;
+
+    const box = document.getElementById('weekBox');
+    box.innerHTML = FX.card(w);
+    box.insertAdjacentHTML('afterend', FX.key());   // outside the grid, not a cell
   })();
 
   /* ---------- the next away day ----------

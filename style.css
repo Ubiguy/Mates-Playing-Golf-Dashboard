@@ -299,11 +299,25 @@ footer b{color:var(--ink-2);font-weight:600;}
 
 /* team match play fixture list
    Two columns on a wide screen so ten matches read at a glance rather than as
-   a long strip. A played match carries its score and the winner's name in the
-   team colour; an outstanding one stays quiet, so what is still to arrange is
-   what stands out. */
+   a long strip.
+
+   COLOUR CARRIES THE TEAM, WEIGHT CARRIES THE RESULT. Every name is tinted in
+   its own team's colour, so a row reads as A side against B side before it is
+   read at all. The winner is the name at full strength and bold; a halved
+   match shows both at full strength and neither bold, which is what a draw
+   should look like. Colouring only the winner - the previous arrangement -
+   left an unplayed fixture with no team in it at all, which is most of the
+   list for most of the season.
+
+   A browser too old for color-mix keeps the first declaration and simply
+   shows every name at full team colour, which is a fair degradation.        */
 .weeks{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;}
-.wk{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:13px 14px;}
+/* a size container, so the fixture list below can lay itself out against the
+   width of THIS card rather than the width of the window. The match play
+   page puts two week cards side by side, so a viewport-based breakpoint
+   split a 334px card into two columns and squeezed the names to nothing. */
+.wk{background:var(--surface);border:1px solid var(--border);border-radius:4px;
+  padding:13px 14px;container-type:inline-size;}
 .wk-h{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:10px;
   padding-bottom:7px;border-bottom:1px solid var(--border);}
 .wk-h b{font-size:.95rem;}
@@ -311,17 +325,41 @@ footer b{color:var(--ink-2);font-weight:600;}
 .fx-list{list-style:none;margin:0;padding:0;display:grid;gap:1px 26px;
   grid-template-columns:1fr;}
 /* two columns, never three: at three the names are squeezed to about 70px and
-   the row stops being readable at a glance */
-@media (min-width:660px){ .fx-list{grid-template-columns:1fr 1fr;} }
+   the row stops being readable at a glance. Measured on the card, so the home
+   page's single wide card splits in two while the match play page's paired
+   cards each stay in one - which is what their width can carry. */
+@container (min-width:660px){ .fx-list{grid-template-columns:1fr 1fr;} }
 .fx{display:grid;grid-template-columns:1.4em minmax(0,1fr) auto minmax(0,1fr) auto;
-  align-items:baseline;gap:7px;padding:4px 6px;border-radius:3px;font-size:.87rem;}
+  align-items:center;gap:7px;padding:4px 6px;border-radius:3px;font-size:.87rem;}
 .fx + .fx{box-shadow:inset 0 1px 0 var(--hairline);}
 .fx .no{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.64rem;color:var(--muted);
   text-align:right;}
-.fx-a{text-align:right;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.fx-b{color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.fx .won{font-weight:700;color:var(--ink);}
-.fx-a.won{color:var(--teamA);} .fx-b.won{color:var(--teamB);}
+
+/* the two name cells. Each is a flex row so the form bars can sit on the
+   outside edge and only the name itself is allowed to shrink. */
+.fx-a,.fx-b{display:flex;align-items:center;gap:7px;min-width:0;}
+.fx-a{justify-content:flex-end;text-align:right;}
+.fx-a .nm,.fx-b .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* The quiet state is the team colour mixed toward the ink, not toward the
+   card. Mixing toward the card washed the names out to 2.6:1 against it -
+   unreadable - and would do the same in dark mode; mixing toward the ink keeps
+   the hue, stays legible, and moves the right way in both palettes. */
+.fx-a{color:var(--teamA);color:color-mix(in srgb,var(--teamA) 70%,var(--ink));}
+.fx-b{color:var(--teamB);color:color-mix(in srgb,var(--teamB) 70%,var(--ink));}
+.fx-a.won,.fx.halved .fx-a{color:var(--teamA);}
+.fx-b.won,.fx.halved .fx-b{color:var(--teamB);}
+.fx .won .nm{font-weight:700;}
+.fx .nm .src{font-weight:400;}
+
+/* form bars - fx.js explains what they mean. currentColor makes them take the
+   name's team colour, so they brighten with it when that player won. */
+.form{flex:none;display:inline-flex;align-items:center;gap:2px;font-style:normal;line-height:0;}
+.form b{display:block;width:4px;height:11px;border-radius:1px;background:currentColor;opacity:.9;}
+.form b.bw{width:9px;}                                    /* a win worth two */
+.form b.h{opacity:.42;}                                          /* halved */
+.form b.l{background:none;box-shadow:inset 0 0 0 1px currentColor;opacity:.34;}
+.form.none{font-size:.85rem;line-height:1;opacity:.3;}     /* has not played */
+
 .fx-v{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.72rem;color:var(--muted);
   min-width:3.4em;text-align:center;}
 .fx.done .fx-v{font-size:.8rem;font-weight:600;color:var(--ink);
@@ -330,8 +368,22 @@ footer b{color:var(--ink-2);font-weight:600;}
   min-width:5.6em;text-align:right;}
 .fx .pending{opacity:.75;}
 .fx.late .fx-r{color:var(--accent);opacity:1;}
-@media (max-width:430px){
+
+/* the legend, once under the list rather than once per week card */
+.fx-key{display:flex;flex-wrap:wrap;align-items:center;gap:7px 16px;margin-top:12px;
+  font-size:.73rem;color:var(--muted);}
+.fx-key span{display:inline-flex;align-items:center;gap:6px;}
+.fx-key .form{color:var(--ink-2);}
+.fx-key .fx-key-t{color:var(--muted);}
+.fx-key .fx-key-t:first-child{font-weight:600;color:var(--ink-2);font-size:.64rem;
+  text-transform:uppercase;letter-spacing:.06em;}
+
+/* Narrow cards, again measured on the card rather than the window: the date
+   drops to its own line first, which buys back about 57px and keeps the names
+   readable. Only if it is still hopeless do the form bars go - a name the
+   reader cannot read is worse than a record they cannot see. */
+@container (max-width:390px){
   .fx{grid-template-columns:1.4em minmax(0,1fr) auto minmax(0,1fr);row-gap:1px;}
   .fx-r{grid-column:2 / -1;text-align:right;}
 }
-}
+@container (max-width:260px){ .fx .form{display:none;} }

@@ -1,12 +1,22 @@
-"""Stamp data.js and style.css with a content hash in every page.
+"""Stamp the cached assets with a content hash in every page.
 
-Both are cached by the browser, so a change to either must change the URL or
-readers keep the old copy. data.js has always been stamped; style.css was not,
-which meant a CSS change could sit stale behind a cached stylesheet.
+    python stamp.py
+
+data.js, fx.js and style.css are all cached by the browser, so a change to any
+of them must change its URL or readers keep the old copy. That has bitten this
+site twice: once when style.css was not stamped at all and a restyle sat behind
+a cached stylesheet, and once when a page was still asking for an older hash
+than the one on disk.
+
+ONLY src= AND href= ARE TOUCHED. The first version of this matched the bare
+filename anywhere in the page, which quietly rewrote the prose too - the
+handicaps page ended up telling the reader to edit "data.js?v=71f251c4", a file
+that does not exist. A stamp belongs in a URL and nowhere else.
 """
 import hashlib, re, glob, os
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+ASSETS = ['data.js', 'fx.js', 'style.css']
 
 
 def sha8(path):
@@ -14,19 +24,20 @@ def sha8(path):
 
 
 def main():
-    stamps = {'data.js': sha8('data.js'), 'style.css': sha8('style.css')}
+    stamps = {a: sha8(a) for a in ASSETS if os.path.exists(a)}
     changed = []
     for f in sorted(glob.glob('*.html')):
         s = old = open(f, encoding='utf-8').read()
         for asset, v in stamps.items():
-            pat = re.escape(asset) + r'(?:\?v=[0-9a-f]{8})?'
-            s = re.sub(pat, '%s?v=%s' % (asset, v), s)
+            pat = r'((?:src|href)=")' + re.escape(asset) + r'(?:\?v=[0-9a-f]{8})?(")'
+            s = re.sub(pat, r'\g<1>' + asset + '?v=' + v + r'\g<2>', s)
         if s != old:
             open(f, 'w', encoding='utf-8', newline='').write(s)
             changed.append(f)
-    for a, v in stamps.items():
+    for a, v in sorted(stamps.items()):
         print('%-10s -> %s' % (a, v))
-    print('%d page%s restamped' % (len(changed), '' if len(changed) == 1 else 's'))
+    print('%d page%s restamped: %s' % (len(changed), '' if len(changed) == 1 else 's',
+                                       ', '.join(changed) or 'none'))
 
 
 if __name__ == '__main__':

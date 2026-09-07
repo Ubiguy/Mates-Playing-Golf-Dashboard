@@ -6,7 +6,7 @@
 <title>Team Match Play</title>
 <meta name="description" content="Team Yaseen v Team Shufqat - 9-hole Stableford team match play, full round robin.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=ce460277">
+<link rel="stylesheet" href="style.css?v=a856bff8">
 </head>
 <body>
 <div class="page">
@@ -155,11 +155,12 @@
     <div><b>Scoring.</b> Win 1 pt. Win by 5 or more Stableford points 2 pts. Halved match 0.5 each. Loss 0.</div>
     <div><b>Substitutes.</b> A stand-in's result counts for the team and for their own record, but the rostered player's own pairing stays open until they play it themselves.</div>
     <div><b>Handicaps.</b> Handicaps here are the player's current NHS figure from the register, except where marked <span class="src">comp</span> &mdash; a handicap agreed for this competition only, which does not change that player's NHS anywhere else. Matches are settled on the Stableford points recorded on the card.</div>
-    <div><b>Source.</b> The Match Log tab of Team_Matchplay_Leaderboard.xlsx, mirrored into <code>data.js?v=71f251c4</code>.</div>
+    <div><b>Source.</b> The Match Log tab of Team_Matchplay_Leaderboard.xlsx, mirrored into <code>data.js</code>.</div>
   </footer>
 </div>
 
 <script src="data.js?v=71f251c4"></script>
+<script src="fx.js?v=3ff4cce9"></script>
 <script>
   const isSub = (p,f) => !!f && f !== p;
   const fmtP  = v => v % 1 === 0 ? String(v) : v.toFixed(1);
@@ -372,65 +373,23 @@
         }).join('') + '</tr>').join('') + '</tbody>';
 
   /* ---------- the fixture list ----------
-     Every scheduled pairing, with its result where one exists. A result is
-     tied to a pairing by who was DUE to play it: a substitute stands in for a
-     team-mate, so the match belongs to the rostered player's fixture, not the
+     Every scheduled pairing, with its result where one exists. The rows come
+     from fx.js, shared with the home page: a result is tied to a pairing by
+     who was DUE to play it, because a substitute stands in for a team-mate, so
+     the match belongs to the rostered player's fixture rather than the
      stand-in's. The rules allow a match to be played ahead of its week, so a
-     date earlier than the week is expected and is shown as 'played early'. */
+     date earlier than the week is expected and is marked 'early'. */
   (function(){
     if (typeof TEAM_SCHEDULE === 'undefined') return;
-    const byPair = {};
-    MATCHES.forEach(m => {
-      byPair[(m.aSubFor || m.aPlayer) + '|' + (m.bSubFor || m.bPlayer)] = m;
-    });
-    const today = new Date(); today.setHours(0,0,0,0);
-    const day = d => new Date(d + 'T00:00:00');
-    const dmy = d => day(d).toLocaleDateString('en-GB', {day:'numeric', month:'short'});
-
     let played = 0;
     const html = TEAM_SCHEDULE.map(w => {
-      const start = day(w.from);
-      const end = new Date(start); end.setDate(end.getDate() + 6);
-      const rows = w.pairs.map(([a, b], i) => {
-        const m = byPair[a + '|' + b];
-        if (!m) {
-          const state = end < today ? 'late' : (start <= today ? 'now' : '');
-          // some pairings are known in advance to need a stand-in
-          const why = (typeof SUB_REQUIRED !== 'undefined') && SUB_REQUIRED[a + '|' + b];
-          return `<li class="fx ${state}">
-            <span class="no">${i + 1}</span>
-            <span class="fx-a">${a}</span>
-            <span class="fx-v">v</span>
-            <span class="fx-b">${b}</span>
-            <span class="fx-r pending">${why
-              ? `<span class="src" title="${why}">sub needed</span>`
-              : (end < today ? 'not yet played' : 'to play')}</span></li>`;
-        }
-        played++;
-        const early = day(m.date) < start;
-        const sub = (p, f) => f && f !== p ? ` <span class="src" title="stood in for ${f}">${p}</span>` : '';
-        const win = m.aPts === m.bPts ? 'halved' : (m.aPts > m.bPts ? 'a' : 'b');
-        return `<li class="fx done">
-          <span class="no">${i + 1}</span>
-          <span class="fx-a ${win === 'a' ? 'won' : ''}">${a}${sub(m.aPlayer, m.aSubFor)}</span>
-          <span class="fx-v">${m.aPts}&ndash;${m.bPts}</span>
-          <span class="fx-b ${win === 'b' ? 'won' : ''}">${b}${sub(m.bPlayer, m.bSubFor)}</span>
-          <span class="fx-r">${dmy(m.date)}${early ? ' <span class="src" title="played ahead of its week, which the rules allow">early</span>' : ''}</span></li>`;
-      }).join('');
-      const done = w.pairs.filter(([a, b]) => byPair[a + '|' + b]).length;
-      const state = done === w.pairs.length ? 'done' : (start <= today ? 'live' : '');
-      return `<div class="wk">
-        <div class="wk-h">
-          <b>Week ${w.week}</b>
-          <span class="when">commencing Monday ${day(w.from).toLocaleDateString('en-GB',
-            {day:'numeric', month:'long'})}</span>
-          <span class="chip ${state}">${done} of ${w.pairs.length}</span>
-        </div>
-        <ul class="fx-list">${rows}</ul>
-      </div>`;
+      played += w.pairs.filter(p => FX.byPair[p[0] + '|' + p[1]]).length;
+      return FX.card(w, {header:true, early:true});
     }).join('');
 
-    document.getElementById('fixtures').innerHTML = html;
+    const box = document.getElementById('fixtures');
+    box.innerHTML = html;
+    box.insertAdjacentHTML('afterend', FX.key());   // once, not once per week
     document.getElementById('fxWhen').textContent =
       `${played} of ${TEAM_SCHEDULE.reduce((n, w) => n + w.pairs.length, 0)} played`;
   })();
