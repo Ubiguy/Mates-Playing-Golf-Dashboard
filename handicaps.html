@@ -32,7 +32,7 @@
 
   <div class="strip">
     <div class="stat"><span class="k">Playing off NHS</span><span class="v num" id="cNhs">0</span><span class="sub" id="sNhs"></span></div>
-    <div class="stat"><span class="k">WHS on file</span><span class="v num" id="cWhs">0</span><span class="sub" id="sWhs"></span></div>
+    <div class="stat"><span class="k">WHS verified</span><span class="v num" id="cWhs">0</span><span class="sub" id="sWhs"></span></div>
     <div class="stat"><span class="k">Calculated</span><span class="v num" id="cCalc">0</span><span class="sub" id="sCalc"></span></div>
     <div class="stat"><span class="k">Established</span><span class="v num" id="cEst">0</span><span class="sub">past 20 rounds</span></div>
   </div>
@@ -69,6 +69,11 @@
       cards submitted at their own clubs, so it answers a different question from NHS and will usually
       disagree with it. Never used as a playing figure here.
       <br><br>
+      Only a figure taken from a player&rsquo;s own England Golf export is a verified index. The rest are
+      older estimates, greyed and marked <span class="src">est</span> &mdash; a placeholder until that
+      player&rsquo;s export is supplied, not something to quote. The counter above the table counts the
+      verified ones only.
+      <br><br>
       <b>Calculated HC &mdash; what the submitted rounds actually say.</b> Worked out here from the
       hole-by-hole scorecards the society has logged, as an independent third opinion on the other two. Score differential = round total minus course rating,
       then the average of the best N differentials with the WHS low-round adjustment applied. It stays
@@ -87,11 +92,11 @@
     <div><b>Editing the register.</b> Every figure lives in <code>data.js</code>, in the <code>REGISTER</code> list, one line per player. Change a number, commit, and this page and its counts update themselves.</div>
     <div><b>Sorting.</b> Players without a published figure in the column being sorted always sit at the bottom, whichever direction you sort in.</div>
     <div><b>Source.</b> All three figures come from the Player HC tab of the society tracker &mdash; NHS from the &ldquo;NHS App HCP&rdquo; column, WHS from the &ldquo;WHS&rdquo; column, and the calculated index from the logged scorecards. The NHS column is the one that counts.</div>
-    <div><b>Tees.</b> Every round logged in 2025 and 2026 was played off the yellow tees, so the calculated figures for that period rest on a single consistent set of tees rather than a mixture.</div>
+    <div><b>Tees.</b> Most rounds were played off the yellow tees, and the calculated figures assume that by default. Where a player&rsquo;s England Golf record shows otherwise &mdash; six competition days off white or red, plus a handful of individual rounds, and the Hollins Hall away day &mdash; that round is rated off the tee actually played. Only the calculated column is affected; NHS and WHS are not.</div>
   </footer>
 </div>
 
-<script src="data.js?v=b41e09fb"></script>
+<script src="data.js?v=b6d0f7bf"></script>
 <script>
   const has = v => v !== null && v !== undefined;
   const fmtH = v => has(v) ? v.toFixed(1) : '&ndash;';
@@ -106,15 +111,22 @@
   const MIN_ROUNDS = 4;
   const solid = r => has(r.calc) && r.rounds >= MIN_ROUNDS;
 
+  /* A WHS figure is only official once that player's England Golf export has
+     been loaded. The rest are estimates carried from before, and must not be
+     read as verified indices. */
+  const official = r => r.whsOfficial === true;
+
   /* ---------- summary counts ---------- */
   (function(){
     const n = k => REGISTER.filter(r => has(r[k])).length;
     const nhs = n('nhs'), whs = n('whs');
+    const whsOff = REGISTER.filter(r => has(r.whs) && official(r)).length;
+    const whsEst = whs - whsOff;
     const calc = REGISTER.filter(solid).length;
     const thin = REGISTER.filter(r => has(r.calc) && !solid(r)).length;
     const est = REGISTER.filter(r => r.est).length;
     document.getElementById('cNhs').textContent = nhs;
-    document.getElementById('cWhs').textContent = whs;
+    document.getElementById('cWhs').textContent = whsOff;
     document.getElementById('cCalc').textContent = calc;
     document.getElementById('sCalc').innerHTML =
       (thin ? `${thin} more under ${MIN_ROUNDS} rounds &middot; ` : '') + 'comparison only';
@@ -122,8 +134,10 @@
     const missing = REGISTER.length - nhs;
     document.getElementById('sNhs').textContent =
       missing ? `${missing} still without an NHS figure` : 'every player on the books';
-    document.getElementById('sWhs').textContent =
-      whs < REGISTER.length ? `${REGISTER.length - whs} still to come` : 'complete';
+    document.getElementById('sWhs').innerHTML =
+      [whsEst ? `${whsEst} estimated` : '',
+       REGISTER.length - whs ? `${REGISTER.length - whs} still to come` : '']
+      .filter(Boolean).join(' &middot; ') || 'all verified';
     document.getElementById('stamp').innerHTML =
       `${REGISTER.length} players on the books<br>all quoted on their NHS handicap`;
   })();
@@ -168,7 +182,10 @@
               ${has(pl.v) ? '' : '<span class="src" title="No NHS handicap on file for this player">none</span>'}
               <span class="idx-bar" style="width:${w.toFixed(1)}px"></span>
               <span class="num" style="min-width:3.2em;display:inline-block">${fmtH(pl.v)}</span></span></td>
-            <td class="${has(r.whs) ? '' : 'pending'}">${fmtH(r.whs)}</td>
+            <td class="${has(r.whs) && official(r) ? '' : 'pending'}">${
+              has(r.whs) && !official(r)
+                ? `<span class="src" title="Estimate held pending this player&rsquo;s England Golf export &mdash; not a verified WHS index">est</span> `
+                : ''}${fmtH(r.whs)}</td>
             <td class="${solid(r) ? '' : 'pending'}">${
               has(r.calc) && !solid(r)
                 ? `<span class="src" title="Only ${r.rounds} round${r.rounds === 1 ? '' : 's'} on record — too few to compare against">thin</span> `
@@ -189,13 +206,18 @@
     /* how far apart are the three figures? */
     const onNhs = REGISTER.filter(r => playing(r).src === 'nhs');
     const noNhs = REGISTER.filter(r => playing(r).src !== 'nhs');
-    const differ = REGISTER.filter(r => has(r.nhs) && has(r.whs) && r.nhs !== r.whs);
+    const differ = REGISTER.filter(r => has(r.nhs) && has(r.whs) && official(r) && r.nhs !== r.whs);
     const wide = REGISTER.filter(r => has(r.nhs) && solid(r) && Math.abs(r.calc - r.nhs) >= 8)
                          .sort((a,b) => Math.abs(b.calc - b.nhs) - Math.abs(a.calc - a.nhs));
     const bits = [];
     bits.push(`Every one of the ${onNhs.length} players with a figure on file is quoted on their NHS handicap.`);
     if (noNhs.length) bits.push(`No NHS figure yet for ` + noNhs.map(r => r.n).join(', ') + `.`);
-    if (differ.length) bits.push(`${differ.length} of ${REGISTER.length} carry a different NHS and WHS number.`);
+    const offN = REGISTER.filter(official).length;
+    if (differ.length) bits.push(`${differ.length} of the ${offN} players with a verified WHS index carry a different NHS number.`);
+    const estN = REGISTER.filter(r => has(r.whs) && !official(r)).length;
+    /* regNote is written with textContent, so these strings must stay plain text */
+    if (estN) bits.push(`A further ${estN} WHS figures are estimates, marked est in the table, ` +
+      `and are not verified indices — they change once that player’s England Golf export is loaded.`);
     if (wide.length) bits.push(`The calculated index sits 8 or more shots from the NHS handicap for ` +
       wide.map(r => `${r.n} (${r.rounds} rounds)`).join(', ') + `, which is worth a look but changes nothing.`);
     document.getElementById('regNote').textContent = bits.join(' ');

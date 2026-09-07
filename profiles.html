@@ -75,7 +75,9 @@
       <br><br>
       <b>Two different sources, deliberately kept apart.</b> The nine Asia Cup players have an
       <b>England Golf (WHS) index</b>, calculated by England Golf to the WHS method from cards
-      submitted at their own clubs.
+      submitted at their own clubs. Each of those cards is rebuilt from that player's own England
+      Golf round history, so the figures move as new exports arrive; where no export has been
+      supplied the card keeps its Asia Cup deck figures and is marked <span class="src">deck</span>.
       The other twenty-three have a <b>society index</b>, worked out here from the hole-by-hole
       scorecards in our own tracker. They are built the same way but from different rounds, so a
       number from one section is not comparable with a number from the other. None of the twenty-three
@@ -101,11 +103,11 @@
     <div><b>Source.</b> <span id="srcLine"></span> Compiled from England Golf round-history data. CDH membership numbers held in that deck are deliberately not published here.</div>
     <div><b>Society figures.</b> Computed here from the hole-by-hole scorecards in the society tracker, replaying the same WHS low-round method the handicap register uses. Checked against the tracker's own calculation for all thirty players who have rounds: no discrepancies.</div>
     <div><b>The Asia Cup squad.</b> <span id="othersLine"></span></div>
-    <div><b>As at.</b> These histories were compiled for the Asia Cup and are a snapshot, not a live feed &mdash; they do not update themselves the way the rest of this site does. Society handicaps and results come from the tracker as usual.</div>
+    <div><b>As at.</b> Every figure on a card &mdash; index, cards played, differentials, peak and low marks, courses &mdash; is recomputed from the England Golf export loaded into the tracker, so a card refreshes whenever a newer export is supplied. A card marked <span class="src">deck</span> has no export yet and still shows the original Asia Cup snapshot. Society handicaps and results come from the tracker as usual.</div>
   </footer>
 </div>
 
-<script src="data.js?v=b41e09fb"></script>
+<script src="data.js?v=b6d0f7bf"></script>
 <script>
   const REG = Object.fromEntries(REGISTER.map(r => [r.n, r]));
   const f1  = v => v.toFixed(1);
@@ -169,10 +171,13 @@
           <span class="big num">${f1(r.nhs)}</span>
           <span class="foot">${r.rounds} society round${r.rounds === 1 ? '' : 's'} logged</span>
         </div>
-        <div class="hc">
-          <span class="lbl">England Golf index</span>
+        <div class="hc${p.deckOnly ? ' stale' : ''}">
+          <span class="lbl">England Golf index${
+            p.deckOnly ? ' <span class="src" title="Asia Cup deck figure — no England Golf export loaded for this player yet">deck</span>' : ''}</span>
           <span class="big num">${f1(p.idx)}</span>
-          <span class="foot">${p.scores} cards since ${p.since}</span>
+          <span class="foot">${p.deckOnly
+            ? `deck snapshot &middot; ${p.scores} cards since ${p.since}`
+            : `${p.scores} cards since ${p.since}`}</span>
         </div>
       </div>
 
@@ -203,8 +208,13 @@
     bits.push(`Their England Golf index runs ${avgGap.toFixed(1)} shots above their NHS handicap on ` +
       `average, widest for ${widest.n} at ${(widest.idx - REG[widest.n].nhs).toFixed(1)}.`);
     document.getElementById('profNote').textContent = bits.join(' ');
+    const fresh = ROWS.filter(p => !p.deckOnly).length, deck = ROWS.length - fresh;
     document.getElementById('srcLine').textContent =
-      `${ASIA_CUP.event} squad profiles, prepared for ${ASIA_CUP.date} at ${ASIA_CUP.venue}.`;
+      `${ASIA_CUP.event} squad, picked for ${ASIA_CUP.date} at ${ASIA_CUP.venue}. ` +
+      `${fresh} of these ${ROWS.length} cards are rebuilt from the player's own England Golf ` +
+      `export held in the tracker` +
+      (deck ? `; the remaining ${deck} still carry the original Asia Cup deck figures and are marked deck.`
+            : '.');
     renderSociety();
     document.getElementById('othersLine').textContent =
       `The other ${SQUAD_OTHERS.length} in the squad do not play in this society, so they have no card here: ` +
@@ -297,6 +307,10 @@
   .prof-top .id{display:flex;flex-direction:column;gap:1px;min-width:0;}
   .prof-top .id b{font-size:1rem;font-weight:700;letter-spacing:-.01em;}
   .alias{font-size:.73rem;color:var(--muted);}
+  .src{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.58rem;font-weight:600;
+    letter-spacing:.06em;padding:1px 4px;border-radius:2px;background:var(--surface-sunk);
+    color:var(--muted);vertical-align:middle;}
+  .hc.stale .big{color:var(--muted);}
   .pill.role{flex:none;margin-left:auto;background:var(--gold-wash);color:var(--gold);}
 
   .hcs{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);
