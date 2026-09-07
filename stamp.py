@@ -13,9 +13,11 @@ filename anywhere in the page, which quietly rewrote the prose too - the
 handicaps page ended up telling the reader to edit "data.js?v=71f251c4", a file
 that does not exist. A stamp belongs in a URL and nowhere else.
 """
-import hashlib, re, glob, os
+import hashlib, re, glob, os, sys
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
+# runs on its own folder normally; CI passes the checkout directory
+os.chdir(sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith('-')
+         else os.path.dirname(os.path.abspath(__file__)))
 ASSETS = ['data.js', 'fx.js', 'style.css',
           'favicon-16.png', 'favicon-32.png', 'apple-touch-icon.png']
 

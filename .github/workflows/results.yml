@@ -1,0 +1,65 @@
+# Publish team match results submitted by the captains.
+#
+# The captains fill in a Google Form from their phones. Its responses sheet is
+# published as CSV, this reads it, regenerates the MATCHES block in data.js and
+# commits. No PC is involved, which is the whole point: results used to need
+# one person at one machine with the Excel tracker open.
+#
+# Nothing here touches the tracker. Handicaps, rounds and WHS records stay on
+# that PC and out of this repo - the site's data.js already carries everything
+# this job needs.
+#
+# RESULTS_CSV_URL is a repository secret rather than a literal so the sheet's
+# address is not published alongside the site. It holds match results only, the
+# same data the site shows, but there is no reason to hand out the URL.
+name: Publish match results
+
+on:
+  schedule:
+    - cron: '5,35 * * * *'      # twice an hour; a submission is live within ~30 min
+  workflow_dispatch:            # and a "Run workflow" button, for right now
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-results        # never two commits racing each other
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          # no pip install: with the form as the source this is pure stdlib
+
+      - name: Read the form and regenerate data.js
+        env:
+          RESULTS_CSV_URL: ${{ secrets.RESULTS_CSV_URL }}
+          DATA_JS: data.js
+        run: |
+          if [ -z "$RESULTS_CSV_URL" ]; then
+            echo "RESULTS_CSV_URL secret is not set - nothing to do"; exit 1
+          fi
+          python tools/results_import.py          # report first, so the log is readable
+          python tools/matches_write.py
+
+      - name: Restamp the pages
+        run: python stamp.py .
+
+      - name: Commit if anything changed
+        run: |
+          if git diff --quiet; then
+            echo "no change - no result has been submitted since the last run"
+            exit 0
+          fi
+          score=$(python tools/results_import.py | grep '^score' || echo 'results updated')
+          git config user.name  "mpgolf results bot"
+          git config user.email "actions@github.com"
+          git add -A
+          git commit -m "Results from the captains' form -- ${score}"
+          git push

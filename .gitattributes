@@ -1,0 +1,10 @@
+# No end-of-line conversion, on any platform, for any file.
+#
+# stamp.py cache-busts by hashing the raw bytes of data.js, fx.js and the
+# stylesheet. Git for Windows defaults to core.autocrlf=true, which would give
+# the working copy CRLF while the repo and GitHub Pages keep LF - so the stamp
+# written into the pages would be the hash of a file nobody is ever served, and
+# readers would sit on a stale cached copy with no way to tell.
+#
+# Everything here is generated LF and served LF. Nothing should touch that.
+* -text
