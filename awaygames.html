@@ -37,6 +37,18 @@
     <div class="stat"><span class="k">Lowest net away</span><span class="v num" id="cBest">0</span><span class="sub" id="sBest"></span></div>
   </div>
 
+  <section id="upcoming" hidden>
+    <div class="head">
+      <div class="head-l">
+        <h2>Upcoming</h2>
+        <span class="chip live">Booked</span>
+        <span class="when" id="upWhen"></span>
+      </div>
+      <p>Days already in the diary. Results appear below once the scorecards are in.</p>
+    </div>
+    <div class="t-scroll"><table id="upTable"></table></div>
+  </section>
+
   <div id="games"></div>
 
   <section>
@@ -66,7 +78,7 @@
   </footer>
 </div>
 
-<script src="data.js?v=b14206ef"></script>
+<script src="data.js?v=f50d0d6b"></script>
 <script>
   const GAMES = [...AWAY_GAMES].sort((a,b) => new Date(b.date) - new Date(a.date));
 
@@ -93,6 +105,43 @@
       `${GAMES.length} away day${GAMES.length === 1 ? '' : 's'} &middot; ${rounds} rounds` +
       (mp ? ` &middot; ${mp} played as matches` : '') +
       `<br>each on its own course rating`;
+  })();
+
+  /* ---------- days in the diary ----------
+     A fixture is an away day before the cards exist. Course rating is shown
+     only where the club has supplied it; otherwise the page says so rather
+     than standing par in for it. A fixture still listed after its date has
+     passed is marked as awaiting scorecards, not quietly dropped. */
+  (function(){
+    const F = (typeof FIXTURES !== 'undefined' ? FIXTURES : []);
+    if (!F.length) return;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const day = d => new Date(d + 'T00:00:00');
+    const fmt = d => day(d).toLocaleDateString('en-GB',
+      {day:'numeric', month:'long', year:'numeric'});
+    const rows = [...F].sort((x,y) => day(x.date) - day(y.date));
+    const waiting = rows.filter(f => day(f.date) < today).length;
+
+    document.getElementById('upcoming').hidden = false;
+    document.getElementById('upWhen').textContent =
+      `${rows.length} booked` + (waiting ? ` · ${waiting} awaiting scorecards` : '');
+    document.getElementById('upTable').innerHTML =
+      `<thead><tr><th class="nm">Date</th><th class="nm">Venue</th>
+        <th class="nm">Tee</th><th class="nm">Rating</th><th class="nm"></th></tr></thead><tbody>` +
+      rows.map(f => {
+        const late = day(f.date) < today;
+        return `<tr>
+          <td class="nm">${fmt(f.date)}</td>
+          <td class="nm">${f.venue}${f.place ? `<span class="major-note">${f.place}</span>` : ''}</td>
+          <td class="nm">${f.tee ? f.tee.toLowerCase() : '<span class="pending">to confirm</span>'}</td>
+          <td class="nm">${f.cr !== null
+            ? f.cr.toFixed(1) + (f.slope ? `, slope ${f.slope}` : '')
+            : '<span class="pending">not supplied yet</span>'}</td>
+          <td class="nm">${late
+            ? '<span class="src" title="The date has passed and no scorecards have been loaded">awaiting cards</span>'
+            : (f.note || '')}</td>
+        </tr>`;
+      }).join('') + `</tbody>`;
   })();
 
   /* ---------- one section per away day ---------- */
