@@ -37,7 +37,7 @@ substitute from the wrong team or standing in for themselves, a score outside
 4's limit of two stand-ins per player is reported but NOT enforced - it is the
 captains' call, and the site already shows where it bites.
 """
-import csv, io, os, re, sys, urllib.error, urllib.request
+import csv, io, os, re, sys, time, urllib.error, urllib.request
 from datetime import date
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -196,6 +196,15 @@ def fetch(source):
     unless you know what to look for, so they are spelled out here."""
     if source and not source.startswith('http'):
         return open(source, encoding='utf-8-sig').read()
+
+    # Google serves a published sheet with max-age=300, so a fetch made moments
+    # after a submission can be handed the feed as it stood five minutes ago -
+    # missing the very row that asked for this run. That is fine on a schedule
+    # and useless on a trigger, which fires the instant a captain presses send.
+    # A unique parameter is a different cache key, so the sheet renders afresh.
+    sep = '&' if '?' in source else '?'
+    source = '%s%s_=%d' % (source, sep, time.time())
+
     try:
         with urllib.request.urlopen(source, timeout=30) as r:
             return r.read().decode('utf-8-sig')
