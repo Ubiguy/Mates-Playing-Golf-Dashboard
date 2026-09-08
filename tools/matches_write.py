@@ -31,6 +31,7 @@ from matches_inputs import SHORT_TO_REGISTER, SCHEDULE, COMP_HANDICAP, SUB_REQUI
 import results_import
 
 BIG_WIN = 5      # winning margin that is worth 2 points instead of 1
+MAX_DROP = 3     # results the form may lose before it looks like a mistake
 
 WB = os.path.join('..', 'TeamGames2026', 'Team_Matchplay_Leaderboard.xlsx')
 # CI checks the site out flat, so the path has to be overridable
@@ -130,6 +131,24 @@ def main():
             print('   already holds %d results.' % have)
             print('   Check that RESULTS_CSV_URL points at the responses sheet')
             print('   of the form the captains are actually submitting to.')
+            sys.exit(1)
+
+    # A CLIFF IS NOT A DELETION.
+    # A captain deleting a result is normal and the count drops by one. A drop
+    # from 22 to 1 is not a deletion, it is the form being asked to be the
+    # source of truth before it holds the season - which is exactly what would
+    # have happened here, the Excel Match Log's 22 results having never been
+    # migrated into it. Zero was already refused; this catches the rest.
+    if ms is not None and ms:
+        have = len(re.findall(r"aPlayer:'", open(DATA, encoding='utf-8').read()))
+        lost = have - len(ms)
+        if lost > MAX_DROP and not os.environ.get('ALLOW_SHRINK'):
+            print('REFUSING TO PUBLISH')
+            print('   the form holds %d results, the site holds %d.' % (len(ms), have))
+            print('   That is %d fewer, which is a cliff rather than a deletion.' % lost)
+            print('   If the form really is the whole season now, re-run with')
+            print('   ALLOW_SHRINK=1. Otherwise the missing results have not been')
+            print('   migrated into the responses sheet yet.')
             sys.exit(1)
 
     if ms is None:
