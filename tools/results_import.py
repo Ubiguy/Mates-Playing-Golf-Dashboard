@@ -98,12 +98,27 @@ def read_rows(source):
     else:
         with urllib.request.urlopen(source, timeout=30) as r:
             text = r.read().decode('utf-8-sig')
-    rows = list(csv.DictReader(io.StringIO(text)))
-    missing = [c for c in COL.values() if rows and c not in rows[0]]
+    reader = csv.DictReader(io.StringIO(text))
+
+    # Check the HEADER, not the first data row. The old check only looked when
+    # there was data, so publishing the wrong tab - Sheet1, the empty one Google
+    # creates alongside the responses - produced a perfectly valid empty CSV and
+    # was reported as "0 submissions". Indistinguishable from a form nobody had
+    # filled in, which sent us hunting for the wrong problem entirely.
+    fields = reader.fieldnames or []
+    missing = [c for c in COL.values() if c not in fields]
     if missing:
-        raise SystemExit('form is missing these columns:\n   ' + '\n   '.join(missing)
-                         + '\n\nthe question text must match exactly - see the form spec')
-    return rows
+        print('THE PUBLISHED CSV IS NOT THE RESPONSES SHEET')
+        print('   expected columns that are not there:')
+        for c in missing:
+            print('      %s' % c)
+        print('   columns it does have: %s'
+              % (', '.join(fields) if fields else '(none - the sheet is empty)'))
+        print('   In the responses spreadsheet: File > Share > Publish to web,')
+        print('   and pick the sheet named "Form Responses 1" - not Sheet1, and')
+        print('   not Entire Document. Then update RESULTS_CSV_URL to match.')
+        sys.exit(1)
+    return list(reader)
 
 
 def resolve(rows):
