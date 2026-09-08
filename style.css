@@ -381,6 +381,13 @@ footer b{color:var(--ink-2);font-weight:600;}
 .wk-carry .fx{background:var(--accent-wash);}
 .wk-carry .fx .fx-r{color:var(--accent);opacity:1;}
 
+/* the submit-a-result button. Deliberately quiet: it is for two people, and
+   everyone else on the page is a reader. */
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;
+  font-weight:600;font-size:.9rem;padding:9px 16px;border-radius:4px;}
+.btn:hover{filter:brightness(1.08);}
+.btn-note{margin:11px 0 0;font-size:.82rem;color:var(--muted);max-width:62ch;line-height:1.55;}
+
 /* the legend, once under the list rather than once per week card */
 .fx-key{display:flex;flex-wrap:wrap;align-items:center;gap:7px 16px;margin-top:12px;
   font-size:.73rem;color:var(--muted);}
