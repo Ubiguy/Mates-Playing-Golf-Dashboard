@@ -70,16 +70,37 @@ jobs:
         if: steps.cfg.outputs.ready == 'yes'
         run: python stamp.py .
 
+      # The score record. data.js is regenerated every run, so it only ever
+      # holds today's answer - this is the dated, append-only trail beside it,
+      # and it is where a wrong score gets retraced from. Runs before the
+      # commit so its own row is part of the same commit.
+      - name: Record the score
+        id: log
+        if: steps.cfg.outputs.ready == 'yes'
+        env:
+          RESULTS_CSV_URL: ${{ secrets.RESULTS_CSV_URL }}
+        run: |
+          python tools/score_log.py . | tee score-run.txt
+          {
+            echo "headline<<EOF"
+            sed -n 's/^headline: //p' score-run.txt
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+          rm -f score-run.txt
+
       - name: Commit if anything changed
         if: steps.cfg.outputs.ready == 'yes'
+        env:
+          # Through the environment rather than inlined: a commit subject built
+          # from data should never be pasted into a shell command.
+          MSG: ${{ steps.log.outputs.headline }}
         run: |
           if git diff --quiet; then
             echo "no change - no result has been submitted since the last run"
             exit 0
           fi
-          score=$(python tools/results_import.py | grep '^score' || echo 'results updated')
           git config user.name  "mpgolf results bot"
           git config user.email "actions@github.com"
           git add -A
-          git commit -m "Results from the captains' form -- ${score}"
+          git commit -m "${MSG:-Results from the captains form}"
           git push
