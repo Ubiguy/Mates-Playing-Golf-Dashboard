@@ -1,0 +1,4 @@
+# Python leaves these behind when the Action runs tools/, and git add -A
+# swept them into a commit on the very first live run.
+__pycache__/
+*.pyc

@@ -115,6 +115,23 @@ def main():
     # workbook remains the fallback so nothing breaks if it is not.
     ms = results_import.load()
     source = 'captains form'
+
+    # AN EMPTY FEED IS NEVER A REASON TO PUBLISH AN EMPTY SEASON.
+    # The form can be read successfully and still return nothing - a secret
+    # pointing at the wrong spreadsheet, a form nobody has submitted to yet, a
+    # Google outage serving an empty body. Without this the run "succeeds" and
+    # quietly wipes every result off a public site, which is what happened the
+    # first time the Action ran against a live secret.
+    if ms is not None and not ms:
+        have = len(re.findall(r"aPlayer:'", open(DATA, encoding='utf-8').read()))
+        if have:
+            print('REFUSING TO PUBLISH')
+            print('   the form returned no submissions at all, but data.js')
+            print('   already holds %d results.' % have)
+            print('   Check that RESULTS_CSV_URL points at the responses sheet')
+            print('   of the form the captains are actually submitting to.')
+            sys.exit(1)
+
     if ms is None:
         import openpyxl                      # only the fallback needs it
         ms = matches(openpyxl.load_workbook(WB, data_only=True))
@@ -208,6 +225,14 @@ def main():
         else:
             ya += 0.5
             sh += 0.5
+
+    # A drop is legitimate - a captain can delete a result - but a cliff is
+    # worth saying out loud in a log nobody reads until something looks wrong.
+    if source == 'captains form':
+        have = len(re.findall(r"aPlayer:'", open(DATA, encoding='utf-8').read()))
+        if len(ms) < have:
+            print('NOTE    : %d results now, was %d - %d fewer than the site had'
+                  % (len(ms), have, have - len(ms)))
 
     print('score   : Yaseen %g, Shufqat %g  (match points)' % (ya, sh))
     print('rosters : %d and %d players' % (len(a), len(b)))
