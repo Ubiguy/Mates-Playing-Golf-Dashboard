@@ -78,18 +78,68 @@ def rosters():
     return [p[0] for p in first], [p[1] for p in first]
 
 
-def parse_date(s):
+def _parts(s):
+    """(a, b, year) from a slashed date, or None."""
+    m = re.match(r'^(\d{1,2})[/.](\d{1,2})[/.](\d{4})', (s or '').strip())
+    return tuple(int(g) for g in m.groups()) if m else None
+
+
+def date_order(rows):
+    """Is this sheet writing d/m/y or m/d/y?
+
+    Google exports dates in the SPREADSHEET's locale, not yours and not ISO.
+    A sheet made by Apps Script defaults to US, so a submission made on the
+    8th of September comes out "9/8/2026" - which read as d/m/y is the 9th of
+    August, a month wrong, silently, on every result whose date was left blank.
+
+    Rather than hard-code either order, work it out. Any timestamp with a part
+    above 12 settles it outright. Failing that, a form submission is always in
+    the past and usually recent, so of the two readings take the one that is
+    not in the future and lands closest to today.
+    """
+    for r in rows:
+        p = _parts(r.get(COL['ts'], ''))
+        if not p:
+            continue
+        if p[0] > 12:
+            return 'dmy'
+        if p[1] > 12:
+            return 'mdy'
+
+    today, best = date.today(), None
+    for r in rows:
+        p = _parts(r.get(COL['ts'], ''))
+        if not p:
+            continue
+        for order in ('mdy', 'dmy'):
+            d, mo = (p[1], p[0]) if order == 'mdy' else (p[0], p[1])
+            try:
+                cand = date(p[2], mo, d)
+            except ValueError:
+                continue
+            if cand > today:
+                continue
+            gap = (today - cand).days
+            if best is None or gap < best[0]:
+                best = (gap, order)
+    return best[1] if best else 'dmy'
+
+
+def parse_date(s, order='dmy'):
     s = (s or '').strip()
     if not s:
         return None
-    m = re.match(r'^(\d{4})-(\d{2})-(\d{2})', s)                 # ISO
+    m = re.match(r'^(\d{4})-(\d{2})-(\d{2})', s)          # ISO, unambiguous
     if m:
         return date(*map(int, m.groups()))
-    m = re.match(r'^(\d{1,2})[/.](\d{1,2})[/.](\d{4})', s)        # d/m/Y
-    if m:
-        d, mo, y = map(int, m.groups())
-        return date(y, mo, d)
-    return None
+    p = _parts(s)
+    if not p:
+        return None
+    d, mo = (p[1], p[0]) if order == 'mdy' else (p[0], p[1])
+    try:
+        return date(p[2], mo, d)
+    except ValueError:
+        return None
 
 
 def fetch(source):
@@ -169,6 +219,7 @@ def resolve(rows):
     team_a, team_b = rosters()
     known = set(SHORT_TO_REGISTER)
 
+    order = date_order(rows)
     state, notes, problems, subs_used = {}, [], [], {}
 
     for i, r in enumerate(rows, 2):            # 2 = first data row in the sheet
@@ -200,7 +251,7 @@ def resolve(rows):
         # the captain a tap. Google Forms cannot default a date field to today,
         # so the submission timestamp stands in - it is the same day unless
         # somebody is catching up, and then they fill the date in.
-        d = parse_date(g('date')) or parse_date(g('ts'))
+        d = parse_date(g('date'), order) or parse_date(g('ts'), order)
         if d is None:
             problems.append('%s: no date, and the submission timestamp (%r) could'
                             ' not be read either' % (where, g('ts')))
