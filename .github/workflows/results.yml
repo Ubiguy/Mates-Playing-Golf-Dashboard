@@ -16,7 +16,12 @@ name: Publish match results
 
 on:
   schedule:
-    - cron: '5,35 * * * *'      # twice an hour; a submission is live within ~30 min
+    # Four times an hour, deliberately off the hour: GitHub's scheduler is
+    # busiest at :00 and a job queued then waits longer. Best effort either
+    # way - a scheduled run can lag by several minutes under load, so this
+    # buys a typical 15 minutes rather than a guaranteed one. Run workflow
+    # is still there when somebody wants a result up immediately.
+    - cron: '5,20,35,50 * * * *'
   workflow_dispatch:            # and a "Run workflow" button, for right now
 
 permissions:
