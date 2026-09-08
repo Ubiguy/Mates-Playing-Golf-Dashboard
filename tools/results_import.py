@@ -37,7 +37,7 @@ substitute from the wrong team or standing in for themselves, a score outside
 4's limit of two stand-ins per player is reported but NOT enforced - it is the
 captains' call, and the site already shows where it bites.
 """
-import csv, io, os, re, sys, urllib.request
+import csv, io, os, re, sys, urllib.error, urllib.request
 from datetime import date
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -92,12 +92,51 @@ def parse_date(s):
     return None
 
 
-def read_rows(source):
+def fetch(source):
+    """The CSV text, with the two ways this goes wrong named out loud.
+
+    A "publish to web" URL is world-readable and looks like
+
+        https://docs.google.com/spreadsheets/d/e/2PACX-.../pub?...output=csv
+
+    An ordinary sheet URL - the one in the address bar - looks like
+
+        https://docs.google.com/spreadsheets/d/<id>/edit
+
+    and needs a signed-in browser. GitHub's runner has no sign-in, so it gets
+    401 or 403 and the run dies in a stack trace that says nothing about
+    spreadsheets. Both mistakes are easy and neither is obvious from the URL
+    unless you know what to look for, so they are spelled out here."""
     if source and not source.startswith('http'):
-        text = open(source, encoding='utf-8-sig').read()
-    else:
+        return open(source, encoding='utf-8-sig').read()
+    try:
         with urllib.request.urlopen(source, timeout=30) as r:
-            text = r.read().decode('utf-8-sig')
+            return r.read().decode('utf-8-sig')
+    except urllib.error.HTTPError as e:
+        if e.code in (401, 403):
+            print('THE FEED URL NEEDS A SIGN-IN, SO IT IS NOT A PUBLISHED ONE')
+            print('   Google returned HTTP %d.' % e.code)
+            print('   RESULTS_CSV_URL looks like an ordinary spreadsheet link.')
+            print('   In the responses spreadsheet: File > Share > Publish to web,')
+            print('   pick the sheet "Form Responses 1", choose Comma-separated')
+            print('   values (.csv), press Publish, and use THAT url. A published')
+            print('   one contains /d/e/2PACX- and ends output=csv.')
+            sys.exit(1)
+        if e.code == 404:
+            print('THE FEED URL IS NOT THERE (HTTP 404)')
+            print('   The spreadsheet may have been deleted, or publishing turned')
+            print('   off. Re-publish it and update RESULTS_CSV_URL.')
+            sys.exit(1)
+        raise
+    except urllib.error.URLError as e:
+        print('COULD NOT REACH GOOGLE: %s' % e.reason)
+        print('   Nothing was published. This is usually transient - the next')
+        print('   scheduled run will pick the results up.')
+        sys.exit(1)
+
+
+def read_rows(source):
+    text = fetch(source)
     reader = csv.DictReader(io.StringIO(text))
 
     # Check the HEADER, not the first data row. The old check only looked when
