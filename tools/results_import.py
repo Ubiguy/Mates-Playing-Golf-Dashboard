@@ -142,6 +142,43 @@ def parse_date(s, order='dmy'):
         return None
 
 
+def stamp(s, order='dmy'):
+    """A sortable (date, time) from a submission timestamp, or None.
+
+    The date half goes through parse_date so it honours the sheet's locale the
+    same way everything else does. The time half is plain H:M:S and needs no
+    interpretation.
+    """
+    d = parse_date(s, order)
+    if d is None:
+        return None
+    m = re.search(r'(\d{1,2}):(\d{2})(?::(\d{2}))?', s or '')
+    return (d, tuple(int(x or 0) for x in m.groups()) if m else (0, 0, 0))
+
+
+def submissions(rows, order):
+    """[(sheet row, row)], oldest submission first.
+
+    The log is applied last-wins, which is only right if it is read in the
+    order the rows were SUBMITTED. SHEET ORDER IS NOT THAT ORDER. Google Forms
+    writes each new response directly beneath the last row IT wrote, so when
+    the season was pasted in during migration it landed underneath submissions
+    that had already been made. A captain correcting a migrated fixture would
+    have had the correction overridden by the older row below it - silently,
+    with the site still showing the score they had just fixed.
+
+    So sort on the timestamp rather than trusting position. Rows Google never
+    stamped (a hand-typed one) inherit the timestamp of the row above, which
+    keeps them where they were pasted, and the sort is stable, so rows sharing
+    a timestamp keep their sheet order.
+    """
+    out, last = [], (date.min, (0, 0, 0))
+    for i, r in enumerate(rows, 2):        # 2 = first data row in the sheet
+        last = stamp(r.get(COL['ts'], ''), order) or last
+        out.append((last, i, r))
+    out.sort(key=lambda x: (x[0], x[1]))
+    return [(i, r) for _, i, r in out]
+
 def fetch(source):
     """The CSV text, with the two ways this goes wrong named out loud.
 
@@ -222,7 +259,7 @@ def resolve(rows):
     order = date_order(rows)
     state, notes, problems, subs_used = {}, [], [], {}
 
-    for i, r in enumerate(rows, 2):            # 2 = first data row in the sheet
+    for i, r in submissions(rows, order):
         g = lambda k: (r.get(COL[k]) or '').strip()
         act = g('action')
         a, b = g('a'), g('b')
