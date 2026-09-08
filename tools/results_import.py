@@ -32,8 +32,8 @@ be matched to its scheduled week even when neither name on the card is the one
 in the fixture list.
 
 WHAT THIS REFUSES. A pairing that is not in the schedule, an unknown name, a
-substitute from the wrong team, a score outside what a 9-hole Stableford can
-produce. Those are reported and the row is dropped rather than published. Rule
+substitute from the wrong team or standing in for themselves, a score outside
+0-27, which is what 9 holes of Stableford can produce. Those are reported and the row is dropped rather than published. Rule
 4's limit of two stand-ins per player is reported but NOT enforced - it is the
 captains' call, and the site already shows where it bites.
 """
@@ -49,10 +49,11 @@ CSV_URL = os.environ.get('RESULTS_CSV_URL', '')
 
 # The form's question text becomes the CSV header, so these must match exactly.
 COL = {
+    'ts':      'Timestamp',
     'action':  'What are you doing?',
     'a':       'Team Yaseen player',
     'b':       'Team Shufqat player',
-    'date':    'Date played',
+    'date':    'Date played',        # blank means "today"
     'apts':    'Team Yaseen points',
     'bpts':    'Team Shufqat points',
     'suba':    'Stand-in for the Team Yaseen player',
@@ -60,7 +61,11 @@ COL = {
     'by':      'Your name',
 }
 NEW, FIX, DEL = 'New result', 'Correction', 'Delete'
-MAX_POINTS = 40          # 9 holes, 2 points a hole is 18; 40 is far beyond real
+# Stableford on 9 holes: par is 2 points a hole, a birdie 3. Birdie every hole
+# is 27, which is the practical ceiling and what the society plays to. An eagle
+# would pay 4 and could in principle breach it - if that ever happens the round
+# will be refused and this is the number to raise.
+MAX_POINTS = 27
 
 
 def rosters():
@@ -137,9 +142,14 @@ def resolve(rows):
                                 % (where, a, b))
             continue
 
-        d = parse_date(g('date'))
+        # A blank date means "played today", which is the common case and saves
+        # the captain a tap. Google Forms cannot default a date field to today,
+        # so the submission timestamp stands in - it is the same day unless
+        # somebody is catching up, and then they fill the date in.
+        d = parse_date(g('date')) or parse_date(g('ts'))
         if d is None:
-            problems.append('%s: date not understood (%r)' % (where, g('date')))
+            problems.append('%s: no date, and the submission timestamp (%r) could'
+                            ' not be read either' % (where, g('ts')))
             continue
         try:
             ap, bp = int(float(g('apts'))), int(float(g('bpts')))
@@ -148,8 +158,8 @@ def resolve(rows):
                             % (where, g('apts'), g('bpts')))
             continue
         if not (0 <= ap <= MAX_POINTS and 0 <= bp <= MAX_POINTS):
-            problems.append('%s: %d-%d is outside what 9 holes can produce'
-                            % (where, ap, bp))
+            problems.append('%s: %d-%d is outside 0-%d, which is what 9 holes of'
+                            ' Stableford can produce' % (where, ap, bp, MAX_POINTS))
             continue
 
         # A stand-in per side, each its own field. Both teams can substitute in
