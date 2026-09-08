@@ -161,7 +161,9 @@ const MATCHES = [
   {date:'2026-09-03',aPlayer:'Nav',aSubFor:null,aPts:13,bPlayer:'Jabar',bSubFor:null,bPts:16},
   {date:'2026-09-05',aPlayer:'Moody',aSubFor:null,aPts:13,bPlayer:'Raza',bSubFor:null,bPts:15},
   {date:'2026-09-07',aPlayer:'Shahzad',aSubFor:null,aPts:9,bPlayer:'Tariq',bSubFor:null,bPts:10},
-  {date:'2026-09-07',aPlayer:'Nav',aSubFor:null,aPts:14,bPlayer:'Sid',bSubFor:null,bPts:23}
+  {date:'2026-09-07',aPlayer:'Nav',aSubFor:null,aPts:14,bPlayer:'Sid',bSubFor:null,bPts:23},
+  {date:'2026-09-08',aPlayer:'Waseem',aSubFor:null,aPts:27,bPlayer:'Gaff',bSubFor:null,bPts:22},
+  {date:'2026-09-08',aPlayer:'Waseem',aSubFor:null,aPts:27,bPlayer:'Sam',bSubFor:null,bPts:1}
 ];
 
 /* The published 10-week round robin. A match may be played ahead of
