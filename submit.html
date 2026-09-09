@@ -33,7 +33,17 @@
   .formwrap{border:1px solid var(--rule);border-radius:6px;overflow:hidden;
     background:var(--surface);}
   .formwrap iframe{display:block;width:100%;height:1180px;border:0;}
-  @media (max-width:700px){.formwrap iframe{height:1400px;}}
+
+  /* On a phone the page's own margins leave Google about 335px, which is
+     narrower than its form wants: it overflows inside its frame and the
+     heading loses its right-hand end. There is no reaching inside a frame to
+     fix that, so give it the whole screen instead and drop the side border
+     that would then sit off the edge. */
+  @media (max-width:700px){
+    .formwrap{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);
+      border-radius:0;border-left:0;border-right:0;}
+    .formwrap iframe{height:1400px;}
+  }
 </style>
 </head>
 <body>
