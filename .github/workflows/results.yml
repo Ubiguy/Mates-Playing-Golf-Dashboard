@@ -63,7 +63,8 @@ jobs:
           RESULTS_CSV_URL: ${{ secrets.RESULTS_CSV_URL }}
           DATA_JS: data.js
         run: |
-          python tools/results_import.py          # report first, so the log is readable
+          set -o pipefail
+          python tools/results_import.py 2>&1 | tee /tmp/results-run.txt
           python tools/matches_write.py
 
       - name: Restamp the pages
@@ -80,6 +81,7 @@ jobs:
         env:
           RESULTS_CSV_URL: ${{ secrets.RESULTS_CSV_URL }}
         run: |
+          set -o pipefail
           python tools/score_log.py . | tee score-run.txt
           {
             echo "headline<<EOF"
@@ -104,3 +106,24 @@ jobs:
           git add -A
           git commit -m "${MSG:-Results from the captains form}"
           git push
+
+      # LAST, and deliberately after the publish. A row the importer could not
+      # make sense of is skipped: the rest of the season still publishes, which
+      # is right, but until now the only trace was a line in the log of a green
+      # run - and nobody reads the log of a green run. Failing here turns that
+      # into the mail GitHub sends when a job goes red, which is the only
+      # channel anybody actually watches.
+      - name: Say so if any row was refused
+        if: steps.cfg.outputs.ready == 'yes'
+        run: |
+          if grep -q '^   PROBLEM' /tmp/results-run.txt; then
+            echo "The site published, but these rows were left out:"
+            echo
+            grep '^   PROBLEM' /tmp/results-run.txt
+            echo
+            echo "Nothing is lost - the responses sheet keeps every submission,"
+            echo "and a corrected one supersedes. Fix the row and the next run"
+            echo "picks it up."
+            exit 1
+          fi
+          echo "every row was understood"

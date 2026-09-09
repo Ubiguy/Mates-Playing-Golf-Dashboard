@@ -74,6 +74,14 @@ COL = {
 # as results, the deletions would be undone and matches would quietly come
 # back. Hence a prefix test over both vocabularies rather than a constant.
 DELETING = ('delete', 'remov')
+
+# ...and the wordings that mean "here is a score". Anything matching NEITHER
+# list is refused rather than assumed, because the assumption is dangerous in
+# one direction: a deletion whose label is not recognised would be read as a
+# result and the match it removed would come back. Today a stray label is
+# caught only because deletions carry no scores, which is luck rather than a
+# check - it would stop being true the moment the form's branching changed.
+SENDING = ('sending', 'new result', 'correction', 'result')
 # Stableford on 9 holes: par is 2 points a hole, a birdie 3. Birdie every hole
 # is 27, which is the practical ceiling and what the society plays to. An eagle
 # would pay 4 and could in principle breach it - if that ever happens the round
@@ -84,6 +92,11 @@ MAX_POINTS = 27
 def is_delete(act):
     """Does this row take a result off, in either wording the form has used?"""
     return (act or '').strip().lower().startswith(DELETING)
+
+
+def is_sending(act):
+    """Does this row carry a score, in either wording the form has used?"""
+    return (act or '').strip().lower().startswith(SENDING)
 
 
 def rosters():
@@ -300,6 +313,14 @@ def resolve(rows):
             continue
         if (a, b) not in sched:
             problems.append('%s: %s v %s is not a fixture in the schedule' % (where, a, b))
+            continue
+
+        if not is_delete(act) and not is_sending(act):
+            problems.append('%s: "%s" is not an action this understands, so the '
+                            'row was left alone. If the form was edited, the '
+                            'options must still begin "Sending"/"New"/'
+                            '"Correction", or "Removing"/"Delete".'
+                            % (where, act or '(blank)'))
             continue
 
         if is_delete(act):
