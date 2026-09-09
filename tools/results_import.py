@@ -42,6 +42,7 @@ from datetime import date, datetime, time as dt_time, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from matches_inputs import SHORT_TO_REGISTER, SCHEDULE
+import season
 
 # Set by the workflow, or here for local runs. File -> Share -> Publish to web
 # -> whole document -> CSV, on the form's responses sheet.
@@ -348,12 +349,23 @@ def resolve(rows):
 
     order = date_order(rows)
     state, notes, problems, subs_used = {}, [], [], {}
+    skipped_old = 0
 
     for i, r in submissions(rows, order):
         g = lambda k: (r.get(COL[k]) or '').strip()
         act = g('action')
         a, b = g('a'), g('b')
         where = 'row %d (%s)' % (i, g('by') or 'unknown')
+
+        # A PREVIOUS SEASON'S ROW. The form writes to one responses sheet for
+        # ever and nothing is deleted from it, so on the first day of a new
+        # season that sheet still holds every submission of the last one. Their
+        # fixtures are not in this schedule, so without this they would each be
+        # refused, the job would go red, and it would stay red all season.
+        sent_on = parse_date(g('ts'), order)
+        if not season.owns(sent_on):
+            skipped_old += 1
+            continue
         sent = stamp(g('ts'), order)
         age = '' if sent is None or (
             datetime.combine(sent[0], dt_time(*sent[1]))
@@ -466,6 +478,10 @@ def resolve(rows):
 
         state[(a, b)] = dict(date=d.isoformat(), aPlayer=a_play, aSubFor=a_for, aPts=ap,
                              bPlayer=b_play, bSubFor=b_for, bPts=bp, week=sched[(a, b)])
+
+    if skipped_old:
+        notes.append('%d submission(s) from before %s passed over - they belong '
+                     'to an earlier season' % (skipped_old, season.STARTS))
 
     for who, n in sorted(subs_used.items()):
         if n > 2:
