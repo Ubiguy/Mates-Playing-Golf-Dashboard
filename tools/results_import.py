@@ -16,9 +16,9 @@ ones. Every row names a FIXTURE - the two rostered players - and that is the
 key, because in a round robin each pair meets exactly once. Rows are applied in
 submission order and the last one for a fixture is the truth:
 
-    New result       set the result for that fixture
-    Correction       the same, and it is expected to replace something
-    Delete           the fixture goes back to unplayed
+    Sending a result   set the result for that fixture, whether or not it
+                       already had one
+    Removing a result  the fixture goes back to unplayed
 
 Nothing is ever edited or removed from the responses sheet. It is a log of what
 was reported and when, and the site is the fold of it. If a captain fat-fingers
@@ -60,12 +60,30 @@ COL = {
     'subb':    'Stand-in for the Team Shufqat player',
     'by':      'Your name',
 }
-NEW, FIX, DEL = 'New result', 'Correction', 'Delete'
+# The action column, in both the wordings the sheet has ever used.
+#
+# The form used to offer three choices - New result, Correction, Delete - and
+# the first two did exactly the same thing here: set the result for a fixture.
+# The only difference was a warning when the captain's guess about whether one
+# already existed turned out wrong, which changed nothing and which nobody ever
+# saw. So the form asks two questions now, not three.
+#
+# THE OLD WORDING MUST KEEP WORKING. The responses sheet is a log and nothing
+# is ever edited out of it, so it still holds rows saying "Delete a result
+# entered by mistake". If that stopped being recognised those rows would read
+# as results, the deletions would be undone and matches would quietly come
+# back. Hence a prefix test over both vocabularies rather than a constant.
+DELETING = ('delete', 'remov')
 # Stableford on 9 holes: par is 2 points a hole, a birdie 3. Birdie every hole
 # is 27, which is the practical ceiling and what the society plays to. An eagle
 # would pay 4 and could in principle breach it - if that ever happens the round
 # will be refused and this is the number to raise.
 MAX_POINTS = 27
+
+
+def is_delete(act):
+    """Does this row take a result off, in either wording the form has used?"""
+    return (act or '').strip().lower().startswith(DELETING)
 
 
 def rosters():
@@ -284,7 +302,7 @@ def resolve(rows):
             problems.append('%s: %s v %s is not a fixture in the schedule' % (where, a, b))
             continue
 
-        if act.startswith(DEL):
+        if is_delete(act):
             if (a, b) in state:
                 del state[(a, b)]
                 notes.append('%s: deleted %s v %s' % (where, a, b))
@@ -345,12 +363,12 @@ def resolve(rows):
         if bad:
             continue
 
-        if act.startswith(NEW) and (a, b) in state:
-            problems.append('%s: entered as a NEW result but %s v %s already had one'
-                            ' - treated as a correction, check it is right' % (where, a, b))
-        if act.startswith(FIX) and (a, b) not in state:
-            problems.append('%s: entered as a correction but %s v %s had no result yet'
-                            % (where, a, b))
+        # Not a problem - a captain re-sending a fixture is the supported way
+        # to fix a score, and the form no longer asks them to declare which it
+        # is. Worth saying out loud though: it is the one line that explains a
+        # score changing after it was first published.
+        if (a, b) in state:
+            notes.append('%s: replaced the earlier %s v %s result' % (where, a, b))
 
         state[(a, b)] = dict(date=d.isoformat(), aPlayer=a_play, aSubFor=a_for, aPts=ap,
                              bPlayer=b_play, bSubFor=b_for, bPts=bp, week=sched[(a, b)])
