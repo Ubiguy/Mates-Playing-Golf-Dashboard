@@ -50,7 +50,7 @@ CSV_URL = os.environ.get('RESULTS_CSV_URL', '')
 # The form's question text becomes the CSV header, so these must match exactly.
 COL = {
     'ts':      'Timestamp',
-    'action':  'What are you doing?',
+    'action':  'Select one action from below',
     'a':       'Team Yaseen player',
     'b':       'Team Shufqat player',
     'date':    'Date played',        # blank means "today"
@@ -73,6 +73,18 @@ COL = {
 # entered by mistake". If that stopped being recognised those rows would read
 # as results, the deletions would be undone and matches would quietly come
 # back. Hence a prefix test over both vocabularies rather than a constant.
+# Headings this sheet has used before, and still has to be readable under.
+#
+# A QUESTION'S TITLE IS THE COLUMN HEADING. Rename the question in the form and
+# the responses sheet renames the column with it - values intact, but the name
+# the importer looks up is gone, and every run fails until it is taught the new
+# one. That happened on 9 September when "What are you doing?" became "Select
+# one action from below". Aliases mean the same sheet reads correctly whichever
+# name it is carrying, so a rename costs a failed run rather than a lost day.
+ALIASES = {
+    'Select one action from below': ['What are you doing?'],
+}
+
 LAST_ROWS = None            # rows seen by the most recent read_rows
 
 DELETING = ('delete', 'remov')
@@ -287,6 +299,18 @@ def read_rows(source):
     # was reported as "0 submissions". Indistinguishable from a form nobody had
     # filled in, which sent us hunting for the wrong problem entirely.
     fields = reader.fieldnames or []
+
+    # Accept a column under any name it has legitimately had.
+    renamed = {}
+    for canon, olds in ALIASES.items():
+        if canon not in fields:
+            for was in olds:
+                if was in fields:
+                    renamed[was] = canon
+                    break
+    if renamed:
+        fields = [renamed.get(f, f) for f in fields]
+
     missing = [c for c in COL.values() if c not in fields]
     if missing:
         print('THE PUBLISHED CSV IS NOT THE RESPONSES SHEET')
@@ -300,6 +324,9 @@ def read_rows(source):
         print('   not Entire Document. Then update RESULTS_CSV_URL to match.')
         sys.exit(1)
     rows = list(reader)
+    for r in rows:
+        for was, canon in renamed.items():
+            r[canon] = r.pop(was, '')
 
     # How many rows THIS read saw. The number has to travel with the data.js it
     # produced: score_log used to re-fetch to count them, and two fetches
