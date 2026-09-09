@@ -1,0 +1,81 @@
+# Publish live weekly singles scores submitted on the round-scores form.
+#
+# Whoever ran that week's Stableford or Strokeplay round fills in the form
+# once per player, from a phone. This reads the responses sheet, regenerates
+# the LIVE_ROUNDS / LIVE_STANDINGS blocks in data.js and commits - the same
+# shape as results.yml, which does this for team match play.
+#
+# SKIPS QUIETLY, on purpose, in two cases: no ROUNDS_CSV_URL secret yet
+# (the form doesn't exist), and rounds_config.ACTIVE empty (a form exists
+# but nobody has switched live tracking on for a competition - see
+# tools/rounds_config.py). Either way this must not fail and spam a
+# notification every fifteen minutes; see the equivalent note in results.yml.
+name: Publish live round scores
+
+on:
+  schedule:
+    # Same offset trick as results.yml - deliberately not on the hour, so
+    # this doesn't queue behind everything else GitHub runs at :00.
+    - cron: '10,25,40,55 * * * *'
+  workflow_dispatch:            # and a "Run workflow" button, for right now
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-site         # ONE GROUP FOR BOTH JOBS. Each commits and pushes data.js,
+  # so left in separate groups they can run at once and the
+  # second push dies on a non-fast-forward.
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          # no pip install: pure stdlib, same as results.yml
+
+      - name: Is there anything to publish?
+        id: cfg
+        env:
+          ROUNDS_CSV_URL: ${{ secrets.ROUNDS_CSV_URL }}
+        run: |
+          if [ -z "$ROUNDS_CSV_URL" ]; then
+            echo "ROUNDS_CSV_URL is not set - skipping until the form is live"
+            echo "ready=no" >> "$GITHUB_OUTPUT"
+          elif ! python -c "import sys; sys.path.insert(0,'tools'); import rounds_config as c; sys.exit(0 if c.ACTIVE else 1)"; then
+            echo "rounds_config.ACTIVE is empty - nothing is being tracked live"
+            echo "ready=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=yes" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Read the form and regenerate data.js
+        if: steps.cfg.outputs.ready == 'yes'
+        env:
+          ROUNDS_CSV_URL: ${{ secrets.ROUNDS_CSV_URL }}
+          DATA_JS: data.js
+        run: |
+          python tools/rounds_import.py          # report first, so the log is readable
+          python tools/rounds_write.py
+
+      - name: Restamp the pages
+        if: steps.cfg.outputs.ready == 'yes'
+        run: python stamp.py .
+
+      - name: Commit if anything changed
+        if: steps.cfg.outputs.ready == 'yes'
+        run: |
+          if git diff --quiet; then
+            echo "no change - no new round score has been submitted since the last run"
+            exit 0
+          fi
+          git config user.name  "mpgolf results bot"
+          git config user.email "actions@github.com"
+          git add -A
+          git commit -m "Live round scores updated"
+          git push

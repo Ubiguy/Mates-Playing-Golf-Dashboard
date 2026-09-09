@@ -28,7 +28,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: publish-results        # never two commits racing each other
+  group: publish-site        # ONE GROUP FOR BOTH JOBS. Each commits and pushes data.js,
+  # so left in separate groups they can run at once and the
+  # second push dies on a non-fast-forward.
   cancel-in-progress: false
 
 jobs:
