@@ -18,7 +18,7 @@ import hashlib, re, glob, os, sys
 # runs on its own folder normally; CI passes the checkout directory
 os.chdir(sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith('-')
          else os.path.dirname(os.path.abspath(__file__)))
-ASSETS = ['data.js', 'fx.js', 'changes.js', 'style.css',
+ASSETS = ['data.js', 'fx.js', 'changes.js', 'fresh.js', 'style.css',
           'favicon-16.png', 'favicon-32.png', 'apple-touch-icon.png']
 
 
@@ -28,6 +28,12 @@ def sha8(path):
 
 def main():
     stamps = {a: sha8(a) for a in ASSETS if os.path.exists(a)}
+
+    # What fresh.js compares itself against. It is fetched with no-store, so it
+    # is the one thing on the site guaranteed not to come from a cache.
+    if 'data.js' in stamps:
+        open('version.txt', 'w', encoding='utf-8').write(stamps['data.js'])
+
     changed = []
     for f in sorted(glob.glob('*.html')):
         s = old = open(f, encoding='utf-8').read()
