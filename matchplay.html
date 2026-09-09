@@ -6,7 +6,7 @@
 <title>Team Match Play</title>
 <meta name="description" content="Team Yaseen v Team Shufqat - 9-hole Stableford team match play, full round robin.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=bf5655fd">
+<link rel="stylesheet" href="style.css?v=6643a552">
 <link rel="icon" href="favicon-32.png?v=7d5e942c" sizes="32x32" type="image/png">
 <link rel="icon" href="favicon-16.png?v=1fc5ad18" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20639bb8">
@@ -163,6 +163,7 @@
       <div class="head-l"><h2>Submit a result</h2></div>
       <p>Captains only &mdash; the site updates itself a minute or two later</p>
     </div>
+    <p class="lastup" id="lastup" hidden></p>
     <div class="note">
       <a class="btn" target="_top" href="https://docs.google.com/forms/d/e/1FAIpQLSeKNc6H2o_HYfvoR1csXGOXUcDPZDTQ9jrgWxmHBF6Wtn0vHg/viewform">Submit a match result &rarr;</a>
       <p class="btn-note">Pick the two players who were <b>drawn</b> to play, not the stand-ins.
@@ -180,6 +181,7 @@
 </div>
 
 <script src="data.js?v=6d3fee3e"></script>
+<script src="changes.js?v=f0eaf2aa"></script>
 <script src="fx.js?v=35840b0c"></script>
 <script>
   const isSub = (p,f) => !!f && f !== p;
@@ -418,5 +420,23 @@
   code{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.92em;
     background:var(--surface-sunk);padding:1px 5px;border-radius:3px;}
 </style>
+<script>
+  // The last change, in one line: after sending a result the only question a
+  // captain has is whether it landed, and the table alone cannot answer it
+  // unless he knows the old score by heart.
+  (function () {
+    const el = document.getElementById('lastup');
+    if (!el || typeof CHANGES === 'undefined' || !CHANGES.length) return;
+    const r = CHANGES.find(x => !(x.items.length === 1 && x.items[0] === 'no change'))
+           || CHANGES[0];
+    const d = new Date(r.when);
+    const when = isNaN(d) ? r.when
+      : d.toLocaleString('en-GB', { day: 'numeric', month: 'short',
+                                    hour: '2-digit', minute: '2-digit' });
+    el.innerHTML = 'Last change <b>' + when + '</b> · '
+      + r.items.join('; ') + ' · <a href="changes.html">what changed</a>';
+    el.hidden = false;
+  })();
+</script>
 </body>
 </html>

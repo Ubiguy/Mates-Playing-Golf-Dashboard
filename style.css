@@ -406,3 +406,8 @@ footer b{color:var(--ink-2);font-weight:600;}
   .fx-r{grid-column:2 / -1;text-align:right;}
 }
 @container (max-width:260px){ .fx .form{display:none;} }
+
+/* The one-line "did my result land?" answer, under the submit heading. */
+.lastup{margin:0 0 12px;font-size:.8rem;color:var(--muted);line-height:1.5;}
+.lastup b{color:var(--ink-2);font-weight:600;}
+.lastup a{color:var(--accent);}

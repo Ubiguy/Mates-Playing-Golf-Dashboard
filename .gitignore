@@ -2,3 +2,4 @@
 # swept them into a commit on the very first live run.
 __pycache__/
 *.pyc
+.claude/

@@ -30,6 +30,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 LOG = 'score-log.csv'
+FEED = 'changes.js'          # what the pages read; the CSV stays the record
+KEEP = 25                    # entries in that file - the page is a recent view
 FIELDS = ['when', 'results', 'yaseen', 'shufqat', 'submissions', 'change', 'from']
 
 # The MATCHES block as matches_write.py writes it. aPlayer is who PLAYED;
@@ -82,13 +84,14 @@ def changes(old, new):
             continue
         fx = '%s v %s' % k
         if n and not o:
-            out.append('added %s %d-%d' % (fx, n[1], n[2]))
+            what = 'added %s %d-%d' % (fx, n[1], n[2])
         elif o and not n:
-            out.append('deleted %s' % fx)
+            what = 'deleted %s' % fx
         elif o[1:] != n[1:]:
-            out.append('%s now %d-%d, was %d-%d' % (fx, n[1], n[2], o[1], o[2]))
+            what = '%s now %d-%d, was %d-%d' % (fx, n[1], n[2], o[1], o[2])
         else:
-            out.append('%s moved to %s' % (fx, n[0]))
+            what = '%s moved to %s' % (fx, n[0])
+        out.append((what, k))
     return out
 
 
@@ -101,22 +104,33 @@ def git(site, *args):
     return r.stdout if r.returncode == 0 else ''
 
 
-def submissions():
-    """How many rows the form's feed held, or blank when it cannot be read.
+def feed():
+    """(how many rows, {fixture: who last touched it}) from the form.
 
-    Blank rather than 0 on failure: 0 is a real answer that would sit in the
-    log looking like an empty season, and this column is the drift check's
-    only notion of "the same input".
+    The count is blank rather than 0 when the feed cannot be read: 0 is a real
+    answer that would sit in the log looking like an empty season, and that
+    column is the drift check's only notion of "the same input".
+
+    The names come from the log rather than from the resolved matches, because
+    a DELETION leaves no match behind - and "who took that off?" is the first
+    question anybody asks. Last writer per fixture wins, which is the same rule
+    the resolver applies to the results themselves.
     """
     try:
-        import results_import
-        if not results_import.CSV_URL:
-            return ''
-        return len(results_import.read_rows(results_import.CSV_URL))
+        import results_import as R
+        if not R.CSV_URL:
+            return '', {}
+        rows = R.read_rows(R.CSV_URL)
+        who = {}
+        for _, r in R.submissions(rows, R.date_order(rows)):
+            g = lambda k: (r.get(R.COL[k]) or '').strip()
+            if g('a') and g('b'):
+                who[(g('a'), g('b'))] = g('by')
+        return len(rows), who
     except SystemExit:
-        return ''
+        return '', {}
     except Exception:
-        return ''
+        return '', {}
 
 
 def read_log(path):
@@ -135,6 +149,39 @@ def append(path, row):
         w.writerow(row)
 
 
+def js(v):
+    """A JavaScript string literal.
+
+    Fixtures and names are plain enough, but the log's change column is built
+    from whatever the captains typed into the form, so quote it properly rather
+    than trusting it to be tame.
+    """
+    return "'" + (v or '').replace('\\', '\\\\').replace("'", "\\'") + "'"
+
+
+def write_feed(site, path):
+    """Write the newest KEEP entries of the log to changes.js.
+
+    The pages read this rather than score-log.csv. Parsing CSV in a browser
+    looks trivial and breaks on exactly the row you would most want to read: a
+    drift note says "gave Yaseen 14, Shufqat 19", so the field is quoted and a
+    split on commas tears it in half. Python already owns a correct reader, so
+    the splitting happens here, once, and the page is handed a list.
+    """
+    rows = read_log(path)[-KEEP:]
+    out = []
+    for r in reversed(rows):                     # newest first, as it is read
+        items = [i for i in (r.get('change') or '').split('; ') if i]
+        out.append('  {when:%s,results:%s,a:%s,b:%s,items:[%s]}' % (
+            js(r.get('when')), r.get('results') or '0',
+            r.get('yaseen') or '0', r.get('shufqat') or '0',
+            ','.join(js(i) for i in items)))
+    body = ('// Written by score_log.py - the newest %d entries of %s.\n'
+            '// That CSV is the record; this is only what the pages read.\n'
+            'const CHANGES = [\n%s\n];\n' % (KEEP, LOG, ',\n'.join(out)))
+    open(os.path.join(site, FEED), 'w', encoding='utf-8', newline='\n').write(body)
+    return len(out)
+
 def drift(prev, subs, a, b):
     """The most recent row read from the same input that disagrees, if any."""
     if subs == '':
@@ -146,14 +193,14 @@ def drift(prev, subs, a, b):
     return None
 
 
-def headline(a, b, n, moved):
+def headline(a, b, n, told):
     """The commit subject. Long change lists are summarised, not truncated."""
     head = 'Yaseen %g, Shufqat %g (%d matches)' % (a, b, n)
-    if not moved:
+    if not told:
         return head + ' -- daily record'
-    if len(moved) > 2:
-        moved = moved[:2] + ['and %d more' % (len(moved) - 2)]
-    return head + ' -- ' + '; '.join(moved)
+    if len(told) > 2:
+        told = told[:2] + ['and %d more' % (len(told) - 2)]
+    return head + ' -- ' + '; '.join(told)
 
 
 def backfill(site, path):
@@ -175,7 +222,7 @@ def backfill(site, path):
         a, b = points(ms)
         append(path, {'when': when, 'results': len(ms), 'yaseen': '%g' % a,
                       'shufqat': '%g' % b, 'submissions': '',
-                      'change': '; '.join(changes(prev, ms)) or 'first record',
+                      'change': '; '.join(w for w, _ in changes(prev, ms)) or 'first record',
                       'from': sha[:7]})
         prev, wrote = ms, wrote + 1
     print('%s seeded from git history - %d rows' % (LOG, wrote))
@@ -200,11 +247,13 @@ def main():
     if not moved and logged_today:
         print('score log : Yaseen %g, Shufqat %g - no change, today already recorded'
               % (a, b))
-        print('headline: %s' % headline(a, b, len(new), moved))
+        print('headline: %s' % headline(a, b, len(new), []))
+        write_feed(site, path)          # in case only the page shape changed
         return
 
-    subs = submissions()
-    note = '; '.join(moved) or 'no change'
+    subs, who = feed()
+    told = [w + (' (%s)' % who[k] if who.get(k) else '') for w, k in moved]
+    note = '; '.join(told) or 'no change'
 
     # Never write the same row twice. CI commits after every run, so HEAD moves
     # and this cannot arise there - but run by hand twice over, without a commit
@@ -215,7 +264,7 @@ def main():
         if (last['results'], last['yaseen'], last['shufqat'], last['change']) == \
            (str(len(new)), '%g' % a, '%g' % b, note):
             print('score log : Yaseen %g, Shufqat %g - already recorded' % (a, b))
-            print('headline: %s' % headline(a, b, len(new), moved))
+            print('headline: %s' % headline(a, b, len(new), told))
             return
 
     d = drift(prev, subs, a, b)
@@ -228,8 +277,10 @@ def main():
                   'submissions': subs, 'change': note,
                   'from': (git(site, 'rev-parse', 'HEAD') or '').strip()[:7]})
 
-    print('score log : Yaseen %g, Shufqat %g from %d matches' % (a, b, len(new)))
-    for m in moved:
+    n = write_feed(site, path)
+    print('score log : Yaseen %g, Shufqat %g from %d matches (%s holds %d)'
+          % (a, b, len(new), FEED, n))
+    for m in told:
         print('   changed %s' % m)
     if d:
         print('   DRIFT   the same %s submissions gave Yaseen %s, Shufqat %s on %s.'
@@ -237,7 +288,7 @@ def main():
         print('           The input did not change but the score did. Either the')
         print('           rules changed, or the responses sheet was edited by hand')
         print('           instead of a correction being submitted.')
-    hl = headline(a, b, len(new), moved)
+    hl = headline(a, b, len(new), told)
     print('headline: %s' % ('DRIFT -- ' + hl if d else hl))
 
 
