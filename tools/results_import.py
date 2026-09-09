@@ -73,6 +73,8 @@ COL = {
 # entered by mistake". If that stopped being recognised those rows would read
 # as results, the deletions would be undone and matches would quietly come
 # back. Hence a prefix test over both vocabularies rather than a constant.
+LAST_ROWS = None            # rows seen by the most recent read_rows
+
 DELETING = ('delete', 'remov')
 
 # ...and the wordings that mean "here is a score". Anything matching NEITHER
@@ -284,7 +286,15 @@ def read_rows(source):
         print('   and pick the sheet named "Form Responses 1" - not Sheet1, and')
         print('   not Entire Document. Then update RESULTS_CSV_URL to match.')
         sys.exit(1)
-    return list(reader)
+    rows = list(reader)
+
+    # How many rows THIS read saw. The number has to travel with the data.js it
+    # produced: score_log used to re-fetch to count them, and two fetches
+    # seconds apart disagreed by one row - which made a real deletion look like
+    # the same input giving a different score, and raised a false DRIFT.
+    global LAST_ROWS
+    LAST_ROWS = len(rows)
+    return rows
 
 
 def resolve(rows):

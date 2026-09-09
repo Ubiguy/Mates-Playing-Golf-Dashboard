@@ -227,7 +227,18 @@ def main():
     else:
         tail = 'const TEAM_SCHEDULE' if 'const TEAM_SCHEDULE' in src else 'const MATCHES'
         end = src.index('\n];\n', src.index(tail, start)) + 4
-    open(DATA, 'w', encoding='utf-8', newline='').write(src[:start] + block + src[end:])
+    out = src[:start] + block + src[end:]
+
+    # Stamp the feed size into the file it describes, so whatever reads data.js
+    # later knows exactly how many submissions produced it and does not have to
+    # ask Google again and get a different answer. score_log used to re-fetch
+    # to count rows, and two fetches seconds apart disagreed by one - which
+    # made a real deletion look like the same input giving a different score,
+    # and raised a DRIFT that was not one.
+    if results_import.LAST_ROWS is not None:
+        out = re.sub(r'^// feed rows: \d+\n', '', out, flags=re.M)
+        out = '// feed rows: %d\n' % results_import.LAST_ROWS + out
+    open(DATA, 'w', encoding='utf-8', newline='').write(out)
 
     # The team score, scored the way the competition scores it. This used to
     # report the sum of raw Stableford points - Yaseen 321, Shufqat 333 - a

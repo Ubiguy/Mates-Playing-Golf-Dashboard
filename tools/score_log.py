@@ -104,34 +104,42 @@ def git(site, *args):
     return r.stdout if r.returncode == 0 else ''
 
 
-def feed():
-    """(how many rows, {fixture: who last touched it}) from the form.
+def feed(site):
+    """(rows that produced this data.js, {fixture: who last touched it}).
 
-    The count is blank rather than 0 when the feed cannot be read: 0 is a real
-    answer that would sit in the log looking like an empty season, and that
-    column is the drift check's only notion of "the same input".
+    THE COUNT COMES FROM data.js, not from a fresh fetch. It used to be counted
+    by re-reading the form here, which meant the number in the log was sampled
+    at a different moment from the score it sat beside. On 9 September two
+    fetches seconds apart disagreed by one row, so a genuine deletion was
+    recorded against the previous run's count - and the drift check, whose
+    whole premise is "same input, different answer", duly cried wolf.
+    matches_write.py now stamps the size of the feed it actually read into the
+    file it wrote, and that is the only number that can honestly be compared.
 
-    The names come from the log rather than from the resolved matches, because
-    a DELETION leaves no match behind - and "who took that off?" is the first
-    question anybody asks. Last writer per fixture wins, which is the same rule
-    the resolver applies to the results themselves.
+    The names still come from the form, and are allowed to be a moment newer:
+    a name arriving late is cosmetic, where a count arriving late is a false
+    alarm. They are read from the LOG rather than the resolved matches because
+    a deletion leaves no match behind, and "who took that off?" is the first
+    thing anybody asks.
     """
+    src = open(os.path.join(site, 'data.js'), encoding='utf-8').read()
+    m = re.match(r'// feed rows: (\d+)', src)
+    rows = int(m.group(1)) if m else ''
+
+    who = {}
     try:
         import results_import as R
-        if not R.CSV_URL:
-            return '', {}
-        rows = R.read_rows(R.CSV_URL)
-        who = {}
-        for _, r in R.submissions(rows, R.date_order(rows)):
-            g = lambda k: (r.get(R.COL[k]) or '').strip()
-            if g('a') and g('b'):
-                who[(g('a'), g('b'))] = g('by')
-        return len(rows), who
+        if R.CSV_URL:
+            log = R.read_rows(R.CSV_URL)
+            for _, r in R.submissions(log, R.date_order(log)):
+                g = lambda k: (r.get(R.COL[k]) or '').strip()
+                if g('a') and g('b'):
+                    who[(g('a'), g('b'))] = g('by')
     except SystemExit:
-        return '', {}
+        pass
     except Exception:
-        return '', {}
-
+        pass
+    return rows, who
 
 def read_log(path):
     if not os.path.exists(path):
@@ -251,7 +259,7 @@ def main():
         write_feed(site, path)          # in case only the page shape changed
         return
 
-    subs, who = feed()
+    subs, who = feed(site)
     told = [w + (' (%s)' % who[k] if who.get(k) else '') for w, k in moved]
     note = '; '.join(told) or 'no change'
 
