@@ -6,7 +6,7 @@
 <title>Team Match Play</title>
 <meta name="description" content="Team Yaseen v Team Shufqat - 9-hole Stableford team match play, full round robin.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=355d263d">
+<link rel="stylesheet" href="style.css?v=f9a94ca1">
 <link rel="icon" href="favicon-32.png?v=7d5e942c" sizes="32x32" type="image/png">
 <link rel="icon" href="favicon-16.png?v=1fc5ad18" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20639bb8">
@@ -173,17 +173,23 @@
         <li>Send. The table updates itself.</li>
       </ol>
 
-      <figure class="how-ex">
-        <figcaption>Waseem played Gaff and won 21&ndash;16</figcaption>
-        <dl>
-          <dt>What are you doing?</dt><dd>Sending a result</dd>
-          <dt>Team Yaseen player</dt><dd>Waseem</dd>
-          <dt>Team Shufqat player</dt><dd>Gaff</dd>
-          <dt>Date played</dt><dd class="q">leave blank if today</dd>
-          <dt>Team Yaseen points</dt><dd>21</dd>
-          <dt>Team Shufqat points</dt><dd>16</dd>
-        </dl>
-      </figure>
+      <details class="shots">
+        <summary>Show me the form</summary>
+        <div class="shots-grid">
+          <figure>
+            <img src="form-page1.png" width="620" height="731" loading="lazy"
+                 alt="Page one of the form: the action, both players and your name.">
+            <figcaption><b>Page one.</b> Pick the two who were <b>drawn</b>, not the
+              stand-ins. Choosing <b>Removing a result</b> sends from here.</figcaption>
+          </figure>
+          <figure>
+            <img src="form-page2.png" width="620" height="984" loading="lazy"
+                 alt="Page two of the form: date, both scores and the stand-in dropdowns.">
+            <figcaption><b>Page two.</b> Both scores, 0&ndash;27. Name a stand-in only
+              if somebody played instead of the drawn player.</figcaption>
+          </figure>
+        </div>
+      </details>
 
       <ul class="how-else">
         <li><b>Someone stood in?</b> Still pick the drawn pair, then name the stand-in on page two.</li>

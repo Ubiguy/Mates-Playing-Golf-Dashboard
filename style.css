@@ -441,3 +441,21 @@ footer b{color:var(--ink-2);font-weight:600;}
   color:var(--muted);line-height:1.6;}
 .how-else li{margin:3px 0;}
 .how-else b{color:var(--ink-2);}
+
+/* The form itself, behind a toggle under the submit button.
+   Shut by default: a captain who has done this before does not need two
+   screenshots in his way, and one who has not can open them without leaving
+   the page or hunting for a guide. auto-fit means the pair sit side by side
+   where there is room and stack on a phone, with no breakpoint to maintain. */
+.shots{margin:14px 0 0;}
+.shots summary{display:inline-block;cursor:pointer;font-size:.82rem;
+  font-weight:600;color:var(--accent);padding:3px 0;}
+.shots summary:hover{text-decoration:underline;}
+.shots-grid{display:grid;gap:16px;margin-top:12px;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));max-width:62rem;}
+.shots-grid figure{margin:0;}
+.shots-grid img{display:block;width:100%;height:auto;border:1px solid var(--border);
+  border-radius:5px;background:var(--surface);}
+.shots-grid figcaption{margin-top:7px;font-size:.78rem;color:var(--muted);
+  line-height:1.5;}
+.shots-grid figcaption b{color:var(--ink-2);font-weight:600;}
