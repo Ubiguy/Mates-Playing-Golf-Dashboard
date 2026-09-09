@@ -86,7 +86,13 @@ def changes(old, new):
         if n and not o:
             what = 'added %s %d-%d' % (fx, n[1], n[2])
         elif o and not n:
-            what = 'deleted %s' % fx
+            # WITH THE SCORE. Without it this file records that something was
+            # removed but not what, so the one document meant to let you
+            # retrace a change cannot be used to undo it - the score would have
+            # to be dug out of whichever earlier entry added it, which may be
+            # weeks and a hundred rows back, or off the end of changes.js
+            # entirely. One line should be enough to put a result back.
+            what = 'deleted %s, was %d-%d' % (fx, o[1], o[2])
         elif o[1:] != n[1:]:
             what = '%s now %d-%d, was %d-%d' % (fx, n[1], n[2], o[1], o[2])
         else:

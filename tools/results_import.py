@@ -38,7 +38,7 @@ substitute from the wrong team or standing in for themselves, a score outside
 captains' call, and the site already shows where it bites.
 """
 import csv, io, os, re, sys, time, urllib.error, urllib.request
-from datetime import date
+from datetime import date, datetime, time as dt_time, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from matches_inputs import SHORT_TO_REGISTER, SCHEDULE
@@ -89,6 +89,19 @@ SENDING = ('sending', 'new result', 'correction', 'result')
 # would pay 4 and could in principle breach it - if that ever happens the round
 # will be refused and this is the number to raise.
 MAX_POINTS = 27
+
+# A result older than this being removed is worth an email. Routine tidying
+# happens the same day; going back weeks is either deliberate or a mistyped
+# pair, and only one of those is fine.
+OLD_RESULT_DAYS = 10
+
+# How long a problem is worth failing the run over. The responses sheet is a
+# log and nothing is edited out of it, so a bad row is replayed on EVERY future
+# run - without this, one unresolvable row would leave the job red for the rest
+# of the season and the red would stop meaning anything. Fresh problems fail
+# and reach a mailbox; older ones stay printed but let the run pass.
+FRESH_HOURS = 48
+PAST = 'PAST: '
 
 
 def is_delete(act):
@@ -314,6 +327,10 @@ def resolve(rows):
         act = g('action')
         a, b = g('a'), g('b')
         where = 'row %d (%s)' % (i, g('by') or 'unknown')
+        sent = stamp(g('ts'), order)
+        age = '' if sent is None or (
+            datetime.combine(sent[0], dt_time(*sent[1]))
+            > datetime.now() - timedelta(hours=FRESH_HOURS)) else PAST
 
         if not (a and b):
             problems.append('%s: no players chosen - ignored' % where)
@@ -326,20 +343,39 @@ def resolve(rows):
             continue
 
         if not is_delete(act) and not is_sending(act):
-            problems.append('%s: "%s" is not an action this understands, so the '
+            problems.append('%s%s: "%s" is not an action this understands, so the '
                             'row was left alone. If the form was edited, the '
                             'options must still begin "Sending"/"New"/'
                             '"Correction", or "Removing"/"Delete".'
-                            % (where, act or '(blank)'))
+                            % (age, where, act or '(blank)'))
             continue
 
         if is_delete(act):
             if (a, b) in state:
-                del state[(a, b)]
-                notes.append('%s: deleted %s v %s' % (where, a, b))
+                gone = state.pop((a, b))
+                notes.append('%s: deleted %s v %s, was %d-%d'
+                             % (where, a, b, gone['aPts'], gone['bPts']))
+
+                # Removing today's result is routine. Removing one from weeks
+                # back is not, and it is the case the form cannot protect
+                # against: the dropdowns list every player whether or not the
+                # pair has played, so one wrong tap silently takes a real
+                # result off a table nobody is looking at any more. It still
+                # publishes - the captain may well mean it - but it says so
+                # loudly enough to reach a mailbox.
+                played = parse_date(gone['date'], 'ymd')
+                if played and (date.today() - played).days > OLD_RESULT_DAYS:
+                    problems.append(
+                        '%s%s: removed %s v %s from %s - %d days back, and it '
+                        'was %d-%d. Nothing is lost; send it again to put it '
+                        'back. Flagged because a mistyped pair takes an old '
+                        'result off in silence.'
+                        % (age, where, a, b, gone['date'],
+                           (date.today() - played).days,
+                           gone['aPts'], gone['bPts']))
             else:
-                problems.append('%s: asked to delete %s v %s, which has no result'
-                                % (where, a, b))
+                problems.append('%s%s: asked to delete %s v %s, which has no result'
+                                % (age, where, a, b))
             continue
 
         # A blank date means "played today", which is the common case and saves
@@ -448,7 +484,10 @@ def main():
     for n in notes:
         print('   note    %s' % n)
     for p in problems:
-        print('   PROBLEM %s' % p)
+        if p.startswith(PAST):
+            print('   past    %s' % p[len(PAST):])
+        else:
+            print('   PROBLEM %s' % p)
     if problems:
         print('\n%d row(s) were not applied. Nothing is lost - the log keeps them,'
               ' and a corrected submission will supersede.' % len(problems))
