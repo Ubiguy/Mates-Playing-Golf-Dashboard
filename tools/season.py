@@ -44,6 +44,34 @@ TEAM_A, TEAM_B = 'Yaseen', 'Shufqat'
 # January. Both are already titled without a year - "Handicap Register", not
 # "2026 Handicap Register" - and the 2025 and 2026 dates inside them are ROUNDS,
 # which is precisely what a register spanning years should hold.
+# Blocks in data.js that belong to the SOCIETY and must survive a rollover.
+# SOCIETY looks season-ish because index.html and season.html both show it, but
+# it counts every round since April 2024 - it is cumulative, not annual.
+SOCIETY_DATA = ['SOCIETY', 'REGISTER', 'VENUES', 'SQUAD_OTHERS', 'EG_NAMES',
+                'SOCIETY_STATS', 'WHS_STATS', 'BEST']
+
+# Annual fixtures that ran in 2026 with a workbook but no page of their own.
+# Both recur, so the template keeps them in view rather than losing them.
+ANNUAL_NO_PAGE = ['Asia Cup', 'Roses (Yorkshire v Lancashire)']
+
+
+# Blocks in data.js that a script writes, and blocks a human types.
+#
+# This matters at rollover. The generated ones look after themselves: give
+# publish.py new inputs and it rewrites them. The hand-typed ones do not - last
+# season's stableford and strokeplay tables simply stay there until somebody
+# edits them, which is why they need naming rather than assuming.
+GENERATED = ['MATCHES', 'TEAM_SCHEDULE', 'ROSTER_A', 'ROSTER_B', 'BIG_WIN',
+             'SUB_REQUIRED', 'EG_NAMES', 'SOCIETY_STATS', 'WHS_STATS',
+             'VENUES', 'FIXTURES']
+
+# Hand-typed AND season-scoped: these carry last year's numbers into next year
+# unless they are cleared. The live scores work would move the first six of
+# these into GENERATED, which is most of the reason to do it.
+HAND_TYPED_SEASON = ['STROKEPLAY', 'SP_UNRANKED', 'SP_ROUNDS', 'SP_BEST',
+                     'STABLEFORD', 'SF_UNRANKED', 'LEAGUE', 'MAJORS',
+                     'GOLFATHON', 'AWAY_GAMES', 'ASIA_CUP']
+
 SEASON_PAGES = [
     ('matchplay',  'matchplay.html'),
     ('strokeplay', 'strokeplay2026.html'),
@@ -59,9 +87,7 @@ SOCIETY_PAGES = [
     ('profiles',  'profiles.html'),
 ]
 
-# Ran in 2026 with a workbook but no page of their own yet. Named here so a
-# rollover does not quietly forget them.
-NO_PAGE_YET = ['AsiaCup', 'RosesMatch']
+
 
 
 def owns(when):
@@ -96,8 +122,8 @@ def main():
     print('  society pages (year agnostic - never archived, never reset):')
     for key, page in SOCIETY_PAGES:
         print('     %-11s %s' % (key, page))
-    if NO_PAGE_YET:
-        print('  no page yet : %s' % ', '.join(NO_PAGE_YET))
+    print('  society data : %s' % ', '.join(SOCIETY_DATA))
+    print('  annual, no page yet: %s' % ', '.join(ANNUAL_NO_PAGE))
 
     today = date.today()
     if today < STARTS:
