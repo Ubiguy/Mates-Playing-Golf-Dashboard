@@ -425,8 +425,8 @@ const SOCIETY_STATS = {
 };
 
 const WHS_STATS = {
-  'Afrid Iqbal':{idx:13, scores:20, since:'Jul 2023', avgDiff:16.9,
-    best:{v:9.8, d:'17 Aug 2024'}, mark:{v:13.1, d:'18 Apr 2026', kind:'peak'}, net:0.5, noExport:true, note:'Remarkably stable — 12.2 to 13.1 across nearly three years, every round at Leeds, with two long reporting gaps. The 29 Jul 2023 round was missing its adjusted gross and was back-calculated to about 89 from the differential.'},
+  'Afrid Iqbal':{idx:12.8, scores:30, since:'Sep 2022', avgDiff:16.5,
+    best:{v:9.8, d:'17 Aug 2024'}, mark:{v:12.2, d:'10 Sep 2022', kind:'low'}, net:0.5, note:'Remarkably stable — 12.2 to 13.1 across nearly three years, every round at Leeds, with two long reporting gaps. The 29 Jul 2023 round was missing its adjusted gross and was back-calculated to about 89 from the differential.'},
   'Aftab Iqbal':{idx:9.4, scores:51, since:'Aug 2018', avgDiff:12.1,
     best:{v:4.2, d:'30 May 2026'}, mark:{v:10.6, d:'28 Nov 2023', kind:'peak'}, net:-0.2},
   'Basharat2 Ali':{idx:18.3, scores:39, since:'Jul 2021', avgDiff:24.9,
@@ -437,6 +437,8 @@ const WHS_STATS = {
     best:{v:10.8, d:'19 Jun 2025'}, mark:{v:19, d:'26 Mar 2022', kind:'peak'}, net:-2.1},
   'Imran K':{idx:17, scores:60, since:'Apr 2023', avgDiff:19.6,
     best:{v:11.6, d:'22 Aug 2026'}, mark:{v:14.5, d:'3 Aug 2025', kind:'low'}, net:0.9, note:'Remarkably level - the index has sat between about 14.5 and 19 across three years with no real trend either way. Rounds split almost evenly between the Leeds yellow and white tees. The export stops at England Golf&rsquo;s 60-round limit.'},
+  'Jabar Mughal':{idx:17.7, scores:23, since:'May 2018', avgDiff:21,
+    best:{v:13.5, d:'7 Sep 2022'}, mark:{v:15.8, d:'17 May 2018', kind:'low'}, net:1.9},
   'Mansoor M':{idx:19.9, scores:19, since:'Apr 2026', avgDiff:24.9,
     best:{v:16.3, d:'21 Jun 2026'}, mark:{v:21, d:'25 Apr 2026', kind:'peak'}, net:-1.1},
   'Raz Shafi':{idx:11.7, scores:60, since:'Jul 2023', avgDiff:15.4,
