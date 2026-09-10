@@ -310,7 +310,7 @@ const REGISTER = [
   {n:'Shaan Ahmed',         nhs:18.1, honours:[{t:'Golfathon 2026', k:'charity'}],  whs:18,    calc:23.3,  rounds:15, est:false},
   {n:'Guftar Hussain',      nhs:7.9, honours:[{t:'Yorkshire · Asia Cup 2026', k:'squad'}, {t:'Yorkshire · War of the Roses 2026', k:'squad'}],   whs:9.6,    whsOfficial:true, calc:11.7,  rounds:20, est:true},
   {n:'Raz Shafi',           nhs:10.6, honours:[{t:'Yorkshire · War of the Roses 2026', k:'squad'}],  whs:11.7,    whsOfficial:true, calc:14.2,    rounds:17, est:false},
-  {n:'Afrid Iqbal',         nhs:10.6, honours:[{t:'Yorkshire · Asia Cup 2026', k:'squad'}],  whs:13.0,    calc:14.3,    rounds: 9, est:false},
+  {n:'Afrid Iqbal',         nhs:10.6, honours:[{t:'Yorkshire · Asia Cup 2026', k:'squad'}],  whs:12.8,    calc:14.3,    rounds: 9, est:false},
   {n:'Haaris Ahmed',        nhs:12.4,  whs:16.6,    whsOfficial:true, calc:12.5,    rounds: 4, est:false},
   {n:'Jabar Mughal',        nhs:15.7,  whs:17.7,  calc:17,    rounds:13, est:false},
   {n:'Sabar Riaz',          nhs:24.3,  whs:24,    calc:28,    rounds: 3, est:false},
