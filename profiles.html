@@ -479,8 +479,14 @@
   .rec-h em{font-style:normal;font-weight:400;letter-spacing:.02em;text-transform:none;
     font-size:.7rem;color:var(--muted);}
   .rec .facts{margin:0;}
-  .courses li.elsewhere{align-items:flex-start;gap:10px;}
-  .courses li.elsewhere b{font-weight:400;color:var(--muted);text-align:right;}
+  /* The other rows are "Course .......... 2 rounds", so the value is short and
+     held on one line. This row's value is a comma list of course names, and
+     nowrap turned it into a single enormous line that squeezed the label to
+     nothing - the words ran vertically down the card. Stack it instead and let
+     it wrap. */
+  .courses li.elsewhere{flex-direction:column;align-items:flex-start;gap:2px;}
+  .courses li.elsewhere b{flex:0 1 auto;white-space:normal;text-align:left;
+    font-weight:400;color:var(--muted);line-height:1.45;}
   @media (max-width:560px){ .ctl-count{margin-left:0;} }
   .honours{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;}
   .honour{display:inline-block;font-family:'IBM Plex Mono',ui-monospace,monospace;
