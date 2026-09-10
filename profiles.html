@@ -6,7 +6,7 @@
 <title>Player Profiles</title>
 <meta name="description" content="WHS (England Golf) round histories for society players, alongside their NHS society handicap.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=f9a94ca1">
+<link rel="stylesheet" href="style.css?v=f9aa6899">
 <link rel="icon" href="favicon-32.png?v=7d5e942c" sizes="32x32" type="image/png">
 <link rel="icon" href="favicon-16.png?v=1fc5ad18" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20639bb8">
@@ -117,7 +117,7 @@
   </footer>
 </div>
 
-<script src="data.js?v=c290332f"></script>
+<script src="data.js?v=067c143c"></script>
 <script>
   const REG = Object.fromEntries(REGISTER.map(r => [r.n, r]));
   const f1  = v => v.toFixed(1);
@@ -165,6 +165,54 @@
 
   /* One block of figures, used for both records so they read identically and
      can never be mistaken for each other. */
+  /* ---------- rounds that are in both handicap systems ----------
+     The society plays off NHS and England Golf keeps a WHS index, and the two
+     are never the same number. The honest way to compare them is on the SAME
+     round: one card, seen twice.
+
+     Only society competitions that also reached England Golf appear. A
+     member's own golf elsewhere stays out - it is their record, not the
+     society's. See whs_linked_write.py.
+
+     STACKED, NOT TABULAR. A profile card is 332px wide in a three-column grid;
+     the eight columns this wants would need 543px and land in a sideways
+     scroller inside the card. Two short lines per round fit and read better. */
+  const LINKED_SHOWN = 6;
+
+  function linkedBlock(name){
+    const rs = (typeof WHS_LINKED === 'undefined' ? null : WHS_LINKED[name]) || [];
+    if (!rs.length) return '';
+
+    const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const when = d => { const [y,m,dd] = d.split('-'); return `${+dd} ${MON[+m-1]} ${y.slice(2)}`; };
+
+    const items = rs.slice(0, LINKED_SHOWN).map(([d, ev, sg, sn, tee, cr, wg, diff, idx]) => {
+      // WHS caps a hole at net double bogey, so its adjusted gross can be
+      // lower than the card. Mark it rather than let it look like an error.
+      const capped = (sg != null && wg != null && wg !== sg);
+      return `<li>
+        <span class="lk-d">${when(d)}<em>${ev || ''}</em></span>
+        <span class="lk-v">
+          <b>${sg == null ? '&ndash;' : sg}</b><i>gross</i>
+          <b>${sn == null ? '&ndash;' : sn}</b><i>net</i>
+        </span>
+        <span class="lk-v lk-eg">
+          <b>${wg == null ? '&ndash;' : wg}</b><i${capped ? ' class="cap" title="WHS caps each hole at net double bogey"' : ''}>${capped ? 'adj' : 'gross'}</i>
+          <b>${diff == null ? '&ndash;' : diff.toFixed(1)}</b><i>diff</i>
+          <b>${idx == null ? '&ndash;' : idx.toFixed(1)}</b><i>index</i>
+        </span>
+      </li>`;
+    }).join('');
+
+    const more = rs.length > LINKED_SHOWN
+      ? `<p class="lk-more">and ${rs.length - LINKED_SHOWN} more in the workbook</p>` : '';
+
+    return `<div class="linked">
+      <span class="lbl">In both systems<em>${rs.length} round${rs.length === 1 ? '' : 's'} the society and England Golf both hold</em></span>
+      <ul class="lk">${items}</ul>${more}
+    </div>`;
+  }
+
   function recordBlock(title, source, st, o){
     const markLabel = st.mark.kind === 'low' ? 'Lowest index' : 'Peak index';
     return `<div class="rec${o.faded ? ' faded' : ''}">
@@ -232,6 +280,7 @@
         <ul>${soc.ev.map(([e,n]) => `<li><span>${e}</span><b>${n}</b></li>`).join('')}</ul>
       </div>` : ''}
       ${venueBlock(r.n)}
+      ${linkedBlock(r.n)}
 
       ${soc ? `<p class="prof-note">${socNote(soc)}</p>` : ''}
       ${whs && whs.note ? `<p class="prof-note">${whs.note}</p>` : ''}

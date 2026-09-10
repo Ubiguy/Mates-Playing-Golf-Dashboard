@@ -459,3 +459,28 @@ footer b{color:var(--ink-2);font-weight:600;}
 .shots-grid figcaption{margin-top:7px;font-size:.78rem;color:var(--muted);
   line-height:1.5;}
 .shots-grid figcaption b{color:var(--ink-2);font-weight:600;}
+
+/* Rounds held by both handicap systems, on a player profile.
+   A card is 332px in a three-column grid, so this is a stacked list rather
+   than the eight-column table the data suggests - that needed 543px and put a
+   sideways scroller inside the card. */
+.linked{margin:16px 0 0;}
+.linked .lbl{display:block;font-size:.72rem;font-weight:600;color:var(--ink-2);
+  text-transform:uppercase;letter-spacing:.06em;}
+.linked .lbl em{display:block;margin-top:3px;font-style:normal;font-weight:400;
+  font-size:.76rem;color:var(--muted);text-transform:none;letter-spacing:0;}
+.lk{list-style:none;margin:9px 0 0;padding:0;}
+.lk li{padding:7px 0;border-top:1px solid var(--hairline);}
+.lk li:first-child{border-top:0;}
+.lk-d{display:block;font-family:'IBM Plex Mono',monospace;font-size:.72rem;
+  color:var(--muted);}
+.lk-d em{font-style:normal;font-family:'Source Sans 3',sans-serif;font-size:.78rem;
+  font-weight:600;color:var(--ink-2);margin-left:7px;}
+.lk-v{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:2px 5px;
+  margin-top:3px;font-size:.78rem;}
+.lk-v b{font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);}
+.lk-v i{font-style:normal;font-size:.66rem;color:var(--muted);margin-right:5px;}
+.lk-eg{margin-left:10px;}
+.lk-eg b{color:var(--teamB);}
+.lk-v i.cap{border-bottom:1px dotted var(--muted);cursor:help;}
+.lk-more{margin:7px 0 0;font-size:.72rem;font-style:italic;color:var(--muted);}

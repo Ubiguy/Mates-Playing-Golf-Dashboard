@@ -310,9 +310,9 @@ const REGISTER = [
   {n:'Shaan Ahmed',         nhs:18.1, honours:[{t:'Golfathon 2026', k:'charity'}],  whs:18,    calc:23.3,  rounds:15, est:false},
   {n:'Guftar Hussain',      nhs:7.9, honours:[{t:'Yorkshire · Asia Cup 2026', k:'squad'}, {t:'Yorkshire · War of the Roses 2026', k:'squad'}],   whs:9.6,    whsOfficial:true, calc:11.7,  rounds:20, est:true},
   {n:'Raz Shafi',           nhs:10.6, honours:[{t:'Yorkshire · War of the Roses 2026', k:'squad'}],  whs:11.7,    whsOfficial:true, calc:14.2,    rounds:17, est:false},
-  {n:'Afrid Iqbal',         nhs:10.6, honours:[{t:'Yorkshire · Asia Cup 2026', k:'squad'}],  whs:12.8,    calc:14.3,    rounds: 9, est:false},
+  {n:'Afrid Iqbal',         nhs:10.6, honours:[{t:'Yorkshire · Asia Cup 2026', k:'squad'}],  whs:12.8,    whsOfficial:true, calc:14.3,    rounds: 9, est:false},
   {n:'Haaris Ahmed',        nhs:12.4,  whs:16.6,    whsOfficial:true, calc:12.5,    rounds: 4, est:false},
-  {n:'Jabar Mughal',        nhs:15.7,  whs:17.7,  calc:17,    rounds:13, est:false},
+  {n:'Jabar Mughal',        nhs:15.7,  whs:17.7,  whsOfficial:true, calc:17,    rounds:13, est:false},
   {n:'Sabar Riaz',          nhs:24.3,  whs:24,    calc:28,    rounds: 3, est:false},
   {n:'Naeem Akhtar',        nhs:14.3, honours:[{t:'Golfathon 2026', k:'charity'}],  whs:14,    calc:23,    rounds: 3, est:false},
   {n:'Noor',                nhs:8.5,   whs:null,  calc:null,  rounds: 0, est:false},
@@ -546,3 +546,25 @@ const AWAY_GAMES = [
     [20,'Hanif Malik',19,128,109,null]
    ]}
 ];
+
+/* ---------- rounds that are in BOTH handicap systems ----------
+   [date, event, society gross, society net, tee, course rating,
+    WHS adjusted gross, score differential, WHS index after]
+   Only society competitions that also reached England Golf. A
+   member's own golf is not published - see whs_linked_write.py. */
+const WHS_LINKED = {
+  'Afrid Iqbal':[['2026-04-11','StablefordGame02 2026',92,85,'Red',67.1,92,24.3,12.8]],
+  'Basharat2 Ali':[['2026-07-26','StrokePlayGame4',103,85,'Yellow',69,101,28.9,18.3],['2026-07-04','StrokePlayGame01',93,75,'Yellow',69,92,20.8,18.5],['2025-05-18','StablefordGame06',98,81,'Yellow',69,98,26.2,19.8],['2025-05-10','StablefordGame05',107,90,'White',71.5,107,30.4,19.8]],
+  'Guftar Hussain':[['2026-04-11','StablefordGame02 2026',81,76,'Red',67.1,83,15.5,8.3]],
+  'Haaris Ahmed':[['2025-06-21','StablefordGame11',85,69,'White',71.5,85,11.6,16.1],['2025-05-24','StablefordGame07',95,79,'White',71.5,95,20.1,16.5]],
+  'Imran K':[['2026-09-06','Hollins Hall 2026',100,84,'White',71,101,26.1,17],['2026-08-30','StrokePlayGame09',91,77,'Yellow',69,91,19.9,16.3],['2026-08-23','StrokePlayGame08',90,76,'Yellow',69,90,19,15.5],['2026-08-15','Strokeplay Game07',84,70,'Yellow',69,85,14.5,16.7],['2026-08-09','StrokePlayGame06',99,85,'Yellow',69,95,23.5,16.7],['2026-07-26','StrokePlayGame4',91,77,'Yellow',69,90,19,16.7],['2026-07-18','StrokePlayGame3',94,80,'Yellow',69,91,19.9,16],['2026-07-04','StrokePlayGame01',94,80,'Yellow',69,90,19,16],['2026-04-25','StablefordGame04 2026',97,84,'White',71.5,97,21.8,14.5],['2026-04-19','StablefordGame03 2026',84,70,'Yellow',69,84,13.6,15.1],['2025-06-15','StablefordGame10',92,77,'Yellow',69,92,20.8,15.2],['2025-05-10','StablefordGame05',91,76,'White',71.5,91,16.7,15.2],['2025-04-26','StablefordGame03',87,72,'White',71.5,87,13.3,15.8],['2025-04-20','StablefordGame02',92,77,'Yellow',69,91,19.9,15.8],['2025-04-12','StablefordGame01',93,79,'White',71.5,94,19.3,15.8]],
+  'Jabar Mughal':[['2026-04-11','StablefordGame02 2026',86,73,'Red',67.1,86,18.4,17.7]],
+  'Mansoor M':[['2026-04-25','StablefordGame04 2026',104,85,'White',71.5,102,26.1,21]],
+  'Raz Shafi':[['2026-09-06','Hollins Hall 2026',92,80,'White',71,92,18.3,11.7],['2026-07-04','StrokePlayGame01',82,72,'Yellow',69,82,11.8,12]],
+  'Shazad Hussain':[['2026-08-09','StrokePlayGame06',99,79,'White',71.5,94,19.3,21.6],['2026-04-25','StablefordGame04 2026',96,77,'White',71.5,95,20.1,22.1],['2026-04-11','StablefordGame02 2026',98,84,'Red',67.1,98,30.1,21]],
+  'Shufqat Khan':[['2026-09-06','Hollins Hall 2026',96,81,'White',71,96,21.7,15.9],['2026-08-23','StrokePlayGame08',93,80,'Yellow',69,91,19.9,16],['2026-08-15','Strokeplay Game07',86,72,'Yellow',69,86,15.4,17.4],['2026-08-09','StrokePlayGame06',79,64,'Yellow',69,81,10.8,17.8],['2026-07-26','StrokePlayGame4',105,90,'Yellow',69,99,27.1,17.3],['2026-07-04','StrokePlayGame01',105,90,'Yellow',69,101,28.9,16.5],['2026-04-25','StablefordGame04 2026',85,70,'White',71.5,85,11.6,17.6],['2026-04-19','StablefordGame03 2026',96,81,'Yellow',69,95,23.5,18],['2026-04-11','StablefordGame02 2026',86,75,'Red',67.1,87,19.4,18.4],['2026-04-05','StablefordGame01 2026',82,71,'Red',67.1,82,14.5,19.6]],
+  'Sid Amin':[['2026-09-06','Hollins Hall 2026',99,79,'White',71,100,25.2,20.1],['2026-08-30','StrokePlayGame09',91,73,'Yellow',69,91,19.9,20.2],['2026-08-23','StrokePlayGame08',96,78,'Yellow',69,95,23.5,20.2],['2026-08-01','StrokePlayGame5',97,78,'Yellow',69,96,24.4,20.2],['2026-07-26','StrokePlayGame4',90,70,'Yellow',69,90,19,20.5],['2026-07-18','StrokePlayGame3',96,77,'Yellow',69,96,24.4,20.8],['2026-07-04','StrokePlayGame01',105,85,'Yellow',69,99,27.1,20.9],['2026-04-25','StablefordGame04 2026',107,88,'White',71.5,105,28.7,21.6],['2026-04-11','StablefordGame02 2026',91,77,'Red',67.1,91,23.3,21.6],['2026-04-05','StablefordGame01 2026',89,74,'Red',67.1,89,21.3,21.9],['2025-07-13','StablefordGame14',98,78,'Yellow',69,98,26.2,20.7],['2025-06-29','StablefordGame12',102,83,'Yellow',69,102,30.7,21],['2025-06-15','StablefordGame10',98,79,'Yellow',69,98,26.2,21],['2025-06-08','StablefordGame09',98,79,'White',71.5,96,21,21.3],['2025-05-18','StablefordGame06',92,73,'Yellow',69,92,20.8,21.7],['2025-05-10','StablefordGame05',98,79,'White',71.5,99,23.5,21.9],['2025-05-04','StablefordGame04',96,77,'Yellow',69,96,24.4,21.7],['2025-04-26','StablefordGame03',101,82,'White',71.5,101,25.3,21.9],['2025-04-20','StablefordGame02',89,69,'Yellow',69,89,18.1,22.8],['2025-04-12','StablefordGame01',95,75,'White',71.5,94,19.3,23.5]],
+  'Tariq Javaid':[['2026-08-30','StrokePlayGame09',101,78,'Yellow',69,100,28,24.1],['2026-07-26','StrokePlayGame4',117,95,'Yellow',69,96,24.4,24.5],['2025-06-15','StablefordGame10',101,80,'Yellow',69,101,28.9,25.1]],
+  'Waseem Goldenboy':[['2026-09-06','Hollins Hall 2026',102,84,'White',71,102,26.9,18],['2026-08-30','StrokePlayGame09',99,81,'Yellow',69,99,27.1,18],['2026-08-23','StrokePlayGame08',97,82,'Yellow',69,97,25.3,17.8],['2026-07-26','StrokePlayGame4',93,77,'Yellow',69,91,19.9,18.3],['2026-07-04','StrokePlayGame01',91,75,'Yellow',69,91,19.9,18.4],['2025-07-05','StablefordGame13',102,87,'White',71.5,101,25.3,23.4],['2025-04-26','StablefordGame03',98,82,'Yellow',69,101,28.9,22],['2025-04-20','StablefordGame02',94,78,'Yellow',69,105,32.5,22],['2025-04-12','StablefordGame01',95,79,'Yellow',69,101,28.9,22]],
+  'Yaseen Mohammed':[['2026-09-06','Hollins Hall 2026',93,78,'White',71,93,19.1,15.2],['2026-04-25','StablefordGame04 2026',95,83,'White',71.5,97,21.8,14.9],['2026-04-19','StablefordGame03 2026',88,76,'Yellow',69,88,17.2,14.6],['2025-04-20','StablefordGame02',89,76,'Yellow',69,89,18.1,14.4]],
+};
