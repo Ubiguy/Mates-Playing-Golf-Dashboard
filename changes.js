@@ -1,6 +1,7 @@
 // Written by score_log.py - the newest 25 entries of score-log.csv.
 // That CSV is the record; this is only what the pages read.
 const CHANGES = [
+  {when:'2026-09-12T17:54:07Z',results:28,a:13,b:26,items:['added Imran v Raz 18-15 (Waseem)']},
   {when:'2026-09-12T01:14:05Z',results:27,a:12,b:26,items:['no change']},
   {when:'2026-09-11T20:39:35Z',results:27,a:12,b:26,items:['Moody v Sam now 12-17, was 17-12 (Waseem)']},
   {when:'2026-09-11T20:19:41Z',results:27,a:14,b:24,items:['added Bash v Tab 14-19 (Waseem)']},
@@ -24,6 +25,5 @@ const CHANGES = [
   {when:'2026-09-08T09:52:46Z',results:22,a:12,b:19,items:['deleted Waseem v Sam (Waseem)']},
   {when:'2026-09-08T08:23:53Z',results:23,a:14,b:19,items:['deleted Waseem v Gaff (Waseem)']},
   {when:'2026-09-08T07:27:06Z',results:24,a:16,b:19,items:['added Waseem v Gaff 27-22 (Waseem)','added Waseem v Sam 27-1 (Waseem)']},
-  {when:'2026-09-07T19:29:36+01:00',results:22,a:12,b:19,items:['added Nav v Sid 14-23 (Waseem)','added Shahzad v Tariq 9-10 (Waseem)']},
-  {when:'2026-09-07T16:49:10+01:00',results:20,a:12,b:16,items:['added Shaan v Sam 14-10 (Waseem)','deleted Moody v Sam (Waseem)']}
+  {when:'2026-09-07T19:29:36+01:00',results:22,a:12,b:19,items:['added Nav v Sid 14-23 (Waseem)','added Shahzad v Tariq 9-10 (Waseem)']}
 ];
