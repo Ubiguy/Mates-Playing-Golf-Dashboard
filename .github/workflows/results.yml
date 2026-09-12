@@ -1,9 +1,17 @@
 # Publish team match results submitted by the captains.
 #
-# The captains fill in a Google Form from their phones. Its responses sheet is
-# published as CSV, this reads it, regenerates the MATCHES block in data.js and
-# commits. No PC is involved, which is the whole point: results used to need
-# one person at one machine with the Excel tracker open.
+# The captains fill in a Google Form from their phones. The form's trigger
+# (publish_trigger.gs) reads the responses sheet the moment a row lands and
+# sends those rows with its request to run this. This regenerates the MATCHES
+# block in data.js from them and commits. No PC is involved, which is the whole
+# point: results used to need one person at one machine with the Excel tracker
+# open.
+#
+# THE PUBLISHED CSV IS THE FALLBACK. The sheet is also published to the web as
+# CSV, and the cron and the Run workflow button read that. It lags the sheet by
+# a minute or more, which is why the rows now travel with the request instead;
+# feed_source.py decides which copy to use and never lets an older copy
+# replace a newer one.
 #
 # Nothing here touches the tracker. Handicaps, rounds and WHS records stay on
 # that PC and out of this repo - the site's data.js already carries everything
@@ -18,11 +26,19 @@ on:
   schedule:
     # Four times an hour, deliberately off the hour: GitHub's scheduler is
     # busiest at :00 and a job queued then waits longer. Best effort either
-    # way - a scheduled run can lag by several minutes under load, so this
-    # buys a typical 15 minutes rather than a guaranteed one. Run workflow
-    # is still there when somebody wants a result up immediately.
+    # way - in practice GitHub fires about one of these in twenty five, so this
+    # is only the safety net behind the form trigger.
     - cron: '5,20,35,50 * * * *'
-  workflow_dispatch:            # and a "Run workflow" button, for right now
+  workflow_dispatch:            # the form trigger, and a "Run workflow" button
+    inputs:
+      rows:
+        description: 'Leave blank - the form trigger fills this in with the responses sheet'
+        required: false
+        default: ''
+      allow_fewer:
+        description: 'Publish even if the sheet now has fewer rows than the site (only after deleting rows from the sheet by hand)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -44,9 +60,9 @@ jobs:
           python-version: '3.12'
           # no pip install: with the form as the source this is pure stdlib
 
-      # The cron runs twice an hour from the moment this lands on main, which is
-      # before the form exists. Skipping cleanly rather than failing keeps that
-      # from mailing a failure notice every thirty minutes.
+      # The cron runs from the moment this lands on main, which is before the
+      # form exists. Skipping cleanly rather than failing keeps that from
+      # mailing a failure notice every run.
       - name: Is the form configured yet?
         id: cfg
         env:
@@ -59,10 +75,29 @@ jobs:
             echo "ready=yes" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Read the form and regenerate data.js
+      # The rows arrive as data and are written to a file through the
+      # environment - never pasted into a shell command, where a quote in a
+      # player's name would become code.
+      - name: Which copy of the sheet?
+        id: src
         if: steps.cfg.outputs.ready == 'yes'
         env:
           RESULTS_CSV_URL: ${{ secrets.RESULTS_CSV_URL }}
+          ROWS: ${{ inputs.rows }}
+          ALLOW_FEWER: ${{ inputs.allow_fewer }}
+          DATA_JS: data.js
+        run: |
+          if [ -n "$ROWS" ]; then printf '%s' "$ROWS" > /tmp/rows.csv; fi
+          if [ "$ALLOW_FEWER" = "true" ]; then
+            python tools/feed_source.py /tmp/rows.csv --allow-fewer
+          else
+            python tools/feed_source.py /tmp/rows.csv
+          fi
+
+      - name: Read the form and regenerate data.js
+        if: steps.src.outputs.go == 'yes'
+        env:
+          RESULTS_CSV_URL: ${{ steps.src.outputs.file || secrets.RESULTS_CSV_URL }}
           DATA_JS: data.js
         run: |
           set -o pipefail
@@ -77,9 +112,9 @@ jobs:
       # commit so its own row is part of the same commit.
       - name: Record the score
         id: log
-        if: steps.cfg.outputs.ready == 'yes'
+        if: steps.src.outputs.go == 'yes'
         env:
-          RESULTS_CSV_URL: ${{ secrets.RESULTS_CSV_URL }}
+          RESULTS_CSV_URL: ${{ steps.src.outputs.file || secrets.RESULTS_CSV_URL }}
         run: |
           set -o pipefail
           python tools/score_log.py . | tee score-run.txt
@@ -91,11 +126,11 @@ jobs:
           rm -f score-run.txt
 
       - name: Restamp the pages
-        if: steps.cfg.outputs.ready == 'yes'
+        if: steps.src.outputs.go == 'yes'
         run: python stamp.py .
 
       - name: Commit if anything changed
-        if: steps.cfg.outputs.ready == 'yes'
+        if: steps.src.outputs.go == 'yes'
         env:
           # Through the environment rather than inlined: a commit subject built
           # from data should never be pasted into a shell command.
@@ -118,7 +153,7 @@ jobs:
       # into the mail GitHub sends when a job goes red, which is the only
       # channel anybody actually watches.
       - name: Say so if any row was refused
-        if: steps.cfg.outputs.ready == 'yes'
+        if: steps.src.outputs.go == 'yes'
         run: |
           if grep -q '^   PROBLEM' /tmp/results-run.txt; then
             echo "The site published, but these rows were left out:"
