@@ -25,10 +25,16 @@
  * The reload uses a NEW url (?fresh=...) rather than location.reload(), because
  * reloading a cached page can be served from that same cache. A new url cannot.
  *
- * LOOP GUARD. A reload is tried once per published version. If the page that
- * comes back still disagrees with version.txt, something outside our control
- * is serving it and asking again would only spin, so it stops. The next
- * publish is a new version and gets its own try.
+ * LOOP GUARD. A reload is tried once per published version, PER PAGE. If the
+ * page that comes back still disagrees with version.txt, something outside our
+ * control is serving it and asking again would only spin, so it stops. The
+ * next publish is a new version and gets its own try.
+ *
+ * Per page, because sessionStorage is shared by every page in the tab. On 13
+ * September the home page reloaded for the new score and recorded "tried
+ * 7cae6197"; Team Match Play, opened next in the same tab from the browser's
+ * cache, saw that record, took it for its own, and stayed on 13-26 while the
+ * home page showed 15-26.
  */
 (function () {
   var tag = document.querySelector('script[src^="data.js?v="]');
@@ -38,7 +44,7 @@
   if (!mine) return;
 
   var EVERY = 45;                       // seconds between checks while on screen
-  var TRIED = 'mpgolf-fresh-tried';     // the version last reloaded for
+  var TRIED = 'mpgolf-fresh-tried:' + location.pathname;   // this page's last reload
   var SCROLL = 'mpgolf-fresh-scroll';   // where the reader was, to put them back
 
   // sessionStorage can be missing or throw - a private window, or this page
