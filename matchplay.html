@@ -49,7 +49,13 @@
     letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;margin-right:7px;border-radius:3px;
     background:var(--surface-sunk);color:var(--ink-2);text-align:center;vertical-align:1px;}
   .ch .lab.removed{background:var(--accent-wash);color:var(--accent);}
-  .ch .won-a{color:var(--teamA);font-weight:600;} .ch .won-b{color:var(--teamB);font-weight:600;}
+  .ch .pa{color:var(--teamA);} .ch .pb{color:var(--teamB);}
+  .ch .ln b{font-weight:700;}
+  .ch .was{font-size:.8rem;color:var(--muted);}
+  .ch .nw{white-space:nowrap;}
+  .ch-sum{margin:0;font-size:.92rem;font-weight:600;color:var(--ink-2);}
+  #lastup{margin:0;}
+  .ch .big{color:var(--gold);font-size:.8em;}
   .ch .mv{white-space:nowrap;font-weight:600;font-size:.86rem;margin-left:4px;}
   .ch .mv .a{color:var(--teamA);} .ch .mv .b{color:var(--teamB);}
   .ch.quiet .ln{color:var(--muted);}
@@ -98,6 +104,9 @@
       </div>
     </div>
     <p class="verdict" id="verdict"></p>
+    <!-- "Did my result land?" answered under the score, with the way in to
+         the full trail. Filled from whatchanged.js. -->
+    <p class="lastup" id="lastup" hidden></p>
   </div>
 
   <!-- 2. This week's fixtures, with the results already in. -->
@@ -216,6 +225,7 @@
     <details class="dive" id="changes">
       <summary><span class="dv-tx"><span class="dv-t">What changed</span><span class="dv-s" id="chSub"></span></span></summary>
       <div class="dv-body">
+        <p class="ch-sum" id="chSum"></p>
         <div class="ch-top">
           <p class="dv-note" id="chNote"></p>
           <label class="ch-toggle"><input type="checkbox" id="chAll"> Show everything</label>
@@ -231,7 +241,6 @@
     <details class="dive" id="p-submit">
       <summary><span class="dv-tx"><span class="dv-t">Submit a result</span><span class="dv-s">Captains only &mdash; the site updates itself a minute later</span></span></summary>
       <div class="dv-body">
-        <p class="lastup" id="lastup" hidden></p>
         <div class="note">
           <a class="btn" target="_top" href="https://docs.google.com/forms/d/e/1FAIpQLSeKNc6H2o_HYfvoR1csXGOXUcDPZDTQ9jrgWxmHBF6Wtn0vHg/viewform">Submit a match result &rarr;</a>
 
@@ -281,6 +290,7 @@
 <script src="data.js?v=d5c36b93"></script>
 <script src="changes.js?v=fbaac3ed"></script>
 <script src="fx.js?v=35840b0c"></script>
+<script src="whatchanged.js?v=d0f88054"></script>
 <script>
   const isSub = (p,f) => !!f && f !== p;
   const fmtP  = v => v % 1 === 0 ? String(v) : v.toFixed(1);
@@ -568,166 +578,45 @@
 </style>
 <script>
   /* ---------- what changed ----------
-     Every published move in the score, newest first, from changes.js - which
-     score_log.py writes from score-log.csv, the append-only record. Nothing
-     here edits that record; it only decides what to show by default.
-
-     QUIET BY DEFAULT. Two kinds of entry are true but are not news:
-       - the daily record, written once a day whether or not anything moved
-       - a result sent and taken off again within a day: a test, or a slip
-         corrected on the spot. Shown as one grey line, not two loud ones.
-     "Show everything" puts every entry back exactly as recorded. */
+     How the log READS lives in whatchanged.js, where tools/test_whatchanged.js
+     tests every rule against the real log. This only puts it on the page. */
   (function(){
-    const rows = (typeof CHANGES === 'undefined') ? [] : CHANGES;    // newest first
-    const box = document.getElementById('chBox');
-    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const at = s => new Date(s);
-    const hm = d => d.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
-    const dayOf = d => d.toLocaleDateString('en-GB', {weekday:'long', day:'numeric', month:'long'});
-    const whenShort = d => d.toLocaleString('en-GB', {weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
-
-    if (!rows.length) {
-      document.getElementById('chSub').textContent = 'nothing recorded yet';
-      box.innerHTML = '<p class="dv-note">Nothing recorded yet.</p>';
-      return;
-    }
-
-    /* "added Mansoor v Raza 15-18 (Yaseen (C))" -> the submitter is the last
-       bracketed group, which may itself contain brackets. A bare "(C)" is a
-       captain's mark on a player, never a submitter. */
-    const BY = /\s\(((?:[^()]|\([^()]*\))+)\)$/;
-    function parse(t){
-      let body = t, by = '';
-      const m = t.match(BY);
-      if (m && m[1] !== 'C') { by = m[1]; body = t.slice(0, m.index); }
-      let x;
-      if ((x = body.match(/^added (.+) v (.+) (\d+)-(\d+)$/)))
-        return {kind:'added', fx:x[1] + ' v ' + x[2], a:x[1], b:x[2], ap:+x[3], bp:+x[4], by};
-      if ((x = body.match(/^deleted (.+) v (.+?)(?:, was (\d+)-(\d+))?$/)))
-        return {kind:'removed', fx:x[1] + ' v ' + x[2], a:x[1], b:x[2], ap:x[3] ? +x[3] : null, bp:x[4] ? +x[4] : null, by};
-      if ((x = body.match(/^(.+) v (.+) now (\d+)-(\d+), was (\d+)-(\d+)$/)))
-        return {kind:'changed', fx:x[1] + ' v ' + x[2], a:x[1], b:x[2], ap:+x[3], bp:+x[4], wa:+x[5], wb:+x[6], by};
-      if (body === 'no change') return {kind:'daily', by};
-      if (/^DRIFT/.test(body)) return {kind:'drift', text:body, by};
-      return {kind:'other', text:body, by};
-    }
-
-    const score = (a, b, ap, bp) => {
-      const w = ap > bp ? 'a' : bp > ap ? 'b' : '';
-      return `<span class="${w === 'a' ? 'won-a' : ''}">${esc(a)}</span> ${ap}&ndash;${bp} `
-           + `<span class="${w === 'b' ? 'won-b' : ''}">${esc(b)}</span>`;
-    };
-    const LABEL = {added:'Added', removed:'Removed', changed:'Changed', daily:'Daily', drift:'Check', other:'Note'};
-    function line(it){
-      let what;
-      if (it.kind === 'added') what = score(it.a, it.b, it.ap, it.bp);
-      else if (it.kind === 'removed') what = esc(it.a) + ' v ' + esc(it.b)
-        + (it.ap != null ? ` <span class="dv-s">was ${it.ap}&ndash;${it.bp}</span>` : '');
-      else if (it.kind === 'changed') what = score(it.a, it.b, it.ap, it.bp)
-        + ` <span class="dv-s">was ${it.wa}&ndash;${it.wb}</span>`;
-      else if (it.kind === 'daily') what = 'no change &mdash; the daily record';
-      else what = esc(it.text);
-      return `<span class="lab ${it.kind}">${LABEL[it.kind]}</span>${what}`;
-    }
-    const signed = v => (v > 0 ? '+' : '&minus;') + fmtP(Math.abs(v));
-    function moved(da, db){
-      const parts = [];
-      if (da) parts.push(`<span class="a">Yaseen ${signed(da)}</span>`);
-      if (db) parts.push(`<span class="b">Shufqat ${signed(db)}</span>`);
-      return parts.length ? ` <span class="mv">${parts.join(' ')}</span>` : '';
-    }
-
-    const E = rows.map((r, i) => {
-      const prev = rows[i + 1];
-      return {r, d: at(r.when), items: r.items.map(parse),
-              da: prev ? r.a - prev.a : null, db: prev ? r.b - prev.b : null,
-              first: !prev, hide: false, pairedWith: null};
-    });
-
-    /* Pair a removal with the result it took off, when that result was the
-       nearest earlier entry to touch the same fixture and was sent within a
-       day. Both then fold into one grey line in quiet mode. */
-    const DAY = 24 * 3600 * 1000;
-    E.forEach((e, i) => {
-      if (e.items.length !== 1 || e.items[0].kind !== 'removed') return;
-      const fx = e.items[0].fx;
-      for (let j = i + 1; j < E.length; j++) {
-        const o = E[j];
-        if (!o.items.some(it => it.fx === fx)) continue;
-        if (o.items.length === 1 && o.items[0].kind === 'added' && !o.pairedWith
-            && e.d - o.d <= DAY) {
-          o.hide = true; e.pairedWith = o;
-        }
-        break;
-      }
-    });
-
-    const latest = E.find(e => !(e.items.length === 1 && e.items[0].kind === 'daily')) || E[0];
-    document.getElementById('chSub').textContent = 'last change ' + whenShort(latest.d);
-
-    function entry(e, all){
-      const one = e.items.length === 1 ? e.items[0] : null;
-      const by = [...new Set(e.items.map(it => it.by).filter(Boolean))].join(', ');
-      const meta = `Yaseen ${fmtP(e.r.a)} &middot; Shufqat ${fmtP(e.r.b)} &middot; ${e.r.results} played`
-                 + (by ? ` &middot; sent by ${esc(by)}` : '');
-
-      if (!all && e.pairedWith) {
-        const o = e.pairedWith, it = o.items[0];
-        const mins = Math.max(1, Math.round((e.d - o.d) / 60000));
-        const gapTxt = mins < 60 ? `${mins} min` : `${Math.round(mins / 60)} h`;
-        return `<div class="ch quiet"><span class="t">${hm(e.d)}</span>`
-          + `<div class="ln"><span class="lab">Withdrawn</span>${esc(it.a)} ${it.ap}&ndash;${it.bp} ${esc(it.b)}`
-          + ` sent, then removed ${gapTxt} later</div>`
-          + `<div class="meta">no change to the score${by ? ' &middot; ' + esc(by) : ''}</div></div>`;
-      }
-      if (!all && e.first && e.items.length > 3) {
-        return `<div class="ch"><span class="t">${hm(e.d)}</span>`
-          + `<div class="ln"><span class="lab">Loaded</span>the season so far &mdash; ${e.items.length} results</div>`
-          + `<div class="meta">${meta}</div></div>`;
-      }
-      const drift = e.items.some(it => it.kind === 'drift');
-      const lines = e.items.map((it, k) => `<div class="ln">${line(it)}${k === 0 ? moved(e.da, e.db) : ''}</div>`).join('');
-      return `<div class="ch${drift ? ' drift' : ''}${one && one.kind === 'daily' ? ' quiet' : ''}">`
-        + `<span class="t">${hm(e.d)}</span>${lines}<div class="meta">${meta}</div></div>`;
-    }
-
+    const rows = (typeof CHANGES === 'undefined' || typeof WC === 'undefined') ? [] : CHANGES;
+    if (typeof WC === 'undefined') return;
     const all = document.getElementById('chAll');
-    function render(){
-      const show = all.checked ? E : E.filter(e => !e.hide
-        && !(e.items.length === 1 && e.items[0].kind === 'daily'));
-      let html = '', lastDay = '';
-      show.forEach(e => {
-        const dd = dayOf(e.d);
-        if (dd !== lastDay) { html += `<div class="ch-day">${dd}</div>`; lastDay = dd; }
-        html += entry(e, all.checked);
-      });
-      box.innerHTML = html;
-      const hidden = E.length - show.length;
-      document.getElementById('chNote').textContent = all.checked
-        ? `All ${E.length} entries, exactly as recorded.`
-        : `Newest first.${hidden ? ` ${hidden} test${hidden === 1 ? '' : 's'} and daily checks folded away.` : ''}`;
+    function draw(){
+      const r = WC.render(rows, {all: all.checked, now: new Date()});
+      document.getElementById('chBox').innerHTML = r.html;
+      document.getElementById('chNote').textContent = r.note;
+      document.getElementById('chSum').textContent = r.summary;
+      return r;
     }
     try { all.checked = sessionStorage.getItem('mpgolf-changes-all') === '1'; } catch (e) {}
     all.addEventListener('change', () => {
       try { sessionStorage.setItem('mpgolf-changes-all', all.checked ? '1' : ''); } catch (e) {}
-      render();
+      draw();
     });
-    render();
-  })();
+    const r = draw();
 
-  // The last change, in one line, where a captain has just sent a result.
-  (function () {
+    document.getElementById('chSub').textContent = r.latest
+      ? 'last change ' + WC.whenShort(r.latest.d) : 'nothing recorded yet';
+
+    // The last change, in one line under the score: after sending a result
+    // the only question a captain has is whether it landed.
     const el = document.getElementById('lastup');
-    if (!el || typeof CHANGES === 'undefined' || !CHANGES.length) return;
-    const r = CHANGES.find(x => !(x.items.length === 1 && x.items[0] === 'no change'))
-           || CHANGES[0];
-    const d = new Date(r.when);
-    const when = isNaN(d) ? r.when
-      : d.toLocaleString('en-GB', { day: 'numeric', month: 'short',
-                                    hour: '2-digit', minute: '2-digit' });
-    el.innerHTML = 'Last change <b>' + when + '</b> · '
-      + r.items.join('; ') + ' · <a href="#changes">what changed</a>';
+    if (!r.latest) return;
+    el.innerHTML = 'Last change <b>' + WC.esc(WC.whenShort(r.latest.d)) + '</b> &middot; '
+      + WC.esc(r.latest.text) + ' &middot; <a href="#changes">what changed</a>';
     el.hidden = false;
+    // A link to the hash already in the address bar does nothing, so open the
+    // panel and bring it into view by hand.
+    el.querySelector('a').addEventListener('click', ev => {
+      ev.preventDefault();
+      const p = document.getElementById('changes');
+      p.open = true;
+      p.scrollIntoView({block: 'start'});
+      try { history.replaceState(null, '', '#changes'); } catch (e) {}
+    });
   })();
 
   /* ---------- open panels survive a reload ----------

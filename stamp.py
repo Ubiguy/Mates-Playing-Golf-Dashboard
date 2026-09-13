@@ -18,7 +18,7 @@ import hashlib, re, glob, os, sys
 # runs on its own folder normally; CI passes the checkout directory
 os.chdir(sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith('-')
          else os.path.dirname(os.path.abspath(__file__)))
-ASSETS = ['data.js', 'fx.js', 'changes.js', 'fresh.js', 'style.css',
+ASSETS = ['data.js', 'fx.js', 'changes.js', 'fresh.js', 'whatchanged.js', 'style.css',
           'favicon-16.png', 'favicon-32.png', 'apple-touch-icon.png']
 
 
