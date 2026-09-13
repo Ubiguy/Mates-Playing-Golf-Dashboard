@@ -4,121 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>What changed</title>
-<meta name="description" content="Every change to the team match play table, when it was made and who made it.">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=f9aa6899">
-<link rel="icon" href="favicon-32.png?v=7d5e942c" sizes="32x32" type="image/png">
-<link rel="icon" href="favicon-16.png?v=1fc5ad18" sizes="16x16" type="image/png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20639bb8">
-<style>
-  /* The score is the anchor - it is what somebody is querying when they come
-     here - so it is set in the numeric face and never wraps. What changed is
-     prose and takes whatever room is left. */
-  td.ch{text-align:left;white-space:normal;line-height:1.5;}
-  td.ch b{font-weight:600;}
-  td.ch .by{color:var(--muted);font-weight:400;}
-  td.ch .quiet{color:var(--muted);font-style:italic;}
-  td.wh,th.wh{text-align:left;font-family:'IBM Plex Mono',monospace;
-    font-size:.76rem;color:var(--muted);width:1%;}
-  td.sc,th.sc{width:1%;font-family:'Archivo',sans-serif;font-weight:700;}
-  tr.drift td{background:color-mix(in srgb, var(--accent) 9%, transparent);}
-</style>
+<meta name="robots" content="noindex">
+<!-- What changed is now a panel on the team match play page. This page stays
+     so that old links and bookmarks still land somewhere useful. -->
+<meta http-equiv="refresh" content="0; url=matchplay.html#changes">
+<script>location.replace('matchplay.html#changes');</script>
 </head>
 <body>
-<div class="page">
-
-  <nav class="sitenav">
-    <a href="index.html">Home</a>
-    <a href="season.html">2026 season</a>
-    <a href="matchplay.html">Team match play</a>
-    <a href="strokeplay2026.html">Strokeplay Singles</a>
-    <a href="live.html">Live scores</a>
-    <a href="2025season.html">2025 season</a>
-    <a href="awaygames.html">Away games</a>
-    <a href="handicaps.html">Handicaps</a>
-    <a href="profiles.html">Player profiles</a>
-    <a class="back" target="_top" href="https://sites.google.com/view/mpgolf">&larr; Mates Playing Golf</a>
-  </nav>
-
-  <header class="masthead">
-    <div>
-      <h1>What changed</h1>
-      <p class="sub">Every move in the team match play score, and who made it</p>
-    </div>
-    <div class="stamp" id="span"></div>
-  </header>
-
-  <section>
-    <div class="head">
-      <div class="head-l"><h2>The trail</h2><span class="when" id="count"></span></div>
-      <p>Newest first &mdash; the score is what the site showed after that change</p>
-    </div>
-    <div class="t-scroll"><table id="log"></table></div>
-    <p class="btn-note">
-      This is kept because the table is rebuilt from the captains' form every
-      time it changes, so the table itself only ever shows where things stand
-      now. A row here is dated, was written when the change was published, and
-      is never edited afterwards &mdash; which is what you want when somebody
-      asks why a score moved.
-    </p>
-  </section>
-
-  <footer>
-    <div><b>Scoring.</b> Win 1 pt. Win by 5 or more Stableford points 2 pts. Halved match 0.5 each. Loss 0.</div>
-    <div><b>Corrections.</b> Nothing is edited out. A captain fixing a score submits it again and the later
-      submission supersedes &mdash; both stay in the log, which is why the reason for a change survives.</div>
-  </footer>
-
-</div>
-
-<script src="changes.js?v=f5c77be4"></script>
-<script>
-  (function () {
-    const box = document.getElementById('log');
-    const rows = (typeof CHANGES === 'undefined') ? [] : CHANGES;
-
-    if (!rows.length) {
-      box.outerHTML = '<p class="btn-note">Nothing recorded yet.</p>';
-      return;
-    }
-
-    const when = s => {
-      const d = new Date(s);
-      return isNaN(d) ? s
-        : d.toLocaleString('en-GB', { day: 'numeric', month: 'short',
-                                      hour: '2-digit', minute: '2-digit' });
-    };
-
-    // "added Waseem v Jabar 5-26 (Waseem)" -> the verb in bold, the name quiet.
-    const item = t => {
-      const m = t.match(/^(.*?)\s*\(([^()]+)\)$/);
-      const body = (m ? m[1] : t).replace(/^(added|deleted)\b/,
-                                          '<b>$1</b>');
-      return body + (m ? ' <span class="by">' + m[2] + '</span>' : '');
-    };
-
-    const html = rows.map(r => {
-      const quiet = r.items.length === 1 && r.items[0] === 'no change';
-      const drift = r.items.some(t => t.indexOf('DRIFT') === 0);
-      return '<tr' + (drift ? ' class="drift"' : '') + '>'
-        + '<td class="wh">' + when(r.when) + '</td>'
-        + '<td class="sc">' + r.b + '&ndash;' + r.a + '</td>'
-        + '<td class="rk">' + r.results + '</td>'
-        + '<td class="ch">' + (quiet
-            ? '<span class="quiet">no change &mdash; daily record</span>'
-            : r.items.map(item).join('<br>')) + '</td></tr>';
-    }).join('');
-
-    box.innerHTML = '<thead><tr><th class="wh">When</th>'
-      + '<th class="sc">Shufqat&ndash;Yaseen</th><th class="rk">Pld</th>'
-      + '<th class="ch" style="text-align:left">What changed</th></tr></thead>'
-      + '<tbody>' + html + '</tbody>';
-
-    document.getElementById('count').textContent =
-      rows.length + (rows.length === 1 ? ' entry' : ' entries');
-    document.getElementById('span').textContent =
-      'to ' + when(rows[0].when);
-  })();
-</script>
+<p>What changed is now on the <a href="matchplay.html#changes">team match play page</a>.</p>
 </body>
 </html>

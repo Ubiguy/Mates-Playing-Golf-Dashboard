@@ -58,18 +58,6 @@
     <p class="mp-note" id="mpNote"></p>
   </section>
 
-  <section id="week" hidden>
-    <div class="head">
-      <div class="head-l">
-        <h2 id="weekTitle">This week</h2>
-        <span class="chip live" id="weekChip"></span>
-        <span class="when" id="weekWhen"></span>
-      </div>
-      <p>All ten weeks are on the <a href="matchplay.html">team match play page</a></p>
-    </div>
-    <div class="weeks" id="weekBox"></div>
-  </section>
-
   <section id="next" hidden>
     <div class="head">
       <div class="head-l">
@@ -89,7 +77,6 @@
 </div>
 
 <script src="data.js?v=d5c36b93"></script>
-<script src="fx.js?v=35840b0c"></script>
 <script>
   const fmtP = v => v % 1 === 0 ? String(v) : v.toFixed(1);
 
@@ -123,45 +110,12 @@
     document.getElementById('mpNote').innerHTML =
       (lead ? `${lead} lead by ${fmtP(Math.abs(a-b))}` : `All square at ${fmtP(a)} each`) +
       ` with ${total - pairs.size} of the ${total} pairings still to play. ` +
-      `<a href="matchplay.html">Full match play board &rarr;</a>`;
+      `<a href="matchplay.html">This week&rsquo;s results &rarr;</a>`;
   })();
 
-  /* ---------- this week's team fixtures ----------
-     The week is chosen by date, so the block moves on by itself every Monday
-     and disappears once the last week has finished - nobody has to republish.
-     Matches played ahead of their week are already done, so the list is a mix
-     of results and outstanding games; both are shown, because what is still to
-     arrange is the point of putting it here.
-
-     The rows are drawn by fx.js, which the match play page uses too, so the
-     two lists cannot drift apart. */
-  (function(){
-    if (typeof TEAM_SCHEDULE === 'undefined' || !TEAM_SCHEDULE.length) return;
-    const today = new Date(); today.setHours(0,0,0,0);
-    const day = d => new Date(d + 'T00:00:00');
-    const endOf = w => { const e = day(w.from); e.setDate(e.getDate() + 6); return e; };
-
-    const last = TEAM_SCHEDULE[TEAM_SCHEDULE.length - 1];
-    if (endOf(last) < today) return;                  // competition over
-    // the week we are in, or the next one to start
-    const w = TEAM_SCHEDULE.find(x => endOf(x) >= today);
-    if (!w) return;
-
-    const done = w.pairs.filter(p => FX.byPair[p[0] + '|' + p[1]]).length;
-    const started = day(w.from) <= today;
-
-    document.getElementById('week').hidden = false;
-    document.getElementById('weekTitle').textContent =
-      (started ? 'This week — week ' : 'Next week — week ') + w.week;
-    document.getElementById('weekChip').textContent = `${done} of ${w.pairs.length}`;
-    document.getElementById('weekWhen').textContent =
-      (started ? 'commencing Monday ' : 'starts Monday ') +
-      day(w.from).toLocaleDateString('en-GB', {day:'numeric', month:'long'});
-
-    const box = document.getElementById('weekBox');
-    box.innerHTML = FX.card(w, {carry:true});
-    box.insertAdjacentHTML('afterend', FX.key());   // outside the grid, not a cell
-  })();
+  /* This week's fixtures used to follow here. Most players want the score and
+     nothing more, so the home page carries just that, and the week's games -
+     with everything else - are on the team match play page. */
 
   /* ---------- the next away day ----------
      Strictly what is still to come: a fixture shows on the day itself and is

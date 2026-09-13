@@ -31,7 +31,10 @@ sys.path.insert(0, HERE)
 
 LOG = 'score-log.csv'
 FEED = 'changes.js'          # what the pages read; the CSV stays the record
-KEEP = 25                    # entries in that file - the page is a recent view
+# Every entry. It used to be the newest 25, and by 13 September the season's
+# opening results had already fallen off the end. A whole season is a few
+# hundred rows at most; the page groups them by day and folds away the noise.
+KEEP = None
 FIELDS = ['when', 'results', 'yaseen', 'shufqat', 'submissions', 'change', 'from']
 
 # The MATCHES block as matches_write.py writes it. aPlayer is who PLAYED;
@@ -182,7 +185,9 @@ def write_feed(site, path):
     split on commas tears it in half. Python already owns a correct reader, so
     the splitting happens here, once, and the page is handed a list.
     """
-    rows = read_log(path)[-KEEP:]
+    rows = read_log(path)
+    if KEEP:
+        rows = rows[-KEEP:]
     out = []
     for r in reversed(rows):                     # newest first, as it is read
         items = [i for i in (r.get('change') or '').split('; ') if i]
@@ -190,9 +195,10 @@ def write_feed(site, path):
             js(r.get('when')), r.get('results') or '0',
             r.get('yaseen') or '0', r.get('shufqat') or '0',
             ','.join(js(i) for i in items)))
-    body = ('// Written by score_log.py - the newest %d entries of %s.\n'
+    body = ('// Written by score_log.py - %s of %s, newest first.\n'
             '// That CSV is the record; this is only what the pages read.\n'
-            'const CHANGES = [\n%s\n];\n' % (KEEP, LOG, ',\n'.join(out)))
+            'const CHANGES = [\n%s\n];\n'
+            % ('the newest %d entries' % KEEP if KEEP else 'every entry', LOG, ',\n'.join(out)))
     open(os.path.join(site, FEED), 'w', encoding='utf-8', newline='\n').write(body)
     return len(out)
 

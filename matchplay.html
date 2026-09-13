@@ -10,6 +10,51 @@
 <link rel="icon" href="favicon-32.png?v=7d5e942c" sizes="32x32" type="image/png">
 <link rel="icon" href="favicon-16.png?v=1fc5ad18" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20639bb8">
+<style>
+  /* ---------- the deeper dive ----------
+     The page opens on what most players come for - the score, and this week's
+     games - and everything else waits behind a bar until somebody asks for it.
+     It was sixteen phone screens long with every section open. <details> needs
+     no script to work, so a page that fails to run its JavaScript still opens. */
+  .dives{display:flex;flex-direction:column;gap:10px;}
+  details.dive{background:var(--surface);border:1px solid var(--border);border-radius:4px;}
+  details.dive > summary{list-style:none;cursor:pointer;display:flex;align-items:center;
+    gap:12px;padding:14px 16px;}
+  details.dive > summary::-webkit-details-marker{display:none;}
+  details.dive > summary::before{content:'';flex:none;width:7px;height:7px;margin:0 3px;
+    border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);
+    transform:rotate(-45deg);transition:transform .15s;}
+  details.dive[open] > summary::before{transform:rotate(45deg);}
+  details.dive[open] > summary{border-bottom:1px solid var(--hairline);}
+  details.dive > summary:hover .dv-t{color:var(--accent);}
+  .dv-tx{display:flex;flex-direction:column;gap:1px;min-width:0;}
+  .dv-t{font-family:'Archivo',sans-serif;font-weight:700;font-size:1.02rem;letter-spacing:-.01em;}
+  .dv-s{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted);}
+  .dv-body{padding:16px;display:flex;flex-direction:column;gap:16px;min-width:0;}
+  .dv-note{margin:0;font-size:.84rem;color:var(--muted);}
+  @media (max-width:560px){ .dv-body{padding:14px 12px;} }
+
+  /* ---------- what changed ---------- */
+  .ch-top{display:flex;justify-content:space-between;align-items:center;gap:8px 16px;flex-wrap:wrap;}
+  .ch-toggle{display:inline-flex;align-items:center;gap:7px;font-size:.84rem;color:var(--muted);cursor:pointer;}
+  .ch-day{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);padding:14px 0 6px;border-bottom:1px solid var(--border);}
+  .ch-day:first-child{padding-top:0;}
+  .ch{display:grid;grid-template-columns:3.1em 1fr;gap:3px 10px;padding:10px 0;border-bottom:1px solid var(--hairline);}
+  .ch .t{font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--muted);padding-top:3px;}
+  .ch .ln{line-height:1.45;}
+  .ch .ln + .ln{grid-column:2;}
+  .ch .meta{grid-column:2;font-size:.79rem;color:var(--muted);}
+  .ch .lab{display:inline-block;min-width:4.9em;font-family:'IBM Plex Mono',monospace;font-size:.64rem;font-weight:600;
+    letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;margin-right:7px;border-radius:3px;
+    background:var(--surface-sunk);color:var(--ink-2);text-align:center;vertical-align:1px;}
+  .ch .lab.removed{background:var(--accent-wash);color:var(--accent);}
+  .ch .won-a{color:var(--teamA);font-weight:600;} .ch .won-b{color:var(--teamB);font-weight:600;}
+  .ch .mv{white-space:nowrap;font-weight:600;font-size:.86rem;margin-left:4px;}
+  .ch .mv .a{color:var(--teamA);} .ch .mv .b{color:var(--teamB);}
+  .ch.quiet .ln{color:var(--muted);}
+  .ch.drift{background:var(--accent-wash);padding-left:8px;padding-right:8px;}
+</style>
 </head>
 <body>
 <div class="page">
@@ -35,6 +80,7 @@
     <div class="stamp" id="stamp"></div>
   </header>
 
+  <!-- 1. The score, and the one line that puts it in context. -->
   <div style="display:flex;flex-direction:column;gap:18px;">
     <div class="board">
       <div class="side a" id="sideA">
@@ -54,163 +100,186 @@
     <p class="verdict" id="verdict"></p>
   </div>
 
-  <div class="strip" id="strip"></div>
-
-  <section>
-    <div class="head">
-      <div class="head-l"><h2>Race to the cup</h2></div>
-      <p>Cumulative team points after each match &mdash; the shaded band is the gap</p>
-    </div>
-    <div class="chart-wrap">
-      <svg id="race" viewBox="0 0 660 260" role="img" aria-label="Cumulative team points after each match"></svg>
-      <div class="tip" id="tip"></div>
-    </div>
-    <div class="legend">
-      <span><i class="legend-key a"></i>Team Yaseen</span>
-      <span><i class="legend-key b"></i>Team Shufqat</span>
-      <span><i class="legend-key gap"></i>Points gap</span>
-    </div>
-  </section>
-
-  <section>
-    <div class="head">
-      <div class="head-l"><h2>Player records</h2></div>
-      <p>Sorted by points, then wins. <span class="star">&#9733;</span> marks wins by 5+ points</p>
-    </div>
-    <div class="rosters">
-      <div class="roster a">
-        <h3><i class="dot"></i>Team Yaseen</h3>
-        <div class="t-scroll"><table id="tableA"></table></div>
-      </div>
-      <div class="roster b">
-        <h3><i class="dot"></i>Team Shufqat</h3>
-        <div class="t-scroll"><table id="tableB"></table></div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="head">
-      <div class="head-l"><h2>Match ledger</h2></div>
-      <p>Every card played, most recent first</p>
-    </div>
-    <div class="ledger" id="ledger"></div>
-  </section>
-
-  <section>
-    <div class="head">
-      <div class="head-l"><h2>Pairings grid</h2></div>
-      <p id="gridSub"></p>
-    </div>
-    <div class="g-legend">
-      <span><i class="sw done"></i>Played</span>
-      <span><i class="sw open"></i>Still to arrange</span>
-    </div>
-    <div class="grid-scroll"><table class="pg" id="pg"></table></div>
-  </section>
-
-  <section>
+  <!-- 2. This week's fixtures, with the results already in. -->
+  <section id="week" hidden>
     <div class="head">
       <div class="head-l">
-        <h2>Fixtures</h2>
-        <span class="when" id="fxWhen"></span>
+        <h2 id="weekTitle">This week</h2>
+        <span class="chip live" id="weekChip"></span>
+        <span class="when" id="weekWhen"></span>
       </div>
-      <p>The full round robin. A match may be played ahead of its week by agreement, so a
-        result can appear before the week it belongs to.</p>
     </div>
-    <div class="weeks" id="fixtures"></div>
+    <div class="weeks" id="weekBox"></div>
   </section>
 
-  <section>
-    <div class="head">
-      <div class="head-l"><h2>Competition rules</h2></div>
-      <p>Agreed at the start of the competition</p>
-    </div>
-    <div class="note">
-      <b>1. Format.</b> All matches are 9 holes &mdash; the front 9 &mdash; played as Stableford
-      off full handicap.
-      <br><br>
-      <b>2. Match points.</b> 1 point for a win, &frac12; for a draw, 0 for a loss.
-      <br><br>
-      <b>3. Bonus point.</b> A player winning by more than 4 Stableford points takes an
-      additional 1 bonus point.
-      <br><br>
-      <b>4. Substitutions and fixture flexibility.</b> If a player cannot fulfil a fixture the
-      captain may replace them with another member of the same team, but no player may stand in
-      more than twice across the competition. Matches may also be played ahead of their week
-      where both players agree. Captains will accommodate players wherever they can,
-      particularly around holidays &mdash; tell your captain as early as you can.
-      <br><br>
-      <b>5. Spirit of the competition.</b> This is a friendly team competition, to be played
-      with good humour, sportsmanship and respect for your opponent.
-      <br><br>
-      <b>6. Dinner and the individual prize.</b> The losing team takes the winning team out for
-      dinner. A trophy goes to the individual with the highest total points across the
-      competition.
-      <br><br>
-      <b>7. Winning team.</b> The winning team receives trophies at the end of the competition.
-      <br><br>
-      <b>8. Disputes.</b> Any dispute over fixtures, results or rules is settled by the two
-      captains, whose decision is final.
-    </div>
-  </section>
+  <!-- 3. The deeper dive, in the order agreed, closed until asked for. -->
+  <div class="dives">
 
-  <!-- For the captains, at the bottom of the page they are already reading:
-       under the fixtures they are chasing and the rules they are applying.
-       target="_top" because this page is embedded in the Google Site, and a
-       form opened inside that frame is unusable on a phone. -->
-  <section>
-    <div class="head">
-      <div class="head-l"><h2>Submit a result</h2></div>
-      <p>Captains only &mdash; the site updates itself a minute or two later</p>
-    </div>
-    <p class="lastup" id="lastup" hidden></p>
-    <div class="note">
-      <a class="btn" target="_top" href="https://docs.google.com/forms/d/e/1FAIpQLSeKNc6H2o_HYfvoR1csXGOXUcDPZDTQ9jrgWxmHBF6Wtn0vHg/viewform">Submit a match result &rarr;</a>
+    <details class="dive" id="p-fixtures">
+      <summary><span class="dv-tx"><span class="dv-t">All ten weeks</span><span class="dv-s" id="fxWhen"></span></span></summary>
+      <div class="dv-body">
+        <p class="dv-note">The full round robin. A match may be played ahead of its week by agreement, so a
+          result can appear before the week it belongs to.</p>
+        <div class="weeks" id="fixtures"></div>
+      </div>
+    </details>
 
-      <ol class="how">
-        <li>Pick the two players who were <b>drawn</b> &mdash; not the stand-ins.</li>
-        <li>Enter both Stableford points.</li>
-        <li>Send. The table updates itself.</li>
-      </ol>
-
-
-      <ul class="how-else">
-        <li><b>Someone stood in?</b> Still pick the drawn pair, then name the stand-in on page two.</li>
-        <li><b>Wrong score?</b> Send it again with the right one. The latest wins.</li>
-        <li><b>Match not played?</b> Send it again and choose <b>Removing a result</b>.</li>
-      </ul>
-
-      <details class="shots">
-        <summary>Show me the form</summary>
-        <div class="shots-grid">
-          <figure>
-            <img src="form-page1.png" width="620" height="731" loading="lazy"
-                 alt="Page one of the form: the action, both players and your name.">
-            <figcaption><b>Page one.</b> Pick the two who were <b>drawn</b>, not the
-              stand-ins. Choosing <b>Removing a result</b> sends from here.</figcaption>
-          </figure>
-          <figure>
-            <img src="form-page2.png" width="620" height="984" loading="lazy"
-                 alt="Page two of the form: date, both scores and the stand-in dropdowns.">
-            <figcaption><b>Page two.</b> Both scores, 0&ndash;27. Name a stand-in only
-              if somebody played instead of the drawn player.</figcaption>
-          </figure>
+    <details class="dive" id="p-race">
+      <summary><span class="dv-tx"><span class="dv-t">Race to the cup</span><span class="dv-s" id="raceSub"></span></span></summary>
+      <div class="dv-body">
+        <div class="strip" id="strip"></div>
+        <p class="dv-note">Cumulative team points after each match &mdash; the shaded band is the gap</p>
+        <div class="chart-wrap">
+          <svg id="race" viewBox="0 0 660 260" role="img" aria-label="Cumulative team points after each match"></svg>
+          <div class="tip" id="tip"></div>
         </div>
-      </details>
-    </div>
-  </section>
+        <div class="legend">
+          <span><i class="legend-key a"></i>Team Yaseen</span>
+          <span><i class="legend-key b"></i>Team Shufqat</span>
+          <span><i class="legend-key gap"></i>Points gap</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="dive" id="p-ledger">
+      <summary><span class="dv-tx"><span class="dv-t">Match ledger</span><span class="dv-s" id="ledgerSub"></span></span></summary>
+      <div class="dv-body">
+        <p class="dv-note">Every card played, most recent first</p>
+        <div class="ledger" id="ledger"></div>
+      </div>
+    </details>
+
+    <details class="dive" id="p-records">
+      <summary><span class="dv-tx"><span class="dv-t">Player records</span><span class="dv-s" id="recordsSub"></span></span></summary>
+      <div class="dv-body">
+        <p class="dv-note">Sorted by points, then wins. <span class="star">&#9733;</span> marks wins by 5+ points</p>
+        <div class="rosters">
+          <div class="roster a">
+            <h3><i class="dot"></i>Team Yaseen</h3>
+            <div class="t-scroll"><table id="tableA"></table></div>
+          </div>
+          <div class="roster b">
+            <h3><i class="dot"></i>Team Shufqat</h3>
+            <div class="t-scroll"><table id="tableB"></table></div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="dive" id="p-grid">
+      <summary><span class="dv-tx"><span class="dv-t">Pairings grid</span><span class="dv-s" id="gridSub"></span></span></summary>
+      <div class="dv-body">
+        <p class="dv-note">Every Yaseen player meets every Shufqat player once</p>
+        <div class="g-legend">
+          <span><i class="sw done"></i>Played</span>
+          <span><i class="sw open"></i>Still to arrange</span>
+        </div>
+        <div class="grid-scroll"><table class="pg" id="pg"></table></div>
+      </div>
+    </details>
+
+    <details class="dive" id="p-rules">
+      <summary><span class="dv-tx"><span class="dv-t">Competition rules</span><span class="dv-s">Agreed at the start of the competition</span></span></summary>
+      <div class="dv-body">
+        <div class="note">
+          <b>1. Format.</b> All matches are 9 holes &mdash; the front 9 &mdash; played as Stableford
+          off full handicap.
+          <br><br>
+          <b>2. Match points.</b> 1 point for a win, &frac12; for a draw, 0 for a loss.
+          <br><br>
+          <b>3. Bonus point.</b> A player winning by more than 4 Stableford points takes an
+          additional 1 bonus point.
+          <br><br>
+          <b>4. Substitutions and fixture flexibility.</b> If a player cannot fulfil a fixture the
+          captain may replace them with another member of the same team, but no player may stand in
+          more than twice across the competition. Matches may also be played ahead of their week
+          where both players agree. Captains will accommodate players wherever they can,
+          particularly around holidays &mdash; tell your captain as early as you can.
+          <br><br>
+          <b>5. Spirit of the competition.</b> This is a friendly team competition, to be played
+          with good humour, sportsmanship and respect for your opponent.
+          <br><br>
+          <b>6. Dinner and the individual prize.</b> The losing team takes the winning team out for
+          dinner. A trophy goes to the individual with the highest total points across the
+          competition.
+          <br><br>
+          <b>7. Winning team.</b> The winning team receives trophies at the end of the competition.
+          <br><br>
+          <b>8. Disputes.</b> Any dispute over fixtures, results or rules is settled by the two
+          captains, whose decision is final.
+        </div>
+      </div>
+    </details>
+
+    <!-- What changed: every move in the score, who made it. Was changes.html,
+         which now forwards here (matchplay.html#changes). -->
+    <details class="dive" id="changes">
+      <summary><span class="dv-tx"><span class="dv-t">What changed</span><span class="dv-s" id="chSub"></span></span></summary>
+      <div class="dv-body">
+        <div class="ch-top">
+          <p class="dv-note" id="chNote"></p>
+          <label class="ch-toggle"><input type="checkbox" id="chAll"> Show everything</label>
+        </div>
+        <div id="chBox"></div>
+      </div>
+    </details>
+
+    <!-- LAST, deliberately. There is no check on who submits - anybody with the
+         link can - so it sits at the bottom rather than inviting a tap.
+         target="_top" because this page is embedded in the Google Site, and a
+         form opened inside that frame is unusable on a phone. -->
+    <details class="dive" id="p-submit">
+      <summary><span class="dv-tx"><span class="dv-t">Submit a result</span><span class="dv-s">Captains only &mdash; the site updates itself a minute later</span></span></summary>
+      <div class="dv-body">
+        <p class="lastup" id="lastup" hidden></p>
+        <div class="note">
+          <a class="btn" target="_top" href="https://docs.google.com/forms/d/e/1FAIpQLSeKNc6H2o_HYfvoR1csXGOXUcDPZDTQ9jrgWxmHBF6Wtn0vHg/viewform">Submit a match result &rarr;</a>
+
+          <ol class="how">
+            <li>Pick the two players who were <b>drawn</b> &mdash; not the stand-ins.</li>
+            <li>Enter both Stableford points.</li>
+            <li>Send. The table updates itself.</li>
+          </ol>
+
+          <ul class="how-else">
+            <li><b>Someone stood in?</b> Still pick the drawn pair, then name the stand-in on page two.</li>
+            <li><b>Wrong score?</b> Send it again with the right one. The latest wins.</li>
+            <li><b>Match not played?</b> Send it again and choose <b>Removing a result</b>.</li>
+          </ul>
+
+          <details class="shots">
+            <summary>Show me the form</summary>
+            <div class="shots-grid">
+              <figure>
+                <img src="form-page1.png" width="620" height="731" loading="lazy"
+                     alt="Page one of the form: the action, both players and your name.">
+                <figcaption><b>Page one.</b> Pick the two who were <b>drawn</b>, not the
+                  stand-ins. Choosing <b>Removing a result</b> sends from here.</figcaption>
+              </figure>
+              <figure>
+                <img src="form-page2.png" width="620" height="984" loading="lazy"
+                     alt="Page two of the form: date, both scores and the stand-in dropdowns.">
+                <figcaption><b>Page two.</b> Both scores, 0&ndash;27. Name a stand-in only
+                  if somebody played instead of the drawn player.</figcaption>
+              </figure>
+            </div>
+          </details>
+        </div>
+      </div>
+    </details>
+
+  </div>
 
   <footer>
     <div><b>Scoring.</b> Win 1 pt. Win by 5 or more Stableford points 2 pts. Halved match 0.5 each. Loss 0.</div>
     <div><b>Substitutes.</b> A stand-in's result counts for the team and for their own record, but the rostered player's own pairing stays open until they play it themselves.</div>
     <div><b>Handicaps.</b> Handicaps here are the player's current NHS figure from the register, except where marked <span class="src">comp</span> &mdash; a handicap agreed for this competition only, which does not change that player's NHS anywhere else. Matches are settled on the Stableford points recorded on the card.</div>
-    <div><b>Source.</b> The Match Log tab of Team_Matchplay_Leaderboard.xlsx, mirrored into <code>data.js</code>.</div>
+    <div><b>Source.</b> The captains' results form, mirrored into <code>data.js</code>.</div>
   </footer>
 </div>
 
 <script src="data.js?v=d5c36b93"></script>
-<script src="changes.js?v=f5c77be4"></script>
+<script src="changes.js?v=fbaac3ed"></script>
 <script src="fx.js?v=35840b0c"></script>
 <script>
   const isSub = (p,f) => !!f && f !== p;
@@ -293,7 +362,43 @@
       `${Math.round(donePairs.size / TOTAL_PAIRS * 100)}% of the round robin`]
   ].map(([k,v,s]) => `<div class="stat"><span class="k">${k}</span><span class="v num">${v}</span><span class="sub">${s}</span></div>`).join('');
 
+  /* ---------- this week's team fixtures ----------
+     Moved here from the home page, which now carries the score alone. The week
+     is chosen by date, so the block moves on by itself every Monday and
+     disappears once the last week has finished - nobody has to republish.
+     Matches played ahead of their week are already done, so the list is a mix
+     of results and outstanding games. The rows are drawn by fx.js, shared with
+     the full fixture list below, so the two cannot drift apart. */
+  (function(){
+    if (typeof TEAM_SCHEDULE === 'undefined' || !TEAM_SCHEDULE.length) return;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const day = d => new Date(d + 'T00:00:00');
+    const endOf = w => { const e = day(w.from); e.setDate(e.getDate() + 6); return e; };
+
+    const last = TEAM_SCHEDULE[TEAM_SCHEDULE.length - 1];
+    if (endOf(last) < today) return;                  // competition over
+    const w = TEAM_SCHEDULE.find(x => endOf(x) >= today);
+    if (!w) return;
+
+    const done = w.pairs.filter(p => FX.byPair[p[0] + '|' + p[1]]).length;
+    const started = day(w.from) <= today;
+
+    document.getElementById('week').hidden = false;
+    document.getElementById('weekTitle').textContent =
+      (started ? 'This week — week ' : 'Next week — week ') + w.week;
+    document.getElementById('weekChip').textContent = `${done} of ${w.pairs.length}`;
+    document.getElementById('weekWhen').textContent =
+      (started ? 'commencing Monday ' : 'starts Monday ') +
+      day(w.from).toLocaleDateString('en-GB', {day:'numeric', month:'long'});
+
+    const box = document.getElementById('weekBox');
+    box.innerHTML = FX.card(w, {carry:true});
+    box.insertAdjacentHTML('afterend', FX.key());   // outside the grid, not a cell
+  })();
+
   /* ---------- race chart ---------- */
+  document.getElementById('raceSub').textContent =
+    `Yaseen ${fmtP(totalA)} · Shufqat ${fmtP(totalB)} after ${M.length} matches`;
   (function race(){
     const svg = document.getElementById('race'), tip = document.getElementById('tip');
     let a = 0, b = 0;
@@ -382,10 +487,15 @@
         <td>${r.avg != null ? r.avg.toFixed(1) : '&ndash;'}</td>
       </tr>`).join('') + `</tbody>`;
   }
-  renderTable(document.getElementById('tableA'), records(ROSTER_A,'A'));
-  renderTable(document.getElementById('tableB'), records(ROSTER_B,'B'));
+  const recA = records(ROSTER_A,'A'), recB = records(ROSTER_B,'B');
+  renderTable(document.getElementById('tableA'), recA);
+  renderTable(document.getElementById('tableB'), recB);
+  document.getElementById('recordsSub').textContent =
+    `Top: ${recA[0].name} ${fmtP(recA[0].pts)} pts · ${recB[0].name} ${fmtP(recB[0].pts)} pts`;
 
   /* ---------- ledger ---------- */
+  document.getElementById('ledgerSub').textContent =
+    `${M.length} matches · latest ${fmtD(lastDate)}`;
   (function ledger(){
     const byDay = {};
     [...M].reverse().forEach(m => (byDay[m.date] ||= []).push(m));
@@ -414,7 +524,7 @@
 
   /* ---------- pairings grid ---------- */
   document.getElementById('gridSub').textContent =
-    `${donePairs.size} played, ${TOTAL_PAIRS - donePairs.size} to go — every Yaseen player meets every Shufqat player once`;
+    `${donePairs.size} of ${TOTAL_PAIRS} pairings played, ${TOTAL_PAIRS - donePairs.size} to go`;
   document.getElementById('pg').innerHTML =
     '<thead><tr><th class="corner"></th>' + ROSTER_B.map(([n]) => `<th class="col"><span>${n}</span></th>`).join('') + '</tr></thead>'
     + '<tbody>' + ROSTER_A.map(([an]) => '<tr><th class="row">' + an + '</th>' +
@@ -425,11 +535,11 @@
 
   /* ---------- the fixture list ----------
      Every scheduled pairing, with its result where one exists. The rows come
-     from fx.js, shared with the home page: a result is tied to a pairing by
-     who was DUE to play it, because a substitute stands in for a team-mate, so
-     the match belongs to the rostered player's fixture rather than the
-     stand-in's. The rules allow a match to be played ahead of its week, so a
-     date earlier than the week is expected and is marked 'early'. */
+     from fx.js, shared with this week's block above: a result is tied to a
+     pairing by who was DUE to play it, because a substitute stands in for a
+     team-mate, so the match belongs to the rostered player's fixture rather
+     than the stand-in's. The rules allow a match to be played ahead of its
+     week, so a date earlier than the week is expected and is marked 'early'. */
   (function(){
     if (typeof TEAM_SCHEDULE === 'undefined') return;
     let played = 0;
@@ -442,7 +552,7 @@
     box.innerHTML = html;
     box.insertAdjacentHTML('afterend', FX.key());   // once, not once per week
     document.getElementById('fxWhen').textContent =
-      `${played} of ${TEAM_SCHEDULE.reduce((n, w) => n + w.pairs.length, 0)} played`;
+      `${played} of ${TEAM_SCHEDULE.reduce((n, w) => n + w.pairs.length, 0)} fixtures played`;
   })();
 </script>
 <style>
@@ -450,9 +560,155 @@
     background:var(--surface-sunk);padding:1px 5px;border-radius:3px;}
 </style>
 <script>
-  // The last change, in one line: after sending a result the only question a
-  // captain has is whether it landed, and the table alone cannot answer it
-  // unless he knows the old score by heart.
+  /* ---------- what changed ----------
+     Every published move in the score, newest first, from changes.js - which
+     score_log.py writes from score-log.csv, the append-only record. Nothing
+     here edits that record; it only decides what to show by default.
+
+     QUIET BY DEFAULT. Two kinds of entry are true but are not news:
+       - the daily record, written once a day whether or not anything moved
+       - a result sent and taken off again within a day: a test, or a slip
+         corrected on the spot. Shown as one grey line, not two loud ones.
+     "Show everything" puts every entry back exactly as recorded. */
+  (function(){
+    const rows = (typeof CHANGES === 'undefined') ? [] : CHANGES;    // newest first
+    const box = document.getElementById('chBox');
+    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const at = s => new Date(s);
+    const hm = d => d.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+    const dayOf = d => d.toLocaleDateString('en-GB', {weekday:'long', day:'numeric', month:'long'});
+    const whenShort = d => d.toLocaleString('en-GB', {weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+
+    if (!rows.length) {
+      document.getElementById('chSub').textContent = 'nothing recorded yet';
+      box.innerHTML = '<p class="dv-note">Nothing recorded yet.</p>';
+      return;
+    }
+
+    /* "added Mansoor v Raza 15-18 (Yaseen (C))" -> the submitter is the last
+       bracketed group, which may itself contain brackets. A bare "(C)" is a
+       captain's mark on a player, never a submitter. */
+    const BY = /\s\(((?:[^()]|\([^()]*\))+)\)$/;
+    function parse(t){
+      let body = t, by = '';
+      const m = t.match(BY);
+      if (m && m[1] !== 'C') { by = m[1]; body = t.slice(0, m.index); }
+      let x;
+      if ((x = body.match(/^added (.+) v (.+) (\d+)-(\d+)$/)))
+        return {kind:'added', fx:x[1] + ' v ' + x[2], a:x[1], b:x[2], ap:+x[3], bp:+x[4], by};
+      if ((x = body.match(/^deleted (.+) v (.+?)(?:, was (\d+)-(\d+))?$/)))
+        return {kind:'removed', fx:x[1] + ' v ' + x[2], a:x[1], b:x[2], ap:x[3] ? +x[3] : null, bp:x[4] ? +x[4] : null, by};
+      if ((x = body.match(/^(.+) v (.+) now (\d+)-(\d+), was (\d+)-(\d+)$/)))
+        return {kind:'changed', fx:x[1] + ' v ' + x[2], a:x[1], b:x[2], ap:+x[3], bp:+x[4], wa:+x[5], wb:+x[6], by};
+      if (body === 'no change') return {kind:'daily', by};
+      if (/^DRIFT/.test(body)) return {kind:'drift', text:body, by};
+      return {kind:'other', text:body, by};
+    }
+
+    const score = (a, b, ap, bp) => {
+      const w = ap > bp ? 'a' : bp > ap ? 'b' : '';
+      return `<span class="${w === 'a' ? 'won-a' : ''}">${esc(a)}</span> ${ap}&ndash;${bp} `
+           + `<span class="${w === 'b' ? 'won-b' : ''}">${esc(b)}</span>`;
+    };
+    const LABEL = {added:'Added', removed:'Removed', changed:'Changed', daily:'Daily', drift:'Check', other:'Note'};
+    function line(it){
+      let what;
+      if (it.kind === 'added') what = score(it.a, it.b, it.ap, it.bp);
+      else if (it.kind === 'removed') what = esc(it.a) + ' v ' + esc(it.b)
+        + (it.ap != null ? ` <span class="dv-s">was ${it.ap}&ndash;${it.bp}</span>` : '');
+      else if (it.kind === 'changed') what = score(it.a, it.b, it.ap, it.bp)
+        + ` <span class="dv-s">was ${it.wa}&ndash;${it.wb}</span>`;
+      else if (it.kind === 'daily') what = 'no change &mdash; the daily record';
+      else what = esc(it.text);
+      return `<span class="lab ${it.kind}">${LABEL[it.kind]}</span>${what}`;
+    }
+    const signed = v => (v > 0 ? '+' : '&minus;') + fmtP(Math.abs(v));
+    function moved(da, db){
+      const parts = [];
+      if (da) parts.push(`<span class="a">Yaseen ${signed(da)}</span>`);
+      if (db) parts.push(`<span class="b">Shufqat ${signed(db)}</span>`);
+      return parts.length ? ` <span class="mv">${parts.join(' ')}</span>` : '';
+    }
+
+    const E = rows.map((r, i) => {
+      const prev = rows[i + 1];
+      return {r, d: at(r.when), items: r.items.map(parse),
+              da: prev ? r.a - prev.a : null, db: prev ? r.b - prev.b : null,
+              first: !prev, hide: false, pairedWith: null};
+    });
+
+    /* Pair a removal with the result it took off, when that result was the
+       nearest earlier entry to touch the same fixture and was sent within a
+       day. Both then fold into one grey line in quiet mode. */
+    const DAY = 24 * 3600 * 1000;
+    E.forEach((e, i) => {
+      if (e.items.length !== 1 || e.items[0].kind !== 'removed') return;
+      const fx = e.items[0].fx;
+      for (let j = i + 1; j < E.length; j++) {
+        const o = E[j];
+        if (!o.items.some(it => it.fx === fx)) continue;
+        if (o.items.length === 1 && o.items[0].kind === 'added' && !o.pairedWith
+            && e.d - o.d <= DAY) {
+          o.hide = true; e.pairedWith = o;
+        }
+        break;
+      }
+    });
+
+    const latest = E.find(e => !(e.items.length === 1 && e.items[0].kind === 'daily')) || E[0];
+    document.getElementById('chSub').textContent = 'last change ' + whenShort(latest.d);
+
+    function entry(e, all){
+      const one = e.items.length === 1 ? e.items[0] : null;
+      const by = [...new Set(e.items.map(it => it.by).filter(Boolean))].join(', ');
+      const meta = `Yaseen ${fmtP(e.r.a)} &middot; Shufqat ${fmtP(e.r.b)} &middot; ${e.r.results} played`
+                 + (by ? ` &middot; sent by ${esc(by)}` : '');
+
+      if (!all && e.pairedWith) {
+        const o = e.pairedWith, it = o.items[0];
+        const mins = Math.max(1, Math.round((e.d - o.d) / 60000));
+        const gapTxt = mins < 60 ? `${mins} min` : `${Math.round(mins / 60)} h`;
+        return `<div class="ch quiet"><span class="t">${hm(e.d)}</span>`
+          + `<div class="ln"><span class="lab">Withdrawn</span>${esc(it.a)} ${it.ap}&ndash;${it.bp} ${esc(it.b)}`
+          + ` sent, then removed ${gapTxt} later</div>`
+          + `<div class="meta">no change to the score${by ? ' &middot; ' + esc(by) : ''}</div></div>`;
+      }
+      if (!all && e.first && e.items.length > 3) {
+        return `<div class="ch"><span class="t">${hm(e.d)}</span>`
+          + `<div class="ln"><span class="lab">Loaded</span>the season so far &mdash; ${e.items.length} results</div>`
+          + `<div class="meta">${meta}</div></div>`;
+      }
+      const drift = e.items.some(it => it.kind === 'drift');
+      const lines = e.items.map((it, k) => `<div class="ln">${line(it)}${k === 0 ? moved(e.da, e.db) : ''}</div>`).join('');
+      return `<div class="ch${drift ? ' drift' : ''}${one && one.kind === 'daily' ? ' quiet' : ''}">`
+        + `<span class="t">${hm(e.d)}</span>${lines}<div class="meta">${meta}</div></div>`;
+    }
+
+    const all = document.getElementById('chAll');
+    function render(){
+      const show = all.checked ? E : E.filter(e => !e.hide
+        && !(e.items.length === 1 && e.items[0].kind === 'daily'));
+      let html = '', lastDay = '';
+      show.forEach(e => {
+        const dd = dayOf(e.d);
+        if (dd !== lastDay) { html += `<div class="ch-day">${dd}</div>`; lastDay = dd; }
+        html += entry(e, all.checked);
+      });
+      box.innerHTML = html;
+      const hidden = E.length - show.length;
+      document.getElementById('chNote').textContent = all.checked
+        ? `All ${E.length} entries, exactly as recorded.`
+        : `Newest first.${hidden ? ` ${hidden} test${hidden === 1 ? '' : 's'} and daily checks folded away.` : ''}`;
+    }
+    try { all.checked = sessionStorage.getItem('mpgolf-changes-all') === '1'; } catch (e) {}
+    all.addEventListener('change', () => {
+      try { sessionStorage.setItem('mpgolf-changes-all', all.checked ? '1' : ''); } catch (e) {}
+      render();
+    });
+    render();
+  })();
+
+  // The last change, in one line, where a captain has just sent a result.
   (function () {
     const el = document.getElementById('lastup');
     if (!el || typeof CHANGES === 'undefined' || !CHANGES.length) return;
@@ -463,8 +719,33 @@
       : d.toLocaleString('en-GB', { day: 'numeric', month: 'short',
                                     hour: '2-digit', minute: '2-digit' });
     el.innerHTML = 'Last change <b>' + when + '</b> · '
-      + r.items.join('; ') + ' · <a href="changes.html">what changed</a>';
+      + r.items.join('; ') + ' · <a href="#changes">what changed</a>';
     el.hidden = false;
+  })();
+
+  /* ---------- open panels survive a reload ----------
+     fresh.js reloads the page when a new result is published. Without this,
+     the panel somebody was reading would snap shut under them. The open ones
+     are remembered for this tab, and a link to #changes (or any panel) opens
+     that panel and brings it into view. */
+  (function(){
+    const KEY = 'mpgolf-open:' + location.pathname;
+    const panels = [...document.querySelectorAll('details.dive[id]')];
+    let saved = [];
+    try { saved = JSON.parse(sessionStorage.getItem(KEY) || '[]'); } catch (e) {}
+    panels.forEach(p => { if (saved.indexOf(p.id) !== -1) p.open = true; });
+
+    function fromHash(){
+      const id = decodeURIComponent(location.hash.slice(1));
+      const p = id && document.getElementById(id);
+      if (p && p.matches('details.dive')) { p.open = true; p.scrollIntoView({block:'start'}); }
+    }
+    fromHash();
+    window.addEventListener('hashchange', fromHash);
+
+    panels.forEach(p => p.addEventListener('toggle', () => {
+      try { sessionStorage.setItem(KEY, JSON.stringify(panels.filter(x => x.open).map(x => x.id))); } catch (e) {}
+    }));
   })();
 </script>
 <script src="fresh.js?v=c1589ab7"></script>
