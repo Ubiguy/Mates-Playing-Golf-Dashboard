@@ -272,7 +272,7 @@
 
   <footer>
     <div><b>Scoring.</b> Win 1 pt. Win by 5 or more Stableford points 2 pts. Halved match 0.5 each. Loss 0.</div>
-    <div><b>Substitutes.</b> A stand-in's result counts for the team and for their own record, but the rostered player's own pairing stays open until they play it themselves.</div>
+    <div><b>Substitutes.</b> A stand-in's match completes the fixture. The result counts for the team and goes on the stand-in's own record.</div>
     <div><b>Handicaps.</b> Handicaps here are the player's current NHS figure from the register, except where marked <span class="src">comp</span> &mdash; a handicap agreed for this competition only, which does not change that player's NHS anywhere else. Matches are settled on the Stableford points recorded on the card.</div>
     <div><b>Source.</b> The captains' results form, mirrored into <code>data.js</code>.</div>
   </footer>
@@ -302,7 +302,11 @@
   const bigA = M.filter(m => m.big && m.winner === 'A').length;
   const bigB = M.filter(m => m.big && m.winner === 'B').length;
   const halved = M.filter(m => m.winner === 'H').length;
-  const donePairs = new Set(M.filter(m => !m.aIsSub && !m.bIsSub).map(m => m.aPlayer + '|' + m.bPlayer));
+  // A stand-in's match completes the fixture (agreed 13 Sept 2026), so a result
+  // counts against the pair who were DRAWN to play it - the same key fx.js uses
+  // for the fixture list, which is why the two can no longer disagree.
+  const pairKey = m => (m.aSubFor || m.aPlayer) + '|' + (m.bSubFor || m.bPlayer);
+  const donePairs = new Set(M.map(pairKey));
   const TOTAL_PAIRS = ROSTER_A.length * ROSTER_B.length;
 
   /* A roster entry is [name, handicap] or [name, handicap, 'comp'] where the
@@ -530,7 +534,10 @@
     + '<tbody>' + ROSTER_A.map(([an]) => '<tr><th class="row">' + an + '</th>' +
         ROSTER_B.map(([bn]) => {
           const done = donePairs.has(an + '|' + bn);
-          return `<td class="${done ? 'done' : 'open'}" title="${an} v ${bn}${done ? ' — played' : ' — to arrange'}">${done ? '&#10003;' : ''}</td>`;
+          const m = done && M.find(x => pairKey(x) === an + '|' + bn);
+          const who = m && (m.aIsSub || m.bIsSub)
+            ? ` (${[m.aIsSub ? m.aPlayer + ' for ' + an : '', m.bIsSub ? m.bPlayer + ' for ' + bn : ''].filter(Boolean).join(', ')})` : '';
+          return `<td class="${done ? 'done' : 'open'}" title="${an} v ${bn}${done ? ' — played' + who : ' — to arrange'}">${done ? '&#10003;' : ''}</td>`;
         }).join('') + '</tr>').join('') + '</tbody>';
 
   /* ---------- the fixture list ----------

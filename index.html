@@ -87,7 +87,6 @@
 
   /* ---------- team match play, the headline ---------- */
   (function(){
-    const isSub = (p,f) => !!f && f !== p;
     let a = 0, b = 0;
     MATCHES.forEach(m => {
       const big = Math.abs(m.aPts - m.bPts) >= BIG_WIN;
@@ -95,8 +94,9 @@
       else if (m.bPts > m.aPts) b += big ? 2 : 1;
       else { a += 0.5; b += 0.5; }
     });
-    const pairs = new Set(MATCHES.filter(m => !isSub(m.aPlayer,m.aSubFor) && !isSub(m.bPlayer,m.bSubFor))
-      .map(m => m.aPlayer + '|' + m.bPlayer));
+    // A stand-in's match completes the fixture, so a result counts against the
+    // pair who were DRAWN to play it, whoever actually played (13 Sept 2026).
+    const pairs = new Set(MATCHES.map(m => (m.aSubFor || m.aPlayer) + '|' + (m.bSubFor || m.bPlayer)));
     const total = ROSTER_A.length * ROSTER_B.length;
 
     document.getElementById('mpA').textContent = fmtP(a);
